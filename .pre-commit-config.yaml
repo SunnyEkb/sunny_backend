@@ -8,6 +8,8 @@ repos:
     - id: check-added-large-files # Проверяет, не добавляются ли большие файлы.
       args: ['--maxkb=300']  # максимальный размер добавляемого файла 300 кБ
     - id: check-merge-conflict # Проверяет, нет ли файлов, содержащих конфликтующие строки слияния.
+    - id: no-commit-to-branch # Запрещает коммитить в ветку main
+      args: [ '--branch', 'main' ]
 
 # Линтер black
 -   repo: https://github.com/ambv/black
