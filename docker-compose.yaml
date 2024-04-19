@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16.1-alpine
+    restart: always
+    volumes:
+      - sunny_ekb_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+
+  backend:
+    build:
+      context: .
+    restart: always
+    volumes:
+      - sunny_static_value:/app/static/
+      - sunny_media_value:/app/media/
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    command: python3 manage.py runserver 0.0.0.0:8000
+
+volumes:
+  sunny_static_value:
+  sunny_media_value:
+  sunny_ekb_data:
