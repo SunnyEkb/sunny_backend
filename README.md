@@ -1,6 +1,6 @@
 # sunny_backend
-Бекэнд для проекта "Солнечный Екатеринбург"
-[![road_repair workflow](https://github.com/SunnyEkb/sunny_backend/actions/workflows/sunny_ekb.yaml/badge.svg)](https://github.com/SunnyEkb/sunny_backend/actions/workflows/sunny_ekb.yaml)
+Бекэнд для проекта "Солнечный" город Екатеринбург"</br>
+[![sunny_ekb workflow](https://github.com/SunnyEkb/sunny_backend/actions/workflows/sunny_ekb.yaml/badge.svg)](https://github.com/SunnyEkb/sunny_backend/actions/workflows/sunny_ekb.yaml/)
 
 ## Описание
 Web приложение для улучшения качества жизни резидентов района "Солнечный" города Екатеринбург
