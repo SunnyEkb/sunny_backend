@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "drf_spectacular",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,8 @@ else:
             "NAME": BASE_DIR / "sunny.sqlite3",
         }
     }
+
+AUTH_USER_MODEL = "users.CustomUser"
 
 AUTH_PASSWORD_VALIDATORS = [
     {
