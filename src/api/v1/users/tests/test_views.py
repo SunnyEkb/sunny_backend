@@ -26,15 +26,13 @@ class TestUser(TestUserFixtures):
         body = {
             "email": email,
             "password": self.password,
-            "confirmation": self.password
+            "confirmation": self.password,
         }
         response = self.anon_client.post(
             reverse("registry"), data=body, format="json"
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
-        self.assertTrue(
-            User.objects.filter(email=email).exists()
-        )
+        self.assertTrue(User.objects.filter(email=email).exists())
 
     def test_password_reset(self):
         response_1 = self.anon_client.post(
