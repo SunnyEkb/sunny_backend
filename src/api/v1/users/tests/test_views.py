@@ -84,7 +84,7 @@ class TestUser(TestUserFixtures):
 
         response_4 = self.client_3.post(
             reverse("login"),
-            data={"email": self.user_3.email, "password": self.new_password}
+            data={"email": self.user_3.email, "password": self.new_password},
         )
         self.assertEqual(response_4.status_code, HTTPStatus.OK)
         self.assertEqual(
@@ -94,3 +94,33 @@ class TestUser(TestUserFixtures):
     def test_user_logout(self):
         response = self.client_1.post(reverse("logout"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_refresh_tokens(self):
+        response = self.anon_client.post(reverse("token_refresh"))
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_password_change_by_anon_client(self):
+        response = self.anon_client.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.password,
+                "new_password": self.new_password,
+                "new_password_confirmation": self.new_password,
+            },
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_password_change(self):
+        response = self.client_4.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.password,
+                "new_password": self.new_password,
+                "confirmation": self.new_password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response.data, {"Success": APIResponses.PASSWORD_CHANGED.value}
+        )

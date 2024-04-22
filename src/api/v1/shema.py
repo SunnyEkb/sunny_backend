@@ -25,22 +25,50 @@ LOGIN_EXAMPLE = OpenApiExample(
 
 LOGIN_SUCCESS_EXAMPLE = OpenApiExample(
     name="Пользователь вошел в систему",
-    value={"Success": APIResponses.SUCCESS_LOGIN.value}
+    value={"Success": APIResponses.SUCCESS_LOGIN.value},
+)
+
+LOGOUT_SUCCESS_EXAMPLE = OpenApiExample(
+    name="Пользователь вышел из системы",
+    value={"Success": APIResponses.SUCCESS_LOGOUT.value},
 )
 
 LOGIN_INVALID_CREDENTIALS_EXAMPLE = OpenApiExample(
     name="Неверные данные для входа",
-    value={"detail": APIResponses.INVALID_CREDENTIALS.value}
+    value={"detail": APIResponses.INVALID_CREDENTIALS.value},
 )
 
 LOGIN_INACTIVE_EXAMPLE = OpenApiExample(
-    name="Неверные данные для входа",
-    value={"No active": APIResponses.ACCOUNT_IS_INACTIVE.value}
+    name="Неактивный аккаунт",
+    value={"No active": APIResponses.ACCOUNT_IS_INACTIVE.value},
+)
+
+UNAUTHORIZED_EXAMPLE = OpenApiExample(
+    name="Пользователь не авторизован",
+    value={"detail": APIResponses.UNAUTHORIZED.value},
 )
 
 PASSWORD_DO_NOT_MATCH_EXAMPLE = OpenApiExample(
     name="Пароль не соответствует подтверждению",
     value={"non_field_errors": [APIResponses.PASSWORD_DO_NOT_MATCH.value]},
+)
+
+PASSWORD_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Пример изменения пароля пользователя.",
+    value={
+        "current_password": "superPuper",
+        "new_password": "superPuper2",
+    },
+)
+
+PASSWORD_CHANGED_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Пароль обновлен",
+    value={"Success": APIResponses.PASSWORD_CHANGED.value},
+)
+
+REFRESH_SUCCESS_EXAMPLE = OpenApiExample(
+    name="Токен успешно обновлен",
+    value={"Success": APIResponses.SUCCESS_TOKEN_REFRESH.value},
 )
 
 WRONG_EMAIL_EXAMPLE = OpenApiExample(
@@ -66,7 +94,7 @@ LOGIN_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[LOGIN_SUCCESS_EXAMPLE],
 )
 
-LOGIN_UNAUTORIZED_401: OpenApiResponse = OpenApiResponse(
+LOGIN_BADREQUEST_400: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Неверные учетные данные",
     examples=[LOGIN_INVALID_CREDENTIALS_EXAMPLE],
@@ -75,5 +103,29 @@ LOGIN_UNAUTORIZED_401: OpenApiResponse = OpenApiResponse(
 LOGIN_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Пользователь неактивен",
-    examples=[LOGIN_INACTIVE_EXAMPLE],
+    examples=[LOGIN_INACTIVE_EXAMPLE, LOGIN_INVALID_CREDENTIALS_EXAMPLE],
+)
+
+LOGOUT_OK_200: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Пользователь вышел из системы",
+    examples=[LOGOUT_SUCCESS_EXAMPLE],
+)
+
+UNAUTHORIZED_401: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Пользователь не авторизован",
+    examples=[UNAUTHORIZED_EXAMPLE],
+)
+
+REFRESH_OK_200: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Токен обновлен",
+    examples=[REFRESH_SUCCESS_EXAMPLE],
+)
+
+PASSWORD_CHANGED_OK_200: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Пароль обновлен",
+    examples=[PASSWORD_CHANGED_SUCCESS_EXAMPLE],
 )
