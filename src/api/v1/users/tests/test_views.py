@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.urls import reverse
 
+from core.choices import APIResponses
 from core.fixtures import TestUserFixtures
 
 User = get_user_model()
@@ -33,6 +34,21 @@ class TestUser(TestUserFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertTrue(User.objects.filter(email=email).exists())
+
+    def test_user_registry_password_validation(self):
+        body = {
+            "email": self.email_2,
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("non_field_errors", None),
+            [APIResponses.PASSWORD_DO_NOT_MATCH.value],
+        )
 
     def test_password_reset(self):
         response_1 = self.anon_client.post(

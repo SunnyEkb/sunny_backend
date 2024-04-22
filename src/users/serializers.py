@@ -7,6 +7,8 @@ from rest_framework.serializers import (
     ValidationError,
 )
 
+from core.choices import APIResponses
+
 User = get_user_model()
 
 
@@ -30,7 +32,7 @@ class UserCreateSerializer(ModelSerializer):
 
     def validate(self, attrs):
         if attrs["password"] != attrs["confirmation"]:
-            raise ValidationError("password and confirmation do not match")
+            raise ValidationError(APIResponses.PASSWORD_DO_NOT_MATCH.value)
         return attrs
 
     def create(self, validated_data):

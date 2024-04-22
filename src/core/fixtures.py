@@ -44,6 +44,7 @@ class TestUserFixtures(BaseTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.email_1 = "user@foo.com"
+        cls.email_2 = "user_2@foo.com"
         cls.password = "super_password"
         cls.new_password = "new_super_password"
         cls.user_1 = CustomUserFactory()
