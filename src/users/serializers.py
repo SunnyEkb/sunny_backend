@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import (
     CharField,
@@ -6,6 +7,8 @@ from rest_framework.serializers import (
     Serializer,
     ValidationError,
 )
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from core.choices import APIResponses
 
@@ -75,3 +78,18 @@ class NonErrorFieldSerializer(Serializer):
     """
 
     non_error_field = ListField(read_only=True)
+
+
+class CookieTokenRefreshSerializer(TokenRefreshSerializer):
+    refresh = None
+
+    def validate(self, attrs):
+        attrs["refresh"] = self.context["request"].COOKIES.get(
+            settings.SIMPLE_JWT["AUTH_REFRESH"]
+        )
+        if attrs["refresh"]:
+            return super().validate(attrs)
+        else:
+            raise InvalidToken(
+                "No valid token found in cookie 'refresh_token'"
+            )

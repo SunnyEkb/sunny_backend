@@ -14,13 +14,13 @@ User = get_user_model()
 
 class TestUser(TestUserFixtures):
     def setUp(self):
-        self.old_email_backend = settings.EMAIL_BACKEND
+        self.real_email_backend = settings.EMAIL_BACKEND
         settings.EMAIL_BACKEND = (
             "django.core.mail.backends.locmem.EmailBackend"
         )
 
     def tearDown(self):
-        settings.EMAIL_BACKEND = self.old_email_backend
+        settings.EMAIL_BACKEND = self.real_email_backend
 
     def test_user_registry(self):
         email = self.email_1
@@ -50,6 +50,14 @@ class TestUser(TestUserFixtures):
             [APIResponses.PASSWORD_DO_NOT_MATCH.value],
         )
 
+    def test_user_login(self):
+        data = {"email": self.user_2.email, "password": self.password}
+        response = self.client_1.post(reverse("login"), data=data)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response.data, {"Success": APIResponses.SUCCESS_LOGIN.value}
+        )
+
     def test_password_reset(self):
         response_1 = self.anon_client.post(
             reverse("password_reset:reset-password-request"),
@@ -73,3 +81,16 @@ class TestUser(TestUserFixtures):
             data={"token": token, "password": self.new_password},
         )
         self.assertEqual(response_3.status_code, HTTPStatus.OK)
+
+        response_4 = self.client_3.post(
+            reverse("login"),
+            data={"email": self.user_3.email, "password": self.new_password}
+        )
+        self.assertEqual(response_4.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response_4.data, {"Success": APIResponses.SUCCESS_LOGIN.value}
+        )
+
+    def test_user_logout(self):
+        response = self.client_1.post(reverse("logout"))
+        self.assertEqual(response.status_code, HTTPStatus.OK)

@@ -48,7 +48,7 @@ class TestUserFixtures(BaseTestCase):
         cls.password = "super_password"
         cls.new_password = "new_super_password"
         cls.user_1 = CustomUserFactory()
-        cls.user_2 = CustomUserFactory()
+        cls.user_2 = CustomUserFactory(password=cls.password)
         cls.user_3 = CustomUserFactory()
 
         cls.client_1 = APIClient()
