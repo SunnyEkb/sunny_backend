@@ -47,6 +47,15 @@ class TestUserFixtures(BaseTestCase):
         cls.email_2 = "user_2@foo.com"
         cls.password = "super_password"
         cls.new_password = "new_super_password"
+        cls.last_name = "last_name"
+        cls.first_name = "first_name"
+        cls.change_user_data = {
+            "last_name": cls.last_name,
+            "first_name": cls.first_name,
+        }
+        cls.part_change_user_data = {
+            "last_name": cls.last_name,
+        }
         cls.user_1 = CustomUserFactory()
         cls.user_2 = CustomUserFactory(password=cls.password)
         cls.user_3 = CustomUserFactory()

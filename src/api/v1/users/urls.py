@@ -6,6 +6,7 @@ from api.v1.users.views import (
     LoginView,
     LogoutView,
     RegisrtyView,
+    UserViewSet,
 )
 
 
@@ -26,5 +27,17 @@ urlpatterns = [
         "change-password/",
         ChangePassowrdView.as_view(),
         name="change_password",
+    ),
+    re_path(
+        r"^users/me/$",
+        UserViewSet.as_view(
+            {
+                "get": "retrieve",
+                "put": "update",
+                "patch": "partial_update",
+            }
+        ),
+        kwargs={"pk": "me"},
+        name="users",
     ),
 ]

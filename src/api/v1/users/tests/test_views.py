@@ -124,3 +124,31 @@ class TestUser(TestUserFixtures):
         self.assertEqual(
             response.data, {"Success": APIResponses.PASSWORD_CHANGED.value}
         )
+
+    def test_change_user_info(self):
+        response = self.client_1.put(
+            reverse("users"), data=self.change_user_data, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        user = User.objects.get(id=self.user_1.id)
+        self.assertEqual(user.first_name, self.first_name)
+        self.assertEqual(user.last_name, self.last_name)
+
+    def test_part_change_user_info(self):
+        response = self.client_2.patch(
+            reverse("users"), data=self.part_change_user_data, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        user = User.objects.get(id=self.user_2.id)
+        self.assertEqual(user.last_name, self.last_name)
+
+    def test_anon_client_can_not_change_user_info(self):
+        response_1 = self.anon_client.patch(
+            reverse("users"), data=self.part_change_user_data, format="json"
+        )
+        self.assertEqual(response_1.status_code, HTTPStatus.UNAUTHORIZED)
+
+        response_2 = self.anon_client.put(
+            reverse("users"), data=self.change_user_data, format="json"
+        )
+        self.assertEqual(response_2.status_code, HTTPStatus.UNAUTHORIZED)

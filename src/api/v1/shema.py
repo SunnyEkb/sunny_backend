@@ -1,7 +1,12 @@
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
 from core.choices import APIResponses
-from users.serializers import NonErrorFieldSerializer, UserCreateSerializer
+from users.serializers import (
+    NonErrorFieldSerializer,
+    UserCreateSerializer,
+    UserReadSerializer,
+    UserUpdateSerializer,
+)
 
 
 USER_CREATE_EXAMPLE = OpenApiExample(
@@ -16,6 +21,30 @@ USER_CREATE_EXAMPLE = OpenApiExample(
 USER_CREATED_EXAMPLE = OpenApiExample(
     name="Пользователь зарегистрирован",
     value={"email": "example@example.com"},
+)
+
+USER_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Изменение данных о пользователе.",
+    value={
+        "first_name": "Some_name",
+        "last_name": "Some_name",
+    },
+)
+
+USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Частичное изменение данных о пользователе.",
+    value={"last_name": "Some_name"},
+)
+
+
+USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Изменение данных о пользователе.",
+    value={
+        "email": "example@example.com",
+        "first_name": "Some_name",
+        "last_name": "Some_name",
+        "role": 3,
+    },
 )
 
 LOGIN_EXAMPLE = OpenApiExample(
@@ -128,4 +157,22 @@ PASSWORD_CHANGED_OK_200: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Пароль обновлен",
     examples=[PASSWORD_CHANGED_SUCCESS_EXAMPLE],
+)
+
+USER_GET_OK_200: OpenApiResponse = OpenApiResponse(
+    response=UserReadSerializer,
+    description="Данные пользователя",
+    examples=[USER_INFO_EXAMPLE],
+)
+
+USER_PUT_OK_200: OpenApiResponse = OpenApiResponse(
+    response=UserUpdateSerializer,
+    description="Изменение данных пользователя",
+    examples=[USER_CHANGE_EXAMPLE],
+)
+
+USER_PATCH_OK_200: OpenApiResponse = OpenApiResponse(
+    response=UserUpdateSerializer,
+    description="Частичное изменение данных пользователя",
+    examples=[USER_PART_CHANGE_EXAMPLE],
 )
