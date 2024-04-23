@@ -8,4 +8,13 @@ class Role(models.IntegerChoices):
 
 
 class APIResponses(models.TextChoices):
-    PASSWORD_DO_NOT_MATCH = "password and confirmation do not match"
+    ACCOUNT_IS_INACTIVE = "This account is not active"
+    INVALID_TOKEN = "No valid token found in cookie 'refresh_token'"
+    INVALID_CREDENTIALS = "Invalid email or password"
+    PASSWORD_DO_NOT_MATCH = "Password and confirmation do not match"
+    PASSWORD_CHANGED = "Password changed successfully"
+    SUCCESS_LOGIN = "Login successfully"
+    SUCCESS_LOGOUT = "Logout successfully"
+    SUCCESS_TOKEN_REFRESH = "Token refreshed"
+    WRONG_PASSWORD = "Wrong password"
+    UNAUTHORIZED = "Учетные данные не были предоставлены."

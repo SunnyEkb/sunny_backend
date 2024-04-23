@@ -14,13 +14,13 @@ User = get_user_model()
 
 class TestUser(TestUserFixtures):
     def setUp(self):
-        self.old_email_backend = settings.EMAIL_BACKEND
+        self.real_email_backend = settings.EMAIL_BACKEND
         settings.EMAIL_BACKEND = (
             "django.core.mail.backends.locmem.EmailBackend"
         )
 
     def tearDown(self):
-        settings.EMAIL_BACKEND = self.old_email_backend
+        settings.EMAIL_BACKEND = self.real_email_backend
 
     def test_user_registry(self):
         email = self.email_1
@@ -50,6 +50,14 @@ class TestUser(TestUserFixtures):
             [APIResponses.PASSWORD_DO_NOT_MATCH.value],
         )
 
+    def test_user_login(self):
+        data = {"email": self.user_2.email, "password": self.password}
+        response = self.client_1.post(reverse("login"), data=data)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response.data, {"Success": APIResponses.SUCCESS_LOGIN.value}
+        )
+
     def test_password_reset(self):
         response_1 = self.anon_client.post(
             reverse("password_reset:reset-password-request"),
@@ -73,3 +81,74 @@ class TestUser(TestUserFixtures):
             data={"token": token, "password": self.new_password},
         )
         self.assertEqual(response_3.status_code, HTTPStatus.OK)
+
+        response_4 = self.client_3.post(
+            reverse("login"),
+            data={"email": self.user_3.email, "password": self.new_password},
+        )
+        self.assertEqual(response_4.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response_4.data, {"Success": APIResponses.SUCCESS_LOGIN.value}
+        )
+
+    def test_user_logout(self):
+        response = self.client_1.post(reverse("logout"))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_refresh_tokens(self):
+        response = self.anon_client.post(reverse("token_refresh"))
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_password_change_by_anon_client(self):
+        response = self.anon_client.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.password,
+                "new_password": self.new_password,
+                "new_password_confirmation": self.new_password,
+            },
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_password_change(self):
+        response = self.client_4.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.password,
+                "new_password": self.new_password,
+                "confirmation": self.new_password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response.data, {"Success": APIResponses.PASSWORD_CHANGED.value}
+        )
+
+    def test_change_user_info(self):
+        response = self.client_1.put(
+            reverse("users"), data=self.change_user_data, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        user = User.objects.get(id=self.user_1.id)
+        self.assertEqual(user.first_name, self.first_name)
+        self.assertEqual(user.last_name, self.last_name)
+
+    def test_part_change_user_info(self):
+        response = self.client_2.patch(
+            reverse("users"), data=self.part_change_user_data, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        user = User.objects.get(id=self.user_2.id)
+        self.assertEqual(user.last_name, self.last_name)
+
+    def test_anon_client_can_not_change_user_info(self):
+        response_1 = self.anon_client.patch(
+            reverse("users"), data=self.part_change_user_data, format="json"
+        )
+        self.assertEqual(response_1.status_code, HTTPStatus.UNAUTHORIZED)
+
+        response_2 = self.anon_client.put(
+            reverse("users"), data=self.change_user_data, format="json"
+        )
+        self.assertEqual(response_2.status_code, HTTPStatus.UNAUTHORIZED)
