@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 from core.choices import Role
 from core.enums import Limits
@@ -28,6 +29,12 @@ class CustomUser(AbstractUser):
         verbose_name="Адрес электронной почты",
         unique=True,
         db_index=True,
+    )
+    phone = PhoneNumberField(
+        verbose_name="Номер телефона",
+        max_length=Limits.MAX_LENGTH_PHONE_NUMBER.value,
+        blank=True,
+        null=True,
     )
     role = models.IntegerField(
         verbose_name="Роль",

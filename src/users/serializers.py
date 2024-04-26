@@ -54,6 +54,7 @@ class UserReadSerializer(ModelSerializer):
         model = User
         fields = [
             "email",
+            "phone",
             "first_name",
             "last_name",
             "role",
@@ -70,6 +71,7 @@ class UserUpdateSerializer(ModelSerializer):
         fields = [
             "first_name",
             "last_name",
+            "phone",
         ]
 
 

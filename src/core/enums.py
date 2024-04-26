@@ -8,3 +8,4 @@ class Limits(IntEnum):
 
     MAX_LENGTH_FIRST_NAME = 50
     MAX_LENGTH_LAST_NAME = 50
+    MAX_LENGTH_PHONE_NUMBER = 12

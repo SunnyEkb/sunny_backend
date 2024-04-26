@@ -28,6 +28,7 @@ USER_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={
         "first_name": "Some_name",
         "last_name": "Some_name",
+        "phone": "+79000000000",
     },
 )
 
@@ -41,6 +42,7 @@ USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Изменение данных о пользователе.",
     value={
         "email": "example@example.com",
+        "phone": "+79000000000",
         "first_name": "Some_name",
         "last_name": "Some_name",
         "role": 3,
