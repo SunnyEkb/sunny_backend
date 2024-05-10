@@ -209,7 +209,7 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
 SERVER_EMAIL = os.getenv("EMAIL_HOST_USER")
 
-ERROR_LOG_FILENAME = os.getenv("ERROR_LOG_FILENAME")
+ERROR_LOG_FILENAME = os.getenv("ERROR_LOG_FILENAME", default="errors.txt")
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
