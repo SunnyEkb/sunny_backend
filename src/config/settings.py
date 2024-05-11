@@ -244,6 +244,11 @@ LOGGING = {
         },
     },
     "loggers": {
+        "django.server": {
+            "level": "INFO",
+            "handlers": ["console_logger"],
+            "propagate": True,
+        },
         "django": {
             "level": "ERROR",
             "handlers": ["file_logger", "telegram_logger"],
@@ -252,12 +257,5 @@ LOGGING = {
         "factory": {
             "level": "WARN",
         },
-    },
-    "root": {
-        "level": "DEBUG",
-        "handlers": [
-            "console_logger",
-        ],
-        "propagate": True,
     },
 }

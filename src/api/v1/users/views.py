@@ -9,12 +9,13 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from api.v1.permissions import SelfOnly
-from api.v1.shema import (
+from api.v1.sheme import (
     LOGIN_EXAMPLE,
     USER_CREATE_EXAMPLE,
     USER_PART_CHANGE_EXAMPLE,
@@ -59,7 +60,7 @@ User = get_user_model()
         status.HTTP_400_BAD_REQUEST: USER_BAD_REQUEST_400,
     },
 )
-class RegisrtyView(GenericAPIView):
+class RegisrtyView(APIView):
     """
     Регистрация пользователей.
     """
@@ -82,35 +83,39 @@ class RegisrtyView(GenericAPIView):
         status.HTTP_403_FORBIDDEN: LOGIN_FORBIDDEN_403,
     },
 )
-class LoginView(GenericAPIView):
+class LoginView(APIView):
     """
     Вход пользователя в систему.
     """
 
     authentication_classes = ()
-    serializer_class = LoginSerializer()
 
     def post(self, request, format=None):
-        data = request.data
-        response = Response()
-        email = data.get("email", None)
-        password = data.get("password", None)
-        user = authenticate(email=email, password=password)
-        if user is not None:
-            if user.is_active:
-                data = get_tokens_for_user(user)
-                set_access_cookie(response, data)
-                set_refresh_cookie(response, data)
-                response["X-CSRFToken"] = csrf.get_token(request)
-                response.data = {"Success": APIResponses.SUCCESS_LOGIN.value}
-                return response
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            response = Response()
+            email = serializer.validated_data.get("email", None)
+            password = serializer.validated_data.get("password", None)
+            user = authenticate(email=email, password=password)
+            if user is not None:
+                if user.is_active:
+                    data = get_tokens_for_user(user)
+                    set_access_cookie(response, data)
+                    set_refresh_cookie(response, data)
+                    response["X-CSRFToken"] = csrf.get_token(request)
+                    response.data = {
+                        "Success": APIResponses.SUCCESS_LOGIN.value
+                    }
+                    return response
+                else:
+                    return Response(
+                        {"No active": APIResponses.ACCOUNT_IS_INACTIVE.value},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
             else:
-                return Response(
-                    {"No active": APIResponses.ACCOUNT_IS_INACTIVE.value},
-                    status=status.HTTP_403_FORBIDDEN,
+                raise AuthenticationFailed(
+                    APIResponses.INVALID_CREDENTIALS.value
                 )
-        else:
-            raise AuthenticationFailed(APIResponses.INVALID_CREDENTIALS.value)
 
 
 @extend_schema(
@@ -121,12 +126,13 @@ class LoginView(GenericAPIView):
         status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
     },
 )
-class LogoutView(GenericAPIView):
+class LogoutView(APIView):
     """
     Выход из системы.
     """
 
     permission_classes = [IsAuthenticated]
+    serializer_class = None
 
     def post(self, request, format=None):
         try:
@@ -151,7 +157,7 @@ class LogoutView(GenericAPIView):
 @extend_schema(
     tags=["Users"],
     request=None,
-    summary="Обновление refresh токена.",
+    summary="Обновление refresh токена",
     responses={
         status.HTTP_200_OK: REFRESH_OK_200,
         status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
@@ -183,7 +189,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 @extend_schema(
     tags=["Users"],
-    summary="Изменение пароля пользователя.",
+    summary="Изменение пароля пользователя",
     request=PasswordChangeSerializer,
     examples=[PASSWORD_CHANGE_EXAMPLE],
     responses={
@@ -218,14 +224,14 @@ class ChangePassowrdView(GenericAPIView):
 @extend_schema(tags=["Users"])
 @extend_schema_view(
     update=extend_schema(
-        summary="Изменение сведений о пользователе.",
+        summary="Изменение сведений о пользователе",
         responses={
             status.HTTP_200_OK: USER_PUT_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
         },
     ),
     partial_update=extend_schema(
-        summary="Изменение сведений о пользователе.",
+        summary="Изменение сведений о пользователе",
         responses={
             status.HTTP_200_OK: USER_PATCH_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
@@ -233,7 +239,7 @@ class ChangePassowrdView(GenericAPIView):
         examples=[USER_PART_CHANGE_EXAMPLE],
     ),
     retrieve=extend_schema(
-        summary="Просмотр сведений о пользователе.",
+        summary="Просмотр сведений о пользователе",
         responses={
             status.HTTP_200_OK: USER_GET_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
