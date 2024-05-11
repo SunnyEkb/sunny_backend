@@ -241,7 +241,7 @@ LOGGING = {
             "formatter": "main",
             "()": "core.log.TelegramHandler",
             "level": "ERROR",
-        }
+        },
     },
     "loggers": {
         "django": {
