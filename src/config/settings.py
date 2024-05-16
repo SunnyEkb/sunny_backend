@@ -231,7 +231,9 @@ SERVER_EMAIL = os.getenv("EMAIL_HOST_USER")
 TELEGRAM_SUPPORT_CHAT_ID = os.getenv("TELEGRAM_SUPPORT_CHAT_ID")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
-ERROR_LOG_FILENAME = os.getenv("ERROR_LOG_FILENAME", default="errors.txt")
+ERROR_LOG_FILENAME = os.path.join(
+    MEDIA_ROOT, os.getenv("ERROR_LOG_FILENAME", default="errors.txt")
+)
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

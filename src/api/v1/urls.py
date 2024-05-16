@@ -6,6 +6,8 @@ urlpatterns = [
     path(
         "docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"
     ),
-    re_path(r"^auth/", include("drf_social_oauth2.urls")),
+    re_path(
+        r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
+    ),
     path("", include("api.v1.users.urls")),
 ]
