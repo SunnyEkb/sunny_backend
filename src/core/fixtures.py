@@ -17,6 +17,13 @@ class BaseTestCase(APITestCase):
     Базовый класс для тестирования моделей.
     """
 
+    def setUp(self):
+        self.real_error_file_path = settings.ERROR_LOG_FILENAME
+        settings.ERROR_LOG_FILENAME = "errors.txt"
+
+    def tearDown(self):
+        settings.ERROR_LOG_FILENAME = self.real_error_file_path
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
