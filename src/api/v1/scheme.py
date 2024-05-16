@@ -1,3 +1,4 @@
+from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
 from core.choices import APIResponses
@@ -7,6 +8,19 @@ from users.serializers import (
     UserReadSerializer,
     UserUpdateSerializer,
 )
+
+
+class CookieTokenScheme(OpenApiAuthenticationExtension):
+    target_class = "api.v1.users.auth.CustomAuthentication"
+    name = "CookieTokenAuth"
+
+    def get_security_definition(self, auto_schema):
+        return {
+            "type": "apiKey",
+            "in": "cookie",
+            "name": "Authorization",
+            "description": "Token-based authentication in Cookie.",
+        }
 
 
 USER_CREATE_EXAMPLE = OpenApiExample(

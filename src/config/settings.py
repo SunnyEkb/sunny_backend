@@ -227,3 +227,54 @@ else:
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
 SERVER_EMAIL = os.getenv("EMAIL_HOST_USER")
+
+TELEGRAM_SUPPORT_CHAT_ID = os.getenv("TELEGRAM_SUPPORT_CHAT_ID")
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
+
+ERROR_LOG_FILENAME = os.getenv("ERROR_LOG_FILENAME", default="errors.txt")
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "main": {
+            "format": "%(asctime)s, %(name)s, %(levelname)s, %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "simple": {
+            "format": "%(asctime)s, %(message)s",
+        },
+    },
+    "handlers": {
+        "file_logger": {
+            "formatter": "main",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": ERROR_LOG_FILENAME,
+        },
+        "console_logger": {
+            "formatter": "simple",
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+        },
+        "telegram_logger": {
+            "formatter": "main",
+            "()": "core.log.TelegramHandler",
+            "level": "ERROR",
+        },
+    },
+    "loggers": {
+        "django.server": {
+            "level": "INFO",
+            "handlers": ["console_logger"],
+            "propagate": True,
+        },
+        "django": {
+            "level": "ERROR",
+            "handlers": ["file_logger", "telegram_logger"],
+            "propagate": False,
+        },
+        "factory": {
+            "level": "WARN",
+        },
+    },
+}

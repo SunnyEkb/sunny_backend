@@ -8,3 +8,4 @@ django-rest-passwordreset==1.4.1
 djangorestframework-simplejwt==5.3.1
 django-phonenumber-field[phonenumberslite]==7.3.0
 drf_social_oauth2==2.2.0
+python-telegram-bot==21.1.1

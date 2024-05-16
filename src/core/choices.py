@@ -18,3 +18,7 @@ class APIResponses(models.TextChoices):
     SUCCESS_TOKEN_REFRESH = "Token refreshed"
     WRONG_PASSWORD = "Wrong password"
     UNAUTHORIZED = "Учетные данные не были предоставлены."
+
+
+class SystemMessages(models.TextChoices):
+    TELEGRAM_ERROR = "Сообщение об ошибке не отпралено в телеграм."
