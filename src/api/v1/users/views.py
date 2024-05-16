@@ -14,7 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from api.v1.permissions import SelfOnly
-from api.v1.shema import (
+from api.v1.scheme import (
     LOGIN_EXAMPLE,
     USER_CREATE_EXAMPLE,
     USER_PART_CHANGE_EXAMPLE,

@@ -33,6 +33,9 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    "oauth2_provider",
+    "social_django",
+    "drf_social_oauth2",
     "users",
 ]
 
@@ -60,6 +63,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -120,10 +125,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    "drf_social_oauth2.backends.DjangoOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "api.v1.users.auth.CustomAuthentication",
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "drf_social_oauth2.authentication.SocialAuthentication",
     ),
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.UserRateThrottle",
@@ -150,6 +162,13 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "Lax",
 }
+
+DRFSO2_PROPRIETARY_BACKEND_NAME = "VK.com"
+DRFSO2_URL_NAMESPACE = "social_auth"
+ACTIVATE_JWT = True
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv("SOCIAL_AUTH_VK_OAUTH2_KEY")
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv("SOCIAL_AUTH_VK_OAUTH2_SECRET")
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_SECURE = True
