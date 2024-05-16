@@ -248,9 +248,11 @@ LOGGING = {
         "file_logger": {
             "formatter": "main",
             "class": "logging.handlers.RotatingFileHandler",
-            "filename": ERROR_LOG_FILENAME
-            if os.path.exists(ERROR_LOG_FILENAME)
-            else "errors.log",
+            "filename": (
+                ERROR_LOG_FILENAME
+                if os.path.exists(ERROR_LOG_FILENAME)
+                else "errors.log"
+            ),
         },
         "console_logger": {
             "formatter": "simple",
