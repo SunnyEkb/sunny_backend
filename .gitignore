@@ -161,3 +161,6 @@ cython_debug/
 .vscode/
 
 src/media/
+
+/nginx.conf
+/docker-compose.yaml
