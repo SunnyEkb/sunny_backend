@@ -19,6 +19,7 @@ jobs:
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
           envkey_CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
+          envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
           envkey_ERROR_LOG_FILENAME: ${{ secrets.ERROR_LOG_FILENAME }}
           envkey_ACCESS_TOKEN_LIFETIME: ${{ secrets.ACCESS_TOKEN_LIFETIME }}
           envkey_REFRESH_TOKEN_LIFETIME: ${{ secrets.REFRESH_TOKEN_LIFETIME }}
