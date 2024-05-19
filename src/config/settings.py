@@ -5,6 +5,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from corsheaders.defaults import default_headers
+
 TRUE_VALUES = ["1", "true", "True", "YES", "yes"]
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,6 +38,7 @@ INSTALLED_APPS = [
     "oauth2_provider",
     "social_django",
     "drf_social_oauth2",
+    "corsheaders",
     "users",
 ]
 
@@ -177,8 +180,12 @@ CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_TRUSTED_ORIGINS = [os.getenv("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1")]
-CORS_TRUSTED_ORIGINS = [os.getenv("CORS_TRUSTED_ORIGINS", "http://127.0.0.1")]
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS", "http://127.0.0.1"
+).split(", ")
+CORS_ALLOWED_ORIGINS = os.getenv(
+    "CORS_ALLOWED_ORIGINS", "http://127.0.0.1"
+).split(", ")
 CORS_ALLOW_METHODS = (
     "DELETE",
     "GET",
@@ -189,11 +196,7 @@ CORS_ALLOW_METHODS = (
 )
 
 CORS_ALLOW_HEADERS = (
-    "x-requested-with",
-    "content-type",
-    "accept",
-    "origin",
-    "authorization",
+    *default_headers,
     "X-CSRFToken",
 )
 
