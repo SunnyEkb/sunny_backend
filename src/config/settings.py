@@ -188,6 +188,15 @@ CORS_ALLOW_METHODS = (
     "PUT",
 )
 
+CORS_ALLOW_HEADERS = (
+    "x-requested-with",
+    "content-type",
+    "accept",
+    "origin",
+    "authorization",
+    "X-CSRFToken",
+)
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "Sunny Ekb Documentation",
     "DESCRIPTION": "Documentation for Sunny Ekb API built with DRF",
