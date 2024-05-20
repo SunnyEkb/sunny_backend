@@ -26,7 +26,9 @@ class UserCreateSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "username",
             "email",
+            "phone",
             "password",
             "confirmation",
         ]
@@ -53,6 +55,7 @@ class UserReadSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "username",
             "email",
             "phone",
             "first_name",
@@ -69,6 +72,7 @@ class UserUpdateSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "username",
             "first_name",
             "last_name",
             "phone",

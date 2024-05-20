@@ -12,7 +12,6 @@ class CustomUser(AbstractUser):
     Кастомная модель пользователя.
     """
 
-    username = None
     first_name = models.CharField(
         verbose_name="Имя",
         max_length=Limits.MAX_LENGTH_FIRST_NAME.value,

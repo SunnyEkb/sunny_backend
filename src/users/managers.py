@@ -6,9 +6,9 @@ from core.choices import Role
 class UserManager(BaseUserManager):
     """Кастомный менеджер для модели пользователя."""
 
-    def create_user(self, email, password):
+    def create_user(self, email, password, **kwargs):
         email = self.normalize_email(email)
-        user = self.model(email=email)
+        user = self.model(email=email, **kwargs)
         user.set_password(password)
         user.save(using=self._db)
         return user

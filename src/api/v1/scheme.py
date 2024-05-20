@@ -26,7 +26,9 @@ class CookieTokenScheme(OpenApiAuthenticationExtension):
 USER_CREATE_EXAMPLE = OpenApiExample(
     name="Данные для регистрации",
     value={
+        "username": "some_user",
         "email": "example@example.com",
+        "phone": "+79000000000",
         "password": "your-password",
         "confirmation": "your-password",
     },
@@ -40,6 +42,7 @@ USER_CREATED_EXAMPLE = OpenApiExample(
 USER_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Изменение данных о пользователе.",
     value={
+        "username": "Some_username",
         "first_name": "Some_name",
         "last_name": "Some_name",
         "phone": "+79000000000",
@@ -55,6 +58,7 @@ USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
 USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Изменение данных о пользователе.",
     value={
+        "username": "Some_username",
         "email": "example@example.com",
         "phone": "+79000000000",
         "first_name": "Some_name",
@@ -103,6 +107,7 @@ PASSWORD_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={
         "current_password": "superPuper",
         "new_password": "superPuper2",
+        "confirmation": "superPuper2",
     },
 )
 
