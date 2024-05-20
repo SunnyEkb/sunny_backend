@@ -1,4 +1,10 @@
-from factory import Faker, fuzzy, LazyAttribute, PostGenerationMethodCall
+from factory import (
+    Faker,
+    fuzzy,
+    LazyAttribute,
+    PostGenerationMethodCall,
+    Sequence,
+)
 from factory.django import DjangoModelFactory
 
 from users.models import CustomUser
@@ -10,6 +16,7 @@ class CustomUserFactory(DjangoModelFactory):
     class Meta:
         model = CustomUser
 
+    username = Sequence(lambda n: "user_{}".format(n))
     first_name = Faker("first_name")
     last_name = Faker("last_name")
     email = LazyAttribute(lambda o: f"{o.last_name}@example.org")

@@ -25,7 +25,9 @@ class TestUser(TestUserFixtures):
     def test_user_registry(self):
         email = self.email_1
         body = {
+            "username": self.username,
             "email": email,
+            "phone": self.new_phone,
             "password": self.password,
             "confirmation": self.password,
         }
@@ -37,6 +39,7 @@ class TestUser(TestUserFixtures):
 
     def test_user_registry_password_validation(self):
         body = {
+            "username": self.username,
             "email": self.email_2,
             "password": self.password,
             "confirmation": f"{self.password}wrong",

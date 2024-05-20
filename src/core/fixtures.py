@@ -43,6 +43,8 @@ class TestUserFixtures(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.username = "some_user"
+        cls.new_username = "new_user"
         cls.email_1 = "user@foo.com"
         cls.email_2 = "user_2@foo.com"
         cls.password = "super_password"
@@ -51,6 +53,7 @@ class TestUserFixtures(BaseTestCase):
         cls.last_name = "last_name"
         cls.first_name = "first_name"
         cls.change_user_data = {
+            "username": cls.new_username,
             "last_name": cls.last_name,
             "first_name": cls.first_name,
             "phone": cls.new_phone,
