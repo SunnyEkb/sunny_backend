@@ -10,3 +10,6 @@ django-phonenumber-field[phonenumberslite]==7.3.0
 drf_social_oauth2==2.2.0
 python-telegram-bot==21.1.1
 django-cors-headers==4.3.1
+daphne==4.1.2
+channels==4.1.0
+channels-redis==4.2.0
