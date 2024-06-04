@@ -23,6 +23,7 @@ else:
     ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(", ")
 
 INSTALLED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     "drf_social_oauth2",
     "corsheaders",
     "users",
+    "notifications",
 ]
 
 MIDDLEWARE = [
@@ -298,3 +300,22 @@ LOGGING = {
         },
     },
 }
+
+if "test" in sys.argv:
+    CHANNEL_LAYERS = {
+        "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [
+                    (
+                        os.getenv("REDDIS_HOST", "127.0.0.1"),
+                        os.getenv("REDDIS_PORT", 6379),
+                    )
+                ],
+            },
+        },
+    }
