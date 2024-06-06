@@ -301,21 +301,21 @@ LOGGING = {
     },
 }
 
-if "test" in sys.argv:
-    CHANNEL_LAYERS = {
-        "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
-    }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [
-                    (
-                        os.getenv("REDDIS_HOST", "127.0.0.1"),
-                        os.getenv("REDDIS_PORT", 6379),
-                    )
-                ],
-            },
-        },
-    }
+# if "test" in sys.argv:
+CHANNEL_LAYERS = {
+    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
+}
+# else:
+#    CHANNEL_LAYERS = {
+#        "default": {
+#            "BACKEND": "channels_redis.core.RedisChannelLayer",
+#            "CONFIG": {
+#                "hosts": [
+#                    (
+#                        os.getenv("REDDIS_HOST", "127.0.0.1"),
+#                        os.getenv("REDDIS_PORT", 6379),
+#                    )
+#                ],
+#            },
+#        },
+#    }
