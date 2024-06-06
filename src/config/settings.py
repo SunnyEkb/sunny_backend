@@ -301,11 +301,11 @@ LOGGING = {
     },
 }
 
-#if "test" in sys.argv:
+# if "test" in sys.argv:
 CHANNEL_LAYERS = {
     "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
 }
-#else:
+# else:
 #    CHANNEL_LAYERS = {
 #        "default": {
 #            "BACKEND": "channels_redis.core.RedisChannelLayer",
