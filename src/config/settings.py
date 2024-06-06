@@ -77,7 +77,8 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = "config.asgi.application"
+# ASGI_APPLICATION = "config.asgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 PROD_DB = os.getenv("PROD_DB") in TRUE_VALUES
 if "test" in sys.argv:
