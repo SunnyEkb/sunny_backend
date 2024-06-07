@@ -39,7 +39,7 @@ services:
       - "8000:8000"
     env_file:
       - ./.env
-    command: python3 manage.py runserver 0.0.0.0:8000
+    command: python3 daphne -b 0.0.0.0 -p 8000 config.asgi:application
 
 volumes:
   sunny_static_value:
