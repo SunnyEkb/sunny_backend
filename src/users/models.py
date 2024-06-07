@@ -64,3 +64,6 @@ class CustomUser(AbstractUser):
     @property
     def is_moderator(self):
         return self.role == Role.MODERATOR
+
+    def get_group_id(self):
+        return "user_{0}_notifications".format(self.id)
