@@ -22,3 +22,7 @@ class APIResponses(models.TextChoices):
 
 class SystemMessages(models.TextChoices):
     TELEGRAM_ERROR = "Сообщение об ошибке не отпралено в телеграм."
+
+
+class Notifications(models.TextChoices):
+    WELCOME = "{0}Приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
