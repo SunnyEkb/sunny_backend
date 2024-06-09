@@ -116,6 +116,7 @@ class LoginView(APIView):
                 raise AuthenticationFailed(
                     APIResponses.INVALID_CREDENTIALS.value
                 )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema(

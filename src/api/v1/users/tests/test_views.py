@@ -61,6 +61,11 @@ class TestUser(TestUserFixtures):
             response.data, {"Success": APIResponses.SUCCESS_LOGIN.value}
         )
 
+    def test_user_login_wrong_credentials(self):
+        data = {"email": self.user_2.username, "password": self.password}
+        response = self.client_1.post(reverse("login"), data=data)
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
     def test_password_reset(self):
         response_1 = self.anon_client.post(
             reverse("password_reset:reset-password-request"),
