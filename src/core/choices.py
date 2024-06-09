@@ -7,6 +7,12 @@ class Role(models.IntegerChoices):
     USER = 3
 
 
+class ServicePlace(models.TextChoices):
+    HOUSE_CALL = "Выезд"
+    OFFICE = "В офисе"
+    ON_LINE = "On line"
+
+
 class APIResponses(models.TextChoices):
     ACCOUNT_IS_INACTIVE = "This account is not active"
     INVALID_TOKEN = "No valid token found in cookie 'refresh_token'"
