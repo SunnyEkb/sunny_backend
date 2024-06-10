@@ -7,7 +7,7 @@ from notifications.consumers import NotificationConsumer
 class NotificationConsumerTest(TestUserFixtures):
     async def test_anon_connect(self):
         communicator_anon = WebsocketCommunicator(
-            NotificationConsumer.as_asgi(), "/notifications/"
+            NotificationConsumer.as_asgi(), "ws/notifications/"
         )
         connected_anon, _ = await communicator_anon.connect()
         self.assertFalse(connected_anon)
@@ -21,7 +21,7 @@ class NotificationConsumerTest(TestUserFixtures):
             ),
         ]
         communicator = WebsocketCommunicator(
-            NotificationConsumer.as_asgi(), "/notifications/", headers
+            NotificationConsumer.as_asgi(), "ws/notifications/", headers
         )
         communicator.scope["user"] = self.user_1
         connected, _ = await communicator.connect()
