@@ -6,6 +6,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 from core.choices import Notifications
 from core.email_services import send_password_reset_token
 from notifications.models import Notification
+from users.tasks import send_welcome_email_task
 
 User = get_user_model()
 
@@ -36,3 +37,12 @@ def notification_created(sender, instance, created, **kwargs):
             receiver=instance,
         )
         notification.save()
+
+
+@receiver(post_save, sender=User)
+def send_welcome_email_signal(sender, instance, created, **kwargs):
+    if created:
+        send_welcome_email_task.delay(
+            username=instance.username,
+            email=instance.email,
+        )
