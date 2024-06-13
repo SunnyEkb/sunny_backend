@@ -1,3 +1,5 @@
+import sys
+
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -41,8 +43,9 @@ def notification_created(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def send_welcome_email_signal(sender, instance, created, **kwargs):
-    if created:
-        send_welcome_email_task.delay(
-            username=instance.username,
-            email=instance.email,
-        )
+    if "test" not in sys.argv:
+        if created:
+            send_welcome_email_task.delay(
+                username=instance.username,
+                email=instance.email,
+            )
