@@ -53,6 +53,7 @@ class Service(TimeCreateUpdateModel):
         verbose_name="Тип услуги",
         null=True,
     )
+    price = models.JSONField("Прайс", blank=True, null=True)
 
     objects = models.Manager()
     cstm_mng = ServiceManager()
