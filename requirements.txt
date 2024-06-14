@@ -14,3 +14,5 @@ daphne==4.1.2
 channels==4.1.0
 channels-redis==4.2.0
 Pillow==10.3.0
+Celery==5.4.0
+flower==2.0.1

@@ -1,16 +1,40 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
+from core.choices import ServiceCategory
 from core.enums import Limits
 from core.models import TimeCreateUpdateModel
+from services.managers import ServiceManager
 
 User = get_user_model()
 
 
+class Type(models.Model):
+    """Тип услуги."""
+
+    title = models.CharField(
+        "Название",
+        max_length=Limits.MAX_LENGTH_TYPE_TITLE.value,
+    )
+
+    category = models.CharField(
+        "Вид услуги",
+        max_length=Limits.MAX_LENGTH_SERVICE_CATEGORY.value,
+        choices=ServiceCategory,
+    )
+
+    class Meta:
+        verbose_name = "Тип услуги"
+        verbose_name_plural = "Типы услуг"
+        index_together = ["category", "title"]
+        ordering = ["category", "title"]
+
+    def __str__(self) -> str:
+        return self.title
+
+
 class Service(TimeCreateUpdateModel):
-    """
-    Услуга.
-    """
+    """Услуга."""
 
     provider = models.ForeignKey(
         User,
@@ -23,6 +47,15 @@ class Service(TimeCreateUpdateModel):
     description = models.TextField(
         "Описание", max_length=Limits.MAX_LENGTH_SERVICE_DESCRIPTION.value
     )
+    type = models.ForeignKey(
+        Type,
+        on_delete=models.PROTECT,
+        verbose_name="Тип услуги",
+        null=True,
+    )
+
+    objects = models.Manager()
+    cstm_mng = ServiceManager()
 
     class Meta:
         verbose_name = "Услуга"
@@ -33,13 +66,14 @@ class Service(TimeCreateUpdateModel):
 
 
 class ServiceImage(models.Model):
-    """
-    Фото к услуге.
-    """
+    """Фото к услуге."""
 
     image = models.ImageField("Фото к услуге", upload_to="services/")
     service = models.ForeignKey(
-        Service, on_delete=models.CASCADE, verbose_name="Услуга"
+        Service,
+        on_delete=models.CASCADE,
+        verbose_name="Услуга",
+        related_name="images",
     )
     main_photo = models.BooleanField(
         "Основное фото",

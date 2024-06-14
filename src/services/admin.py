@@ -1,13 +1,11 @@
 from django.contrib import admin
 
-from services.models import Service, ServiceImage
+from services.models import Service, ServiceImage, Type
 
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    """
-    Отображение модели услуг в админке.
-    """
+    """Отображение модели услуг в админке."""
 
     list_display = [
         "provider",
@@ -15,17 +13,24 @@ class ServiceAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     ]
-    search_fields = ["title"]
+    search_fields = ["title", "type__category", "type__title"]
+    list_filter = ["type__category"]
     ordering = ["created_at"]
 
 
 @admin.register(ServiceImage)
 class ServiceImageAdmin(admin.ModelAdmin):
-    """
-    Отображение модели фотографий к услугам в админке.
-    """
+    """Отображение модели фотографий к услугам в админке."""
 
-    list_display = [
-        "service",
-    ]
+    list_display = ["service"]
     search_fields = ["service__title"]
+
+
+@admin.register(Type)
+class TypeAdmin(admin.ModelAdmin):
+    """Отображение модели типов услуг в админке."""
+
+    list_display = ["title", "category"]
+    search_fields = ["title"]
+    list_filter = ["category"]
+    ordering = ["category"]

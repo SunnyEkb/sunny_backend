@@ -25,6 +25,25 @@ services:
   redis:
     image: redis:alpine
 
+  celery:
+    image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
+    container_name: celery
+    restart: always
+    command: celery -A sunny worker -l INFO
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+
+  flower:
+    image: mher/flower
+    command: ['flower', '--broker=redis://redis:6379', '--port=5555', '--url_prefix=/flower']
+    ports:
+      - "5555:5555"
+    depends_on:
+      - celery
+
   backend:
     image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
     container_name: backend
