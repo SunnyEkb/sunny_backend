@@ -19,8 +19,27 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - sunny_static_value:/var/html/static/
       - sunny_media_value:/var/html/media/
+      - ./certbot/letsencrypt:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/letsencrypt:ro
     depends_on:
       - backend
+
+  certbot:
+    image: nbraun1/certbot
+    container_name: certbot
+    depends_on:
+      - nginx
+    environment:
+      EMAIL: solnechniy_ekb@mail.ru
+      DOMAINS: sunnyekb.ru
+      AUTHENTICATOR: webroot
+      WEBROOT_PATH: /var/www/letsencrypt
+      POST_HOOK_CMD: docker kill -s HUP $$(docker ps --filter "name=nginx" | awk '{print $$1}')
+      CRON: "0 0 1 * *"
+    volumes:
+      - ./certbot/letsencrypt:/etc/letsencrypt
+      - ./certbot/www:/var/www/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   redis:
     image: redis:alpine
