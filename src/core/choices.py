@@ -39,3 +39,12 @@ class Notifications(models.TextChoices):
 class EmailSubjects(models.TextChoices):
     WELCOME = "Регистрация на сервие Солнечный Екатеринбург"
     PASSWORD_CHANGE = "Сброс пароля на сервисе Солнечный Екатеринбург"
+
+
+class ServiceCategory(models.TextChoices):
+    BEAUTY = "Красота и здоровье"
+    SPORT = "Спорт"
+    PETS = "Домашние животные"
+    CHILDREN = "Для детей"
+    REPAIR = "Ремонт"
+    OTHER = "Другое"
