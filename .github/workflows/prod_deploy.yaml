@@ -37,6 +37,8 @@ jobs:
           envkey_EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
           envkey_EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
           envkey_EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+          envkey_REDDIS_HOST: ${{ secrets.REDDIS_HOST }}
+          envkey_REDDIS_PORT: ${{ secrets.REDDIS_PORT }}
           envkey_TELEGRAM_BOT_ID: ${{ secrets.TELEGRAM_BOT_ID }}
           envkey_TELEGRAM_SUPPORT_CHAT_ID: ${{ secrets.TELEGRAM_SUPPORT_CHAT_ID }}
           envkey_TELEGRAM_MANAGER_CHAT_ID: ${{ secrets.TELEGRAM_MANAGER_CHAT_ID }}
