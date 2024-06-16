@@ -249,6 +249,12 @@ SERVER_EMAIL = os.getenv("EMAIL_HOST_USER")
 TELEGRAM_SUPPORT_CHAT_ID = os.getenv("TELEGRAM_SUPPORT_CHAT_ID")
 TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
 
+REDIS_HOST = os.getenv("REDDIS_HOST", "127.0.0.1")
+REDIS_PORT = str(os.getenv("REDDIS_PORT", 6379))
+CELERY_BROKER_URL = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
+CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+
 ERROR_LOG_FILENAME = os.path.join(
     MEDIA_ROOT, os.getenv("ERROR_LOG_FILENAME", "errors.log")
 )
@@ -312,12 +318,7 @@ else:
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [
-                    (
-                        os.getenv("REDDIS_HOST", "127.0.0.1"),
-                        os.getenv("REDDIS_PORT", 6379),
-                    )
-                ],
+                "hosts": [(REDIS_HOST, REDIS_PORT)],
             },
         },
     }

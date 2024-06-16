@@ -31,4 +31,20 @@ class SystemMessages(models.TextChoices):
 
 
 class Notifications(models.TextChoices):
-    WELCOME = "{0}Приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
+    WELCOME = (
+        "{0}, Приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
+    )
+
+
+class EmailSubjects(models.TextChoices):
+    WELCOME = "Регистрация на сервие Солнечный Екатеринбург"
+    PASSWORD_CHANGE = "Сброс пароля на сервисе Солнечный Екатеринбург"
+
+
+class ServiceCategory(models.TextChoices):
+    BEAUTY = "Красота и здоровье"
+    SPORT = "Спорт"
+    PETS = "Домашние животные"
+    CHILDREN = "Для детей"
+    REPAIR = "Ремонт"
+    OTHER = "Другое"

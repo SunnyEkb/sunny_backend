@@ -1,6 +1,8 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
+from core.choices import EmailSubjects
+
 
 def send_email(
     html_template: str,
@@ -33,7 +35,21 @@ def send_password_reset_token(reset_password_token):
     }
     html_template = "email/reset_password.html"
     text_template = "email/reset_password.txt"
-    subject = "Сброс пароля на сервисе Солнечный Екатеринбург"
+    subject = EmailSubjects.PASSWORD_CHANGE.value
     mail_to = reset_password_token.user.email
+
+    send_email(html_template, text_template, mail_to, context, subject)
+
+
+def send_welcome_email(username, email):
+    """
+    Отправка приветственного сообщения на email.
+    """
+
+    context = {"username": username}
+    html_template = "email/welcome.html"
+    text_template = "email/welcome.txt"
+    subject = EmailSubjects.WELCOME.value
+    mail_to = email
 
     send_email(html_template, text_template, mail_to, context, subject)
