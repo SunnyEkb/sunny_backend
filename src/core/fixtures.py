@@ -6,6 +6,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
+from core.choices import ServiceCategory
+from services.tests.factories import TypeFactory
 from users.tests.factories import CustomUserFactory
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -76,3 +78,11 @@ class TestUserFixtures(BaseTestCase):
         cls.client_4 = APIClient()
         cls.client_4.force_authenticate(cls.user_4)
         cls.anon_client = APIClient()
+
+
+class TestServiceFixtures(TestUserFixtures):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.type_1 = TypeFactory(category=ServiceCategory.BEAUTY.value)
+        cls.type_2 = TypeFactory(category=ServiceCategory.SPORT.value)
