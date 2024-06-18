@@ -33,4 +33,6 @@ class ServiceFactory(DjangoModelFactory):
     title = Sequence(lambda o: "service_{0}".format(o))
     experience = fuzzy.FuzzyInteger(0, 25)
     place_of_provision = fuzzy.FuzzyChoice(ServicePlace.choices)
-    description = Faker("text", length=Limits.MAX_LENGTH_SERVICE_DESCRIPTION)
+    description = fuzzy.FuzzyText(
+        length=Limits.MAX_LENGTH_SERVICE_DESCRIPTION.value
+    )
