@@ -12,9 +12,10 @@ class ServiceAdmin(admin.ModelAdmin):
         "title",
         "created_at",
         "updated_at",
+        "status",
     ]
     search_fields = ["title", "type__category", "type__title"]
-    list_filter = ["type__category"]
+    list_filter = ["type__category", "type__title", "status"]
     ordering = ["created_at"]
 
 

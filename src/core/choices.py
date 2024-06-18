@@ -11,6 +11,15 @@ class ServicePlace(models.TextChoices):
     HOUSE_CALL = "Выезд"
     OFFICE = "В офисе"
     ON_LINE = "On line"
+    OPTIONS = "По выбору"
+
+
+class ServiceStatus(models.IntegerChoices):
+    DRAFT = 0
+    MODERATION = 1
+    PUBLISHED = 2
+    HIDDEN = 3
+    CANCELLED = 4
 
 
 class APIResponses(models.TextChoices):
