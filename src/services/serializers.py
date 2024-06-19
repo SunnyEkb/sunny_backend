@@ -49,7 +49,7 @@ class ServiceRetreiveSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра услуги."""
 
     provider = serializers.StringRelatedField(read_only=True)
-    images = ServiceImageSerializer(many=True, read_only=True, source="images")
+    images = ServiceImageSerializer(many=True, read_only=True)
     type = TypeGetSerializer()
 
     class Meta:
@@ -64,4 +64,5 @@ class ServiceRetreiveSerializer(serializers.ModelSerializer):
             "type",
             "price",
             "status",
+            "images",
         )

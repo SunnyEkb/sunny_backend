@@ -9,6 +9,7 @@ from services.serializers import (
     ServiceRetreiveSerializer,
     TypeGetSerializer,
 )
+from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import TypeFilter
 from api.v1.scheme import TYPES_GET_OK_200, TYPE_LIST_EXAMPLE
 
@@ -50,3 +51,8 @@ class ServiceViewSet(
         if self.action in ("list", "retreive"):
             return ServiceRetreiveSerializer
         return ServiceCreateUpdateSerializer
+
+    def get_permissions(self):
+        if self.action == "retreive":
+            return (ReadOnly(),)
+        return (OwnerOrReadOnly(),)
