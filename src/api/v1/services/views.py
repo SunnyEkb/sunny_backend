@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import mixins, viewsets, status
+from rest_framework import mixins, viewsets, status, pagination
 
 from services.models import Service, Type
 from services.serializers import (
@@ -44,6 +44,8 @@ class ServiceViewSet(
 ):
     """Операции с услугами."""
 
+    pagination_class = pagination.LimitOffsetPagination
+
     def get_queryset(self):
         return Service.cstm_mng.all()
 
@@ -56,3 +58,6 @@ class ServiceViewSet(
         if self.action == "retreive":
             return (ReadOnly(),)
         return (OwnerOrReadOnly(),)
+
+    def perform_create(self, serializer):
+        serializer.save(provider=self.request.user)
