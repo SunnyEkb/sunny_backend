@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins, viewsets, status, pagination
 
+from core.choices import ServiceStatus
 from services.models import Service, Type
 from services.serializers import (
     ServiceCreateUpdateSerializer,
@@ -47,6 +48,10 @@ class ServiceViewSet(
     pagination_class = pagination.LimitOffsetPagination
 
     def get_queryset(self):
+        if self.action == "list":
+            return Service.cstm_mng.filter(
+                status=ServiceStatus.PUBLISHED.value
+            )
         return Service.cstm_mng.all()
 
     def get_serializer_class(self):
