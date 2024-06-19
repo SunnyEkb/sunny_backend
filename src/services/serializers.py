@@ -34,6 +34,7 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             "place_of_provision",
             "type",
             "price",
+            "images",
         )
 
     def create(self, validated_data):

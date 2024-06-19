@@ -1,11 +1,18 @@
+from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins, viewsets, status
 
-from services.models import Type
-from services.serializers import TypeGetSerializer
+from services.models import Service, Type
+from services.serializers import (
+    ServiceCreateUpdateSerializer,
+    ServiceRetreiveSerializer,
+    TypeGetSerializer,
+)
 from api.v1.services.filters import TypeFilter
 from api.v1.scheme import TYPES_GET_OK_200, TYPE_LIST_EXAMPLE
+
+User = get_user_model()
 
 
 @extend_schema(
@@ -25,3 +32,21 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = TypeGetSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TypeFilter
+
+
+class ServiceViewSet(
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Операции с услугами."""
+
+    def get_queryset(self):
+        return Service.cstm_mng.all()
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retreive"):
+            return ServiceRetreiveSerializer
+        return ServiceCreateUpdateSerializer
