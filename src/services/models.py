@@ -74,20 +74,20 @@ class Service(TimeCreateUpdateModel):
         verbose_name = "Услуга"
         verbose_name_plural = "Услуги"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
 
-    def hide(self):
+    def hide(self) -> None:
         if self.status == ServiceStatus.PUBLISHED.value:
             self.status = ServiceStatus.HIDDEN.value
             self.save()
 
-    def send_to_moderation(self):
+    def send_to_moderation(self) -> None:
         if not self.status == ServiceStatus.CANCELLED.value:
             self.status = ServiceStatus.MODERATION.value
             self.save()
 
-    def publish(self):
+    def publish(self) -> None:
         if (
             self.status == ServiceStatus.MODERATION.value
             or self.status == ServiceStatus.HIDDEN.value
@@ -95,7 +95,7 @@ class Service(TimeCreateUpdateModel):
             self.status = ServiceStatus.PUBLISHED.value
             self.save()
 
-    def cancel(self):
+    def cancel(self) -> None:
         if not self.status == ServiceStatus.DRAFT.value:
             self.status = ServiceStatus.CANCELLED.value
             self.save()
@@ -120,5 +120,5 @@ class ServiceImage(models.Model):
         verbose_name = "Фото к услуге"
         verbose_name_plural = "Фото к услугам"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.service.title

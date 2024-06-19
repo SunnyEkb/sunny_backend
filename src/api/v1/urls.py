@@ -10,4 +10,5 @@ urlpatterns = [
         r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
     ),
     path("", include("api.v1.users.urls")),
+    path("", include("api.v1.services.urls")),
 ]

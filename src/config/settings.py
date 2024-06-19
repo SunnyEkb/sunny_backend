@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_filters",
     "drf_spectacular",
     "django_rest_passwordreset",
     "rest_framework.authtoken",
@@ -154,6 +155,9 @@ REST_FRAMEWORK = {
         "user": "10000/day",
         "anon": "1000/day",
     },
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
 }
 
 SIMPLE_JWT = {
