@@ -1,6 +1,7 @@
 # sunny_backend
 Бекэнд для проекта "Солнечный" город Екатеринбург"</br>
-[![sunny_ekb workflow](https://github.com/SunnyEkb/sunny_backend/actions/workflows/sunny_ekb.yaml/badge.svg)](https://github.com/SunnyEkb/sunny_backend/actions/workflows/sunny_ekb.yaml/)
+[![Tests](https://github.com/SunnyEkb/sunny_backend/actions/workflows/sunny_ekb.yaml/badge.svg)](https://github.com/SunnyEkb/sunny_backend/actions/workflows/sunny_ekb.yaml/)
+[![Prod deploy](https://github.com/SunnyEkb/sunny_backend/actions/workflows/prod_deploy.yaml/badge.svg)](https://github.com/SunnyEkb/sunny_backend/actions/workflows/prod_deploy.yaml/)
 
 ## Описание
 Web приложение для улучшения качества жизни резидентов района "Солнечный" города Екатеринбург

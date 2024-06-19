@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from core.choices import ServiceCategory
+from core.choices import ServiceCategory, ServicePlace, ServiceStatus
 from core.enums import Limits
 from core.models import TimeCreateUpdateModel
 from services.managers import ServiceManager
@@ -47,6 +47,13 @@ class Service(TimeCreateUpdateModel):
     description = models.TextField(
         "Описание", max_length=Limits.MAX_LENGTH_SERVICE_DESCRIPTION.value
     )
+    experience = models.PositiveIntegerField("Опыт", default=0)
+    place_of_provision = models.CharField(
+        "Место оказания услуги",
+        max_length=Limits.MAX_LENGTH_SERVICE_PLACE.value,
+        choices=ServicePlace.choices,
+        default=ServicePlace.OPTIONS.value,
+    )
     type = models.ForeignKey(
         Type,
         on_delete=models.PROTECT,
@@ -54,6 +61,11 @@ class Service(TimeCreateUpdateModel):
         null=True,
     )
     price = models.JSONField("Прайс", blank=True, null=True)
+    status = models.IntegerField(
+        "Статус услуги",
+        choices=ServiceStatus.choices,
+        default=ServiceStatus.DRAFT.value,
+    )
 
     objects = models.Manager()
     cstm_mng = ServiceManager()
@@ -62,8 +74,31 @@ class Service(TimeCreateUpdateModel):
         verbose_name = "Услуга"
         verbose_name_plural = "Услуги"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.title
+
+    def hide(self) -> None:
+        if self.status == ServiceStatus.PUBLISHED.value:
+            self.status = ServiceStatus.HIDDEN.value
+            self.save()
+
+    def send_to_moderation(self) -> None:
+        if not self.status == ServiceStatus.CANCELLED.value:
+            self.status = ServiceStatus.MODERATION.value
+            self.save()
+
+    def publish(self) -> None:
+        if (
+            self.status == ServiceStatus.MODERATION.value
+            or self.status == ServiceStatus.HIDDEN.value
+        ):
+            self.status = ServiceStatus.PUBLISHED.value
+            self.save()
+
+    def cancel(self) -> None:
+        if not self.status == ServiceStatus.DRAFT.value:
+            self.status = ServiceStatus.CANCELLED.value
+            self.save()
 
 
 class ServiceImage(models.Model):
@@ -85,5 +120,5 @@ class ServiceImage(models.Model):
         verbose_name = "Фото к услуге"
         verbose_name_plural = "Фото к услугам"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.service.title

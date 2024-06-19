@@ -8,6 +8,7 @@ from users.serializers import (
     UserReadSerializer,
     UserUpdateSerializer,
 )
+from services.serializers import TypeGetSerializer
 
 
 class CookieTokenScheme(OpenApiAuthenticationExtension):
@@ -126,6 +127,14 @@ WRONG_EMAIL_EXAMPLE = OpenApiExample(
     value={"email": ["Введите правильный адрес электронной почты."]},
 )
 
+TYPE_LIST_EXAMPLE = OpenApiExample(
+    name="Список типов услуг",
+    value=[
+        {"category": "Красота и здоровье", "title": "Маникюр"},
+        {"category": "Красота и здоровье", "title": "Массаж"},
+    ],
+)
+
 USER_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=UserCreateSerializer,
     description="Пользователь зарегистрирован",
@@ -196,4 +205,11 @@ USER_PATCH_OK_200: OpenApiResponse = OpenApiResponse(
     response=UserUpdateSerializer,
     description="Частичное изменение данных пользователя",
     examples=[USER_PART_CHANGE_EXAMPLE],
+)
+
+
+TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
+    response=TypeGetSerializer,
+    description="Получение списка типов услуг.",
+    examples=[TYPE_LIST_EXAMPLE],
 )

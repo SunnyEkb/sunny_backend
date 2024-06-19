@@ -1,4 +1,4 @@
-name: sunny_ekb workflow
+name: Tests
 on:
   push:
     branches: [ main ]
