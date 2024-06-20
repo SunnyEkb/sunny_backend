@@ -25,7 +25,7 @@ User = get_user_model()
     },
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список типов услуг."),
+    list=extend_schema(summary="Список типов услуг"),
 )
 class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список типов услуг."""
@@ -40,11 +40,11 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     tags=["Services"],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список услуг."),
-    retrieve=extend_schema(summary="Информация о конкретной услуге."),
-    create=extend_schema(summary="Создание услуги."),
-    update=extend_schema(summary="Изменение данных услуги."),
-    partial_update=extend_schema(summary="Изменение данных услуги."),
+    list=extend_schema(summary="Список услуг"),
+    retrieve=extend_schema(summary="Информация о конкретной услуге"),
+    create=extend_schema(summary="Создание услуги"),
+    update=extend_schema(summary="Изменение данных услуги"),
+    partial_update=extend_schema(summary="Изменение данных услуги"),
 )
 class ServiceViewSet(
     mixins.ListModelMixin,
@@ -72,7 +72,7 @@ class ServiceViewSet(
         return ServiceCreateUpdateSerializer
 
     def get_permissions(self):
-        if self.action == "retreive":
+        if self.action == "retrieve":
             return (ReadOnly(),)
         return (OwnerOrReadOnly(),)
 
