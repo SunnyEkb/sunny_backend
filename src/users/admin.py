@@ -24,7 +24,7 @@ class UserAdmin(UserAdmin):
     ]
     fieldsets = [
         (None, {"fields": ["email", "password"]}),
-        ("Персональная информация", {"fields": ["first_name", "last_name1"]}),
+        ("Персональная информация", {"fields": ["first_name", "last_name"]}),
         ("Разрешения", {"fields": ["is_active", "role", "is_staff"]}),
     ]
     add_fieldsets = [

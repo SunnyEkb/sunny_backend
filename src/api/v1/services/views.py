@@ -11,7 +11,7 @@ from services.serializers import (
     TypeGetSerializer,
 )
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
-from api.v1.services.filters import TypeFilter
+from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import TYPES_GET_OK_200, TYPE_LIST_EXAMPLE
 
 User = get_user_model()
@@ -36,6 +36,16 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     filterset_class = TypeFilter
 
 
+@extend_schema(
+    tags=["Services"],
+)
+@extend_schema_view(
+    list=extend_schema(summary="Список услуг."),
+    retrieve=extend_schema(summary="Информация о конкретной услуге."),
+    create=extend_schema(summary="Создание услуги."),
+    update=extend_schema(summary="Изменение данных услуги."),
+    partial_update=extend_schema(summary="Изменение данных услуги."),
+)
 class ServiceViewSet(
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -46,6 +56,8 @@ class ServiceViewSet(
     """Операции с услугами."""
 
     pagination_class = pagination.LimitOffsetPagination
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = ServiceFilter
 
     def get_queryset(self):
         if self.action == "list":
