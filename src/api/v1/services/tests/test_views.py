@@ -117,3 +117,21 @@ class TestServivecesView(TestServiceFixtures):
                     reverse("services-list") + f"?{k}={v[0]}"
                 )
                 self.assertEqual(len(response.data), len(v[1]))
+
+    def test_services_create(self):
+        response = self.client_1.post(
+            reverse("services-list"), data=self.service_data
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        self.assertTrue(
+            Service.objects.filter(
+                title=self.service_title,
+                status=ServiceStatus.DRAFT.value,
+            ).exists()
+        )
+
+    def test_anon_client_can_t_create_service(self):
+        response = self.anon_client.post(
+            reverse("services-list"), data=self.service_data
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)

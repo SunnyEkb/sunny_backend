@@ -92,3 +92,10 @@ class TestServiceFixtures(TestUserFixtures):
             type=cls.type_2,
             status=ServiceStatus.PUBLISHED.value,
         )
+        cls.service_title = "Super_service"
+        cls.service_data = {
+            "title": cls.service_title,
+            "description": "Some_service",
+            "experience": 12,
+            "place_of_provision": "Выезд",
+        }
