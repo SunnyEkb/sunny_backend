@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.core.validators import MaxValueValidator
 
 from core.choices import ServiceCategory, ServicePlace, ServiceStatus
 from core.enums import Limits
@@ -47,7 +48,11 @@ class Service(TimeCreateUpdateModel):
     description = models.TextField(
         "Описание", max_length=Limits.MAX_LENGTH_SERVICE_DESCRIPTION.value
     )
-    experience = models.PositiveIntegerField("Опыт", default=0)
+    experience = models.PositiveIntegerField(
+        "Опыт",
+        default=0,
+        validators=[MaxValueValidator(Limits.MAXIMUM_EXPERIENCE.value)],
+    )
     place_of_provision = models.CharField(
         "Место оказания услуги",
         max_length=Limits.MAX_LENGTH_SERVICE_PLACE.value,
