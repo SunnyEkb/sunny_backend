@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.core.validators import MaxValueValidator
 
 from core.choices import ServiceCategory, ServicePlace, ServiceStatus
 from core.enums import Limits
@@ -47,7 +48,11 @@ class Service(TimeCreateUpdateModel):
     description = models.TextField(
         "Описание", max_length=Limits.MAX_LENGTH_SERVICE_DESCRIPTION.value
     )
-    experience = models.PositiveIntegerField("Опыт", default=0)
+    experience = models.PositiveIntegerField(
+        "Опыт",
+        default=0,
+        validators=[MaxValueValidator(Limits.MAXIMUM_EXPERIENCE.value)],
+    )
     place_of_provision = models.CharField(
         "Место оказания услуги",
         max_length=Limits.MAX_LENGTH_SERVICE_PLACE.value,
@@ -88,16 +93,21 @@ class Service(TimeCreateUpdateModel):
             self.save()
 
     def publish(self) -> None:
-        if (
-            self.status == ServiceStatus.MODERATION.value
-            or self.status == ServiceStatus.HIDDEN.value
-        ):
+        if self.status == ServiceStatus.HIDDEN.value:
             self.status = ServiceStatus.PUBLISHED.value
             self.save()
 
-    def cancel(self) -> None:
+    def cancell(self) -> None:
         if not self.status == ServiceStatus.DRAFT.value:
             self.status = ServiceStatus.CANCELLED.value
+            self.save()
+
+    def set_draft(self):
+        if self.status in [
+            ServiceStatus.PUBLISHED.value,
+            ServiceStatus.HIDDEN.value,
+        ]:
+            self.status = ServiceStatus.DRAFT.value
             self.save()
 
 
