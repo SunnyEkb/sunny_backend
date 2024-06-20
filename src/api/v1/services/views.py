@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import mixins, viewsets, status, pagination
+from rest_framework import mixins, viewsets, status, pagination, response
 
 from core.choices import ServiceStatus
 from services.models import Service, Type
@@ -78,3 +78,18 @@ class ServiceViewSet(
 
     def perform_create(self, serializer):
         serializer.save(provider=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        # смена статуса на DRAFT, если требуется повторная модерация
+        instance.set_draft()
+        return response.Response(serializer.data)

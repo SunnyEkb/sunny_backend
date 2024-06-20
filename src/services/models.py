@@ -105,6 +105,14 @@ class Service(TimeCreateUpdateModel):
             self.status = ServiceStatus.CANCELLED.value
             self.save()
 
+    def set_draft(self):
+        if self.status in [
+            ServiceStatus.PUBLISHED.value,
+            ServiceStatus.HIDDEN.value,
+        ]:
+            self.status = ServiceStatus.DRAFT.value
+            self.save()
+
 
 class ServiceImage(models.Model):
     """Фото к услуге."""
