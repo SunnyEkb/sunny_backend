@@ -38,6 +38,9 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
+        if "images" not in validated_data.keys():
+            service = Service.objects.create(**validated_data)
+            return service
         images = validated_data.pop("images")
         service = Service.objects.create(**validated_data)
         for image in images:

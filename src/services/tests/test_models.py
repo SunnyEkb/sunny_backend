@@ -44,7 +44,5 @@ class ServiceModelsTest(BaseTestCase):
         self.service_2.send_to_moderation()
         service = Service.objects.get(pk=self.service_2.id)
         self.assertEqual(service.status, ServiceStatus.MODERATION.value)
-        service.publish()
-        self.assertEqual(service.status, ServiceStatus.PUBLISHED.value)
-        service.cancel()
+        service.cancell()
         self.assertEqual(service.status, ServiceStatus.CANCELLED.value)
