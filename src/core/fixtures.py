@@ -93,6 +93,7 @@ class TestServiceFixtures(TestUserFixtures):
             status=ServiceStatus.PUBLISHED.value,
         )
         cls.service_title = "Super_service"
+        cls.new_service_title = "Super_service"
         cls.service_data = {
             "title": cls.service_title,
             "description": "Some_service",

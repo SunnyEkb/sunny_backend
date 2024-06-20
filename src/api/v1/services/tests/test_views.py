@@ -135,3 +135,40 @@ class TestServivecesView(TestServiceFixtures):
             reverse("services-list"), data=self.service_data
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_anon_client_can_t_update_service(self):
+        response = self.anon_client.put(
+            reverse("services-detail", kwargs={"pk": self.service_1.pk}),
+            data=self.service_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_only_provider_can_update_service(self):
+        response = self.client_2.put(
+            reverse("services-detail", kwargs={"pk": self.service_1.pk}),
+            data=self.service_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_service_update(self):
+        # put method test
+        response = self.client_1.put(
+            reverse("services-detail", kwargs={"pk": self.service_1.pk}),
+            data=self.service_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Service.objects.get(pk=self.service_1.pk).title, self.service_title
+        )
+
+        # patch method test
+        new_data = {"title": self.new_service_title}
+        response = self.client_1.patch(
+            reverse("services-detail", kwargs={"pk": self.service_1.pk}),
+            data=new_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Service.objects.get(pk=self.service_1.pk).title,
+            self.new_service_title,
+        )
