@@ -93,14 +93,11 @@ class Service(TimeCreateUpdateModel):
             self.save()
 
     def publish(self) -> None:
-        if (
-            self.status == ServiceStatus.MODERATION.value
-            or self.status == ServiceStatus.HIDDEN.value
-        ):
+        if self.status == ServiceStatus.HIDDEN.value:
             self.status = ServiceStatus.PUBLISHED.value
             self.save()
 
-    def cancel(self) -> None:
+    def cancell(self) -> None:
         if not self.status == ServiceStatus.DRAFT.value:
             self.status = ServiceStatus.CANCELLED.value
             self.save()

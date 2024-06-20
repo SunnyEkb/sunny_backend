@@ -46,5 +46,5 @@ class ServiceModelsTest(BaseTestCase):
         self.assertEqual(service.status, ServiceStatus.MODERATION.value)
         service.publish()
         self.assertEqual(service.status, ServiceStatus.PUBLISHED.value)
-        service.cancel()
+        service.cancell()
         self.assertEqual(service.status, ServiceStatus.CANCELLED.value)

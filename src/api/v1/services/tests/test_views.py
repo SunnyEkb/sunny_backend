@@ -172,3 +172,44 @@ class TestServivecesView(TestServiceFixtures):
             Service.objects.get(pk=self.service_1.pk).title,
             self.new_service_title,
         )
+
+    def test_services_methods(self):
+        # hide method test
+        response_1 = self.client_2.post(
+            reverse("services-hide", kwargs={"pk": self.service_3.pk})
+        )
+        self.assertEqual(response_1.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Service.objects.get(pk=self.service_3.pk).status,
+            ServiceStatus.HIDDEN.value,
+        )
+
+        # publish method test
+        response_2 = self.client_2.post(
+            reverse("services-publish", kwargs={"pk": self.service_3.pk})
+        )
+        self.assertEqual(response_2.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Service.objects.get(pk=self.service_3.pk).status,
+            ServiceStatus.PUBLISHED.value,
+        )
+
+        # cancell method test
+        response_3 = self.client_2.post(
+            reverse("services-cancell", kwargs={"pk": self.service_3.pk})
+        )
+        self.assertEqual(response_3.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Service.objects.get(pk=self.service_3.pk).status,
+            ServiceStatus.CANCELLED.value,
+        )
+
+        # moderate method test
+        response_4 = self.client_2.post(
+            reverse("services-moderate", kwargs={"pk": self.service_4.pk})
+        )
+        self.assertEqual(response_4.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Service.objects.get(pk=self.service_4.pk).status,
+            ServiceStatus.MODERATION.value,
+        )

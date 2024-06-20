@@ -1,7 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins, viewsets, status, pagination, response
+from rest_framework.decorators import action
 
 from core.choices import ServiceStatus
 from services.models import Service, Type
@@ -92,4 +94,83 @@ class ServiceViewSet(
 
         # смена статуса на DRAFT, если требуется повторная модерация
         instance.set_draft()
+        return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Отменить услугу",
+        methods=["POST"],
+        request=None,
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="cancell",
+        url_name="cancell",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def cancell(self, request, *args, **kwargs):
+        """Отменить услугу."""
+
+        service: Service = get_object_or_404(Service, pk=kwargs["pk"])
+        service.cancell()
+        serializer = self.get_serializer(service)
+        return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Скрыть услугу",
+        methods=["POST"],
+        request=None,
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="hide",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def hide(self, request, *args, **kwargs):
+        """Скрыть услугу."""
+
+        service: Service = get_object_or_404(Service, pk=kwargs["pk"])
+        service.hide()
+        serializer = self.get_serializer(service)
+        return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Отправить на модерацию",
+        methods=["POST"],
+        request=None,
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="moderate",
+        url_name="moderate",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def moderate(self, request, *args, **kwargs):
+        """Отправить на модерацию."""
+
+        service: Service = get_object_or_404(Service, pk=kwargs["pk"])
+        service.send_to_moderation()
+        serializer = self.get_serializer(service)
+        return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Опубликовать скрытую услугу",
+        methods=["POST"],
+        request=None,
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="publish",
+        url_name="publish",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def publish_hidden_service(self, request, *args, **kwargs):
+        """Опубликовать скрытую услугу."""
+
+        service: Service = get_object_or_404(Service, pk=kwargs["pk"])
+        service.publish()
+        serializer = self.get_serializer(service)
         return response.Response(serializer.data)
