@@ -35,10 +35,11 @@ class CustomUser(AbstractUser):
         blank=True,
         null=True,
     )
-    role = models.IntegerField(
+    role = models.CharField(
         verbose_name="Роль",
         choices=Role.choices,
         default=Role.USER,
+        max_length=Limits.MAX_LENGTH_USER_ROLE.value,
     )
 
     USERNAME_FIELD = "email"
