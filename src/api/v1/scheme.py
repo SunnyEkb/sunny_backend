@@ -130,8 +130,8 @@ WRONG_EMAIL_EXAMPLE = OpenApiExample(
 TYPE_LIST_EXAMPLE = OpenApiExample(
     name="Список типов услуг",
     value=[
-        {"category": "Красота и здоровье", "title": "Маникюр"},
-        {"category": "Красота и здоровье", "title": "Массаж"},
+        {"id": 1, "category": "Красота и здоровье", "title": "Маникюр"},
+        {"id": 2, "category": "Красота и здоровье", "title": "Массаж"},
     ],
 )
 
