@@ -48,7 +48,7 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         return service
 
 
-class ServiceRetreiveSerializer(serializers.ModelSerializer):
+class ServiceRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра услуги."""
 
     provider = serializers.StringRelatedField(read_only=True)
