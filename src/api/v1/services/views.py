@@ -9,7 +9,7 @@ from core.choices import ServiceStatus
 from services.models import Service, Type
 from services.serializers import (
     ServiceCreateUpdateSerializer,
-    ServiceRetreiveSerializer,
+    ServiceRetrieveSerializer,
     TypeGetSerializer,
 )
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
@@ -70,7 +70,7 @@ class ServiceViewSet(
 
     def get_serializer_class(self):
         if self.action in ("list", "retreive"):
-            return ServiceRetreiveSerializer
+            return ServiceRetrieveSerializer
         return ServiceCreateUpdateSerializer
 
     def get_permissions(self):
