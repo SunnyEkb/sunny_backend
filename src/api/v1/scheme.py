@@ -64,7 +64,7 @@ USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
         "phone": "+79000000000",
         "first_name": "Some_name",
         "last_name": "Some_name",
-        "role": 3,
+        "role": "user",
     },
 )
 
