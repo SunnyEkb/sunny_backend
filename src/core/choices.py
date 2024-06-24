@@ -1,10 +1,10 @@
 from django.db import models
 
 
-class Role(models.IntegerChoices):
-    ADMIN = 1
-    MODERATOR = 2
-    USER = 3
+class Role(models.TextChoices):
+    ADMIN = "admin"
+    MODERATOR = "moderator"
+    USER = "user"
 
 
 class ServicePlace(models.TextChoices):
