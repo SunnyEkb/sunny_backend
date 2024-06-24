@@ -110,6 +110,16 @@ class Service(TimeCreateUpdateModel):
             self.status = ServiceStatus.DRAFT.value
             self.save()
 
+    def moderate(self) -> None:
+        if self.status == ServiceStatus.MODERATION:
+            self.status = ServiceStatus.PUBLISHED.value
+            self.save()
+
+    def refusal_to_publish(self) -> None:
+        if self.status == ServiceStatus.MODERATION:
+            self.status = ServiceStatus.DRAFT.value
+            self.save()
+
 
 class ServiceImage(models.Model):
     """Фото к услуге."""
