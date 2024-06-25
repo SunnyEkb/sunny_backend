@@ -209,6 +209,7 @@ CORS_ALLOW_HEADERS = (
     *default_headers,
     "X-CSRFToken",
 )
+CORS_ALLOW_ALL_ORIGINS = True  # Удалить
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Sunny Ekb Documentation",
