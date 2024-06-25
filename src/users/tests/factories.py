@@ -1,7 +1,6 @@
 from factory import (
     Faker,
     fuzzy,
-    LazyAttribute,
     PostGenerationMethodCall,
     Sequence,
 )
@@ -19,7 +18,7 @@ class CustomUserFactory(DjangoModelFactory):
     username = Sequence(lambda n: "user_{}".format(n))
     first_name = Faker("first_name")
     last_name = Faker("last_name")
-    email = LazyAttribute(lambda o: f"{o.last_name}@example.org")
+    email = Sequence(lambda n: "{}@example.org".format(n))
     is_superuser = False
     phone = "+79000" + str(fuzzy.FuzzyInteger(low=100000, high=999999))
     is_active = True
