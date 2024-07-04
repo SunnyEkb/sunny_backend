@@ -19,3 +19,16 @@ async def send_telegram_message(
             chat_id=chat_id,
             text=message,
         )
+
+
+@async_to_sync
+async def notify_about_moderation(url: str) -> None:
+    """Отправка уведомления о необходимости модерации услуги."""
+
+    bot = telegram.Bot(token=settings.TELEGRAM_TOKEN)
+    for chat_id in settings.TELEGRAM_MODERATORS_CHAT_ID:
+        async with bot:
+            await bot.send_message(
+                chat_id=chat_id,
+                text=f"Необходима модерация услуги. Ссылка: {url}",
+            )
