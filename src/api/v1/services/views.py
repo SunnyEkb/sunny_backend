@@ -1,3 +1,5 @@
+import sys
+
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -162,8 +164,8 @@ class ServiceViewSet(
 
         service: Service = self.get_object()
         service.send_to_moderation()
-        print(service.get_admin_url(request))
-        notify_about_moderation(service.get_admin_url(request))
+        if "test" not in sys.argv:
+            notify_about_moderation(service.get_admin_url(request))
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
 
