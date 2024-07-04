@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
 from django.core.validators import MaxValueValidator
 
@@ -102,12 +103,12 @@ class Service(TimeCreateUpdateModel):
             self.status = ServiceStatus.CANCELLED.value
             self.save()
 
-    def set_draft(self):
+    def set_changed(self):
         if self.status in [
             ServiceStatus.PUBLISHED.value,
             ServiceStatus.HIDDEN.value,
         ]:
-            self.status = ServiceStatus.DRAFT.value
+            self.status = ServiceStatus.CHANGED.value
             self.save()
 
     def moderate(self) -> None:
@@ -119,6 +120,14 @@ class Service(TimeCreateUpdateModel):
         if self.status == ServiceStatus.MODERATION:
             self.status = ServiceStatus.DRAFT.value
             self.save()
+
+    def get_admin_url(self, request) -> str:
+        """Возвращает ссылку на информацию об услуге в админке."""
+
+        domain = get_current_site(request).domain
+        return "".join(
+            ["https://", domain, f"/admin/services/service/{self.id}/change/"]
+        )
 
 
 class ServiceImage(models.Model):

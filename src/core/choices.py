@@ -20,6 +20,7 @@ class ServiceStatus(models.IntegerChoices):
     PUBLISHED = 2
     HIDDEN = 3
     CANCELLED = 4
+    CHANGED = 5
 
 
 class APIResponses(models.TextChoices):
@@ -33,6 +34,7 @@ class APIResponses(models.TextChoices):
     SUCCESS_TOKEN_REFRESH = "Token refreshed"
     WRONG_PASSWORD = "Wrong password"
     UNAUTHORIZED = "Учетные данные не были предоставлены."
+    CAN_NOT_DELETE_SEVICE = "Невозможно удалить опубликованную заявку."
 
 
 class SystemMessages(models.TextChoices):

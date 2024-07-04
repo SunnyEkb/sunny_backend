@@ -1,11 +1,12 @@
+import sys
+
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins, viewsets, status, pagination, response
 from rest_framework.decorators import action
 
-from core.choices import ServiceStatus
+from core.choices import APIResponses, ServiceStatus
 from services.models import Service, Type
 from services.serializers import (
     ServiceCreateUpdateSerializer,
@@ -15,6 +16,7 @@ from services.serializers import (
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import TYPES_GET_OK_200, TYPE_LIST_EXAMPLE
+from core.utils import notify_about_moderation
 
 User = get_user_model()
 
@@ -53,6 +55,7 @@ class ServiceViewSet(
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     """Операции с услугами."""
@@ -92,9 +95,18 @@ class ServiceViewSet(
         if getattr(instance, "_prefetched_objects_cache", None):
             instance._prefetched_objects_cache = {}
 
-        # смена статуса на DRAFT, если требуется повторная модерация
-        instance.set_draft()
+        # смена статуса на CHANGED для повторной модерации
+        instance.set_changed()
         return response.Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.status == ServiceStatus.DRAFT:
+            return super().destroy(request, *args, **kwargs)
+        return response.Response(
+            APIResponses.CAN_NOT_DELETE_SEVICE.value,
+            status=status.HTTP_406_NOT_ACCEPTABLE,
+        )
 
     @extend_schema(
         summary="Отменить услугу",
@@ -111,7 +123,7 @@ class ServiceViewSet(
     def cancell(self, request, *args, **kwargs):
         """Отменить услугу."""
 
-        service: Service = get_object_or_404(Service, pk=kwargs["pk"])
+        service: Service = self.get_object()
         service.cancell()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
@@ -130,7 +142,7 @@ class ServiceViewSet(
     def hide(self, request, *args, **kwargs):
         """Скрыть услугу."""
 
-        service: Service = get_object_or_404(Service, pk=kwargs["pk"])
+        service: Service = self.get_object()
         service.hide()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
@@ -150,8 +162,10 @@ class ServiceViewSet(
     def moderate(self, request, *args, **kwargs):
         """Отправить на модерацию."""
 
-        service: Service = get_object_or_404(Service, pk=kwargs["pk"])
+        service: Service = self.get_object()
         service.send_to_moderation()
+        if "test" not in sys.argv:
+            notify_about_moderation(service.get_admin_url(request))
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
 
@@ -170,7 +184,7 @@ class ServiceViewSet(
     def publish_hidden_service(self, request, *args, **kwargs):
         """Опубликовать скрытую услугу."""
 
-        service: Service = get_object_or_404(Service, pk=kwargs["pk"])
+        service: Service = self.get_object()
         service.publish()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
