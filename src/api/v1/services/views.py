@@ -5,7 +5,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins, viewsets, status, pagination, response
 from rest_framework.decorators import action
 
-from core.choices import ServiceStatus
+from core.choices import APIResponses, ServiceStatus
 from services.models import Service, Type
 from services.serializers import (
     ServiceCreateUpdateSerializer,
@@ -53,6 +53,7 @@ class ServiceViewSet(
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     """Операции с услугами."""
@@ -92,9 +93,18 @@ class ServiceViewSet(
         if getattr(instance, "_prefetched_objects_cache", None):
             instance._prefetched_objects_cache = {}
 
-        # смена статуса на DRAFT, если требуется повторная модерация
-        instance.set_draft()
+        # смена статуса на CHANGED для повторной модерации
+        instance.set_changed()
         return response.Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.status == ServiceStatus.DRAFT:
+            return super().destroy(request, *args, **kwargs)
+        return response.Response(
+            APIResponses.CAN_NOT_DELETE_SEVICE.value,
+            status=status.HTTP_406_NOT_ACCEPTABLE,
+        )
 
     @extend_schema(
         summary="Отменить услугу",

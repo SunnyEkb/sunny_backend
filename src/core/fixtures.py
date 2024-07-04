@@ -98,6 +98,7 @@ class TestServiceFixtures(TestUserFixtures):
             status=ServiceStatus.HIDDEN.value,
         )
         cls.service_4 = ServiceFactory(provider=cls.user_2, type=cls.type_2)
+        cls.service_5 = ServiceFactory(provider=cls.user_2, type=cls.type_2)
         cls.service_title = "Super_service"
         cls.new_service_title = "Super_service"
         cls.service_data = {
