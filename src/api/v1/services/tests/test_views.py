@@ -213,3 +213,16 @@ class TestServivecesView(TestServiceFixtures):
             Service.objects.get(pk=self.service_4.pk).status,
             ServiceStatus.MODERATION.value,
         )
+
+    def test_service_delete(self):
+        response = self.client_2.delete(
+            reverse("services-detail", kwargs={"pk": self.service_5.pk})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+        self.assertFalse(Service.objects.filter(pk=self.service_5.pk).exists())
+
+    def test_only_draft_status_service_can_be_deleted(self):
+        response = self.client_2.delete(
+            reverse("services-detail", kwargs={"pk": self.service_2.pk})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
