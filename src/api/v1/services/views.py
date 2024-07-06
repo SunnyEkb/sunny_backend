@@ -15,7 +15,12 @@ from services.serializers import (
 )
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
-from api.v1.scheme import TYPES_GET_OK_200, TYPE_LIST_EXAMPLE
+from api.v1.scheme import (
+    CANT_HIDE_SERVICE_406,
+    SERVICE_GET_OK_200,
+    TYPES_GET_OK_200,
+    TYPE_LIST_EXAMPLE,
+)
 from core.utils import notify_about_moderation
 
 User = get_user_model()
@@ -132,6 +137,10 @@ class ServiceViewSet(
         summary="Скрыть услугу",
         methods=["POST"],
         request=None,
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_HIDE_SERVICE_406,
+        },
     )
     @action(
         detail=True,
@@ -143,6 +152,11 @@ class ServiceViewSet(
         """Скрыть услугу."""
 
         service: Service = self.get_object()
+        if not service.status == ServiceStatus.PUBLISHED.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.CAN_NOT_HIDE_SERVICE.value,
+            )
         service.hide()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)

@@ -1,14 +1,19 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
-from core.choices import APIResponses
+from core.choices import (
+    APIResponses,
+    ServiceCategory,
+    ServicePlace,
+    ServiceStatus,
+)
 from users.serializers import (
     NonErrorFieldSerializer,
     UserCreateSerializer,
     UserReadSerializer,
     UserUpdateSerializer,
 )
-from services.serializers import TypeGetSerializer
+from services.serializers import ServiceRetrieveSerializer, TypeGetSerializer
 
 
 class CookieTokenScheme(OpenApiAuthenticationExtension):
@@ -212,4 +217,37 @@ TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=TypeGetSerializer,
     description="Получение списка типов услуг.",
     examples=[TYPE_LIST_EXAMPLE],
+)
+
+SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Информация об услуге",
+    value={
+        "id": 1,
+        "provider": "example@example.example",
+        "title": "string",
+        "description": "string",
+        "experience": 50,
+        "place_of_provision": ServicePlace.OPTIONS.value,
+        "type": {"category": ServiceCategory.BEAUTY.value, "title": "маникюр"},
+        "price": {"маникюр": 500},
+        "status": ServiceStatus.DRAFT,
+        "images": [{"image": "string"}],
+    },
+)
+
+SERVICE_GET_OK_200: OpenApiResponse = OpenApiResponse(
+    response=ServiceRetrieveSerializer,
+    description="Получение информауции об услуге.",
+    examples=[SERVICE_GET_EXAMPLE],
+)
+
+CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(
+    name="Услуга не может быть скрыта",
+    value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE.value},
+)
+
+CANT_HIDE_SERVICE_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Нельзя скрыть услугу.",
+    examples=[CANT_HIDE_SERVICE_EXAMPLE],
 )
