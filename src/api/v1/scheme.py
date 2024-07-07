@@ -13,7 +13,11 @@ from users.serializers import (
     UserReadSerializer,
     UserUpdateSerializer,
 )
-from services.serializers import ServiceRetrieveSerializer, TypeGetSerializer
+from services.serializers import (
+    ServiceCreateUpdateSerializer,
+    ServiceRetrieveSerializer,
+    TypeGetSerializer
+)
 
 
 class CookieTokenScheme(OpenApiAuthenticationExtension):
@@ -235,10 +239,29 @@ SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
+SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Создание услуге",
+    value={
+        "title": "string",
+        "description": "string",
+        "experience": 50,
+        "place_of_provision": ServicePlace.OPTIONS.value,
+        "type": "some_type",
+        "price": {"маникюр": 500},
+        "images": [{"image": "string"}],
+    },
+)
+
 SERVICE_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=ServiceRetrieveSerializer,
     description="Получение информауции об услуге.",
     examples=[SERVICE_GET_EXAMPLE],
+)
+
+SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
+    response=ServiceCreateUpdateSerializer,
+    description="Услуга содана.",
+    examples=[SERVICE_CREATE_EXAMPLE],
 )
 
 CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(

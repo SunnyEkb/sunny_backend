@@ -18,9 +18,11 @@ from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import (
     CANT_DELETE_SERVICE_406,
     CANT_HIDE_SERVICE_406,
+    SERVICE_CREATED_201,
     SERVICE_GET_OK_200,
     TYPES_GET_OK_200,
     TYPE_LIST_EXAMPLE,
+    UNAUTHORIZED_401,
 )
 from core.utils import notify_about_moderation
 
@@ -58,10 +60,29 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         },
     ),
     create=extend_schema(
-        request=ServiceCreateUpdateSerializer, summary="Создание услуги"
+        request=ServiceCreateUpdateSerializer,
+        summary="Создание услуги",
+        responses={
+            status.HTTP_201_CREATED: SERVICE_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+        },
     ),
-    update=extend_schema(summary="Изменение данных услуги"),
-    partial_update=extend_schema(summary="Изменение данных услуги"),
+    update=extend_schema(
+        request=ServiceCreateUpdateSerializer,
+        summary="Изменение данных услуги",
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+        },
+    ),
+    partial_update=extend_schema(
+        request=ServiceCreateUpdateSerializer,
+        summary="Изменение данных услуги",
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+        },
+    ),
     destroy=extend_schema(
         summary="Удалить услугу",
         responses={
