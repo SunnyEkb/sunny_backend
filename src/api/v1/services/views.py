@@ -16,6 +16,7 @@ from services.serializers import (
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import (
+    CANT_DELETE_SERVICE_406,
     CANT_HIDE_SERVICE_406,
     SERVICE_GET_OK_200,
     TYPES_GET_OK_200,
@@ -50,10 +51,24 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 )
 @extend_schema_view(
     list=extend_schema(summary="Список услуг"),
-    retrieve=extend_schema(summary="Информация о конкретной услуге"),
-    create=extend_schema(summary="Создание услуги"),
+    retrieve=extend_schema(
+        summary="Информация о конкретной услуге",
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+        },
+    ),
+    create=extend_schema(
+        request=ServiceCreateUpdateSerializer, summary="Создание услуги"
+    ),
     update=extend_schema(summary="Изменение данных услуги"),
     partial_update=extend_schema(summary="Изменение данных услуги"),
+    destroy=extend_schema(
+        summary="Удалить услугу",
+        responses={
+            status.HTTP_204_NO_CONTENT: None,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_DELETE_SERVICE_406,
+        },
+    ),
 )
 class ServiceViewSet(
     mixins.ListModelMixin,

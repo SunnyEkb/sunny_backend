@@ -251,3 +251,14 @@ CANT_HIDE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     description="Нельзя скрыть услугу.",
     examples=[CANT_HIDE_SERVICE_EXAMPLE],
 )
+
+CANT_DELETE_SERVICE_EXAMPLE = OpenApiExample(
+    name="Услуга не может быть удалена.",
+    value={"detail": APIResponses.CAN_NOT_DELETE_SEVICE.value},
+)
+
+CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга не может быть удалена.",
+    examples=[CANT_DELETE_SERVICE_EXAMPLE],
+)
