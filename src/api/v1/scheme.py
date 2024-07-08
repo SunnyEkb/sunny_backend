@@ -16,7 +16,7 @@ from users.serializers import (
 from services.serializers import (
     ServiceCreateUpdateSerializer,
     ServiceRetrieveSerializer,
-    TypeGetSerializer
+    TypeGetSerializer,
 )
 
 
