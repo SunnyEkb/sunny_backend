@@ -15,7 +15,16 @@ from services.serializers import (
 )
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
-from api.v1.scheme import TYPES_GET_OK_200, TYPE_LIST_EXAMPLE
+from api.v1.scheme import (
+    CANT_DELETE_SERVICE_406,
+    CANT_HIDE_SERVICE_406,
+    SERVICE_CREATED_201,
+    SERVICE_GET_OK_200,
+    SERVICE_FORBIDDEN_403,
+    TYPES_GET_OK_200,
+    TYPE_LIST_EXAMPLE,
+    UNAUTHORIZED_401,
+)
 from core.utils import notify_about_moderation
 
 User = get_user_model()
@@ -45,10 +54,46 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 )
 @extend_schema_view(
     list=extend_schema(summary="Список услуг"),
-    retrieve=extend_schema(summary="Информация о конкретной услуге"),
-    create=extend_schema(summary="Создание услуги"),
-    update=extend_schema(summary="Изменение данных услуги"),
-    partial_update=extend_schema(summary="Изменение данных услуги"),
+    retrieve=extend_schema(
+        summary="Информация о конкретной услуге",
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+        },
+    ),
+    create=extend_schema(
+        request=ServiceCreateUpdateSerializer,
+        summary="Создание услуги",
+        responses={
+            status.HTTP_201_CREATED: SERVICE_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+        },
+    ),
+    update=extend_schema(
+        request=ServiceCreateUpdateSerializer,
+        summary="Изменение данных услуги",
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+        },
+    ),
+    partial_update=extend_schema(
+        request=ServiceCreateUpdateSerializer,
+        summary="Изменение данных услуги",
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+        },
+    ),
+    destroy=extend_schema(
+        summary="Удалить услугу",
+        responses={
+            status.HTTP_204_NO_CONTENT: None,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_DELETE_SERVICE_406,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+        },
+    ),
 )
 class ServiceViewSet(
     mixins.ListModelMixin,
@@ -132,6 +177,10 @@ class ServiceViewSet(
         summary="Скрыть услугу",
         methods=["POST"],
         request=None,
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_HIDE_SERVICE_406,
+        },
     )
     @action(
         detail=True,
@@ -143,6 +192,11 @@ class ServiceViewSet(
         """Скрыть услугу."""
 
         service: Service = self.get_object()
+        if not service.status == ServiceStatus.PUBLISHED.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.CAN_NOT_HIDE_SERVICE.value,
+            )
         service.hide()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)

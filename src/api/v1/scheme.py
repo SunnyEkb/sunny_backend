@@ -1,14 +1,23 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
-from core.choices import APIResponses
+from core.choices import (
+    APIResponses,
+    ServiceCategory,
+    ServicePlace,
+    ServiceStatus,
+)
 from users.serializers import (
     NonErrorFieldSerializer,
     UserCreateSerializer,
     UserReadSerializer,
     UserUpdateSerializer,
 )
-from services.serializers import TypeGetSerializer
+from services.serializers import (
+    ServiceCreateUpdateSerializer,
+    ServiceRetrieveSerializer,
+    TypeGetSerializer,
+)
 
 
 class CookieTokenScheme(OpenApiAuthenticationExtension):
@@ -212,4 +221,78 @@ TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=TypeGetSerializer,
     description="Получение списка типов услуг.",
     examples=[TYPE_LIST_EXAMPLE],
+)
+
+SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Информация об услуге",
+    value={
+        "id": 1,
+        "provider": "example@example.example",
+        "title": "string",
+        "description": "string",
+        "experience": 50,
+        "place_of_provision": ServicePlace.OPTIONS.value,
+        "type": {"category": ServiceCategory.BEAUTY.value, "title": "маникюр"},
+        "price": {"маникюр": 500},
+        "status": ServiceStatus.DRAFT,
+        "images": [{"image": "string"}],
+    },
+)
+
+SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Создание услуге",
+    value={
+        "title": "string",
+        "description": "string",
+        "experience": 50,
+        "place_of_provision": ServicePlace.OPTIONS.value,
+        "type": "some_type",
+        "price": {"маникюр": 500},
+        "images": [{"image": "string"}],
+    },
+)
+
+SERVICE_GET_OK_200: OpenApiResponse = OpenApiResponse(
+    response=ServiceRetrieveSerializer,
+    description="Получение информауции об услуге.",
+    examples=[SERVICE_GET_EXAMPLE],
+)
+
+SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
+    response=ServiceCreateUpdateSerializer,
+    description="Услуга содана.",
+    examples=[SERVICE_CREATE_EXAMPLE],
+)
+
+SERVICE_NOT_PROVIDER_EXAMPLE = OpenApiExample(
+    name="Услугу пытается изменить не исполнитель.",
+    value={"detail": APIResponses.NO_PERMISSION.value},
+)
+
+SERVICE_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услугу пытается изменить не исполнитель.",
+    examples=[SERVICE_NOT_PROVIDER_EXAMPLE],
+)
+
+CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(
+    name="Услуга не может быть скрыта",
+    value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE.value},
+)
+
+CANT_HIDE_SERVICE_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Нельзя скрыть услугу.",
+    examples=[CANT_HIDE_SERVICE_EXAMPLE],
+)
+
+CANT_DELETE_SERVICE_EXAMPLE = OpenApiExample(
+    name="Услуга не может быть удалена.",
+    value={"detail": APIResponses.CAN_NOT_DELETE_SEVICE.value},
+)
+
+CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга не может быть удалена.",
+    examples=[CANT_DELETE_SERVICE_EXAMPLE],
 )
