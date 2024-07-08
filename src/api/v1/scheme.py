@@ -264,6 +264,17 @@ SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
     examples=[SERVICE_CREATE_EXAMPLE],
 )
 
+SERVICE_NOT_PROVIDER_EXAMPLE = OpenApiExample(
+    name="Услугу пытается изменить не исполнитель.",
+    value={"detail": APIResponses.NO_PERMISSION.value},
+)
+
+SERVICE_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услугу пытается изменить не исполнитель.",
+    examples=[SERVICE_NOT_PROVIDER_EXAMPLE],
+)
+
 CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(
     name="Услуга не может быть скрыта",
     value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE.value},

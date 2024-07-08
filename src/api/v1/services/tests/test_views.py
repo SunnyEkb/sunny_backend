@@ -176,11 +176,11 @@ class TestServivecesView(TestServiceFixtures):
     def test_services_methods(self):
         # hide method test
         response_1 = self.client_2.post(
-            reverse("services-hide", kwargs={"pk": self.service_3.pk})
+            reverse("services-hide", kwargs={"pk": self.service_6.pk})
         )
         self.assertEqual(response_1.status_code, HTTPStatus.OK)
         self.assertEqual(
-            Service.objects.get(pk=self.service_3.pk).status,
+            Service.objects.get(pk=self.service_6.pk).status,
             ServiceStatus.HIDDEN.value,
         )
 

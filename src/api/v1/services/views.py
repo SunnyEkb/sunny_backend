@@ -20,6 +20,7 @@ from api.v1.scheme import (
     CANT_HIDE_SERVICE_406,
     SERVICE_CREATED_201,
     SERVICE_GET_OK_200,
+    SERVICE_FORBIDDEN_403,
     TYPES_GET_OK_200,
     TYPE_LIST_EXAMPLE,
     UNAUTHORIZED_401,
@@ -73,6 +74,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
         },
     ),
     partial_update=extend_schema(
@@ -81,6 +83,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
         },
     ),
     destroy=extend_schema(
@@ -88,6 +91,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         responses={
             status.HTTP_204_NO_CONTENT: None,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_DELETE_SERVICE_406,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
         },
     ),
 )

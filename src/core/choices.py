@@ -36,6 +36,7 @@ class APIResponses(models.TextChoices):
     UNAUTHORIZED = "Учетные данные не были предоставлены."
     CAN_NOT_DELETE_SEVICE = "Невозможно удалить опубликованную заявку."
     CAN_NOT_HIDE_SERVICE = "Скрыть можно опубликованную только услугу."
+    NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
 
 
 class SystemMessages(models.TextChoices):
