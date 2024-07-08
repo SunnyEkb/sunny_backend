@@ -16,8 +16,11 @@ from services.serializers import (
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import (
+    CANT_CANCELL_SERVICE_406,
     CANT_DELETE_SERVICE_406,
     CANT_HIDE_SERVICE_406,
+    CANT_MODERATE_SERVICE_406,
+    CANT_PUBLISH_SERVICE_406,
     SERVICE_CREATED_201,
     SERVICE_GET_OK_200,
     SERVICE_FORBIDDEN_403,
@@ -157,6 +160,11 @@ class ServiceViewSet(
         summary="Отменить услугу",
         methods=["POST"],
         request=None,
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_CANCELL_SERVICE_406,
+        },
     )
     @action(
         detail=True,
@@ -169,6 +177,11 @@ class ServiceViewSet(
         """Отменить услугу."""
 
         service: Service = self.get_object()
+        if service.status == ServiceStatus.DRAFT.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.CAN_NOT_CANCELL_SERVICE.value,
+            )
         service.cancell()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
@@ -179,6 +192,7 @@ class ServiceViewSet(
         request=None,
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_HIDE_SERVICE_406,
         },
     )
@@ -205,6 +219,11 @@ class ServiceViewSet(
         summary="Отправить на модерацию",
         methods=["POST"],
         request=None,
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_MODERATE_SERVICE_406,
+        },
     )
     @action(
         detail=True,
@@ -217,6 +236,11 @@ class ServiceViewSet(
         """Отправить на модерацию."""
 
         service: Service = self.get_object()
+        if service.status == ServiceStatus.CANCELLED.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.SERVICE_IS_CANCELLED.value,
+            )
         service.send_to_moderation()
         if "test" not in sys.argv:
             notify_about_moderation(service.get_admin_url(request))
@@ -227,6 +251,11 @@ class ServiceViewSet(
         summary="Опубликовать скрытую услугу",
         methods=["POST"],
         request=None,
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_PUBLISH_SERVICE_406,
+        },
     )
     @action(
         detail=True,
@@ -239,6 +268,11 @@ class ServiceViewSet(
         """Опубликовать скрытую услугу."""
 
         service: Service = self.get_object()
+        if not service.status == ServiceStatus.HIDDEN.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.SERVICE_IS_NOT_HIDDEN.value,
+            )
         service.publish()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
