@@ -296,3 +296,36 @@ CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     description="Услуга не может быть удалена.",
     examples=[CANT_DELETE_SERVICE_EXAMPLE],
 )
+
+CANT_CANCELL_SERVICE_EXAMPLE = OpenApiExample(
+    name="Услуга не может быть отменена.",
+    value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE.value},
+)
+
+CANT_CANCELL_SERVICE_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга не может быть отменена.",
+    examples=[CANT_CANCELL_SERVICE_EXAMPLE],
+)
+
+CANT_MODERATE_SERVICE_EXAMPLE = OpenApiExample(
+    name="Услуга не может быть отправлена на модерацию.",
+    value={"detail": APIResponses.SERVICE_IS_CANCELLED.value},
+)
+
+CANT_MODERATE_SERVICE_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга не может быть отправлена на модерацию.",
+    examples=[CANT_MODERATE_SERVICE_EXAMPLE],
+)
+
+CANT_PUBLISH_SERVICE_EXAMPLE = OpenApiExample(
+    name="Услуга не скрыта.",
+    value={"detail": APIResponses.SERVICE_IS_NOT_HIDDEN.value},
+)
+
+CANT_PUBLISH_SERVICE_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга не скрыта.",
+    examples=[CANT_PUBLISH_SERVICE_EXAMPLE],
+)
