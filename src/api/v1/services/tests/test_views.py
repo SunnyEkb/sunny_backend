@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from django.urls import reverse
 
-from core.choices import ServicePlace, ServiceStatus
+from core.choices import ServicePlace, AdvertisementStatus
 from core.fixtures import TestServiceFixtures
 from services.models import Service, Type
 
@@ -45,7 +45,11 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response_auth_user.json()),
-            len(Service.objects.filter(status=ServiceStatus.PUBLISHED.value)),
+            len(
+                Service.objects.filter(
+                    status=AdvertisementStatus.PUBLISHED.value
+                )
+            ),
         )
 
     def test_anon_user_get_services_list(self):
@@ -53,7 +57,11 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response_anon_user.json()),
-            len(Service.objects.filter(status=ServiceStatus.PUBLISHED.value)),
+            len(
+                Service.objects.filter(
+                    status=AdvertisementStatus.PUBLISHED.value
+                )
+            ),
         )
 
     def test_services_filters(self):
@@ -62,7 +70,7 @@ class TestServivecesView(TestServiceFixtures):
                 self.type_1.category,
                 (
                     Service.objects.filter(
-                        status=ServiceStatus.PUBLISHED.value
+                        status=AdvertisementStatus.PUBLISHED.value
                     ).filter(type__category=self.type_1.category)
                 ),
             ],
@@ -70,7 +78,7 @@ class TestServivecesView(TestServiceFixtures):
                 self.type_1.title,
                 (
                     Service.objects.filter(
-                        status=ServiceStatus.PUBLISHED.value
+                        status=AdvertisementStatus.PUBLISHED.value
                     ).filter(type__title__icontains=self.type_1.title)
                 ),
             ],
@@ -78,7 +86,7 @@ class TestServivecesView(TestServiceFixtures):
                 self.service_1.title,
                 (
                     Service.objects.filter(
-                        status=ServiceStatus.PUBLISHED.value
+                        status=AdvertisementStatus.PUBLISHED.value
                     ).filter(title__icontains=self.service_1.title)
                 ),
             ],
@@ -86,7 +94,7 @@ class TestServivecesView(TestServiceFixtures):
                 1,
                 (
                     Service.objects.filter(
-                        status=ServiceStatus.PUBLISHED.value
+                        status=AdvertisementStatus.PUBLISHED.value
                     ).filter(experience__lte=1)
                 ),
             ],
@@ -94,7 +102,7 @@ class TestServivecesView(TestServiceFixtures):
                 10,
                 (
                     Service.objects.filter(
-                        status=ServiceStatus.PUBLISHED.value
+                        status=AdvertisementStatus.PUBLISHED.value
                     ).filter(experience__gte=10)
                 ),
             ],
@@ -102,7 +110,7 @@ class TestServivecesView(TestServiceFixtures):
                 ServicePlace.OPTIONS.value,
                 (
                     Service.objects.filter(
-                        status=ServiceStatus.PUBLISHED.value
+                        status=AdvertisementStatus.PUBLISHED.value
                     ).filter(place_of_provision=ServicePlace.OPTIONS.value)
                 ),
             ],
@@ -126,7 +134,7 @@ class TestServivecesView(TestServiceFixtures):
         self.assertTrue(
             Service.objects.filter(
                 title=self.service_title,
-                status=ServiceStatus.DRAFT.value,
+                status=AdvertisementStatus.DRAFT.value,
             ).exists()
         )
 
@@ -181,7 +189,7 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response_1.status_code, HTTPStatus.OK)
         self.assertEqual(
             Service.objects.get(pk=self.service_6.pk).status,
-            ServiceStatus.HIDDEN.value,
+            AdvertisementStatus.HIDDEN.value,
         )
 
         # publish method test
@@ -191,7 +199,7 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response_2.status_code, HTTPStatus.OK)
         self.assertEqual(
             Service.objects.get(pk=self.service_3.pk).status,
-            ServiceStatus.PUBLISHED.value,
+            AdvertisementStatus.PUBLISHED.value,
         )
 
         # cancell method test
@@ -201,7 +209,7 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response_3.status_code, HTTPStatus.OK)
         self.assertEqual(
             Service.objects.get(pk=self.service_3.pk).status,
-            ServiceStatus.CANCELLED.value,
+            AdvertisementStatus.CANCELLED.value,
         )
 
         # moderate method test
@@ -211,7 +219,7 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response_4.status_code, HTTPStatus.OK)
         self.assertEqual(
             Service.objects.get(pk=self.service_4.pk).status,
-            ServiceStatus.MODERATION.value,
+            AdvertisementStatus.MODERATION.value,
         )
 
     def test_service_delete(self):

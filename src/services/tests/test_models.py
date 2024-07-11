@@ -2,7 +2,7 @@ from core.fixtures import BaseTestCase
 from services.models import Service, ServiceImage
 from services.tests.factories import ServiceFactory, TypeFactory
 
-from core.choices import ServiceStatus
+from core.choices import AdvertisementStatus
 
 
 class ServiceModelsTest(BaseTestCase):
@@ -38,11 +38,13 @@ class ServiceModelsTest(BaseTestCase):
                 self.assertEqual(model, title)
 
     def test_models_default_values(self):
-        self.assertEqual(self.service_1.status, ServiceStatus.DRAFT.value)
+        self.assertEqual(
+            self.service_1.status, AdvertisementStatus.DRAFT.value
+        )
 
     def test_service_model_methods(self):
         self.service_2.send_to_moderation()
         service = Service.objects.get(pk=self.service_2.id)
-        self.assertEqual(service.status, ServiceStatus.MODERATION.value)
+        self.assertEqual(service.status, AdvertisementStatus.MODERATION.value)
         service.cancell()
-        self.assertEqual(service.status, ServiceStatus.CANCELLED.value)
+        self.assertEqual(service.status, AdvertisementStatus.CANCELLED.value)

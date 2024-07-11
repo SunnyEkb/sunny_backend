@@ -1,14 +1,10 @@
-from django.contrib.auth import get_user_model
-from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
 from django.core.validators import MaxValueValidator
 
-from core.choices import ServiceCategory, ServicePlace, ServiceStatus
+from core.choices import ServiceCategory, ServicePlace
 from core.enums import Limits
-from core.models import TimeCreateUpdateModel
+from core.models import AbstractAdvertisement
 from services.managers import ServiceManager
-
-User = get_user_model()
 
 
 class Type(models.Model):
@@ -21,7 +17,7 @@ class Type(models.Model):
 
     category = models.CharField(
         "Вид услуги",
-        max_length=Limits.MAX_LENGTH_SERVICE_CATEGORY.value,
+        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY.value,
         choices=ServiceCategory,
     )
 
@@ -35,20 +31,9 @@ class Type(models.Model):
         return self.title
 
 
-class Service(TimeCreateUpdateModel):
+class Service(AbstractAdvertisement):
     """Услуга."""
 
-    provider = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name="Исполнитель",
-    )
-    title = models.CharField(
-        "Название", max_length=Limits.MAX_LENGTH_SERVICE_TITLE.value
-    )
-    description = models.TextField(
-        "Описание", max_length=Limits.MAX_LENGTH_SERVICE_DESCRIPTION.value
-    )
     experience = models.PositiveIntegerField(
         "Опыт",
         default=0,
@@ -67,11 +52,6 @@ class Service(TimeCreateUpdateModel):
         null=True,
     )
     price = models.JSONField("Прайс", blank=True, null=True)
-    status = models.IntegerField(
-        "Статус услуги",
-        choices=ServiceStatus.choices,
-        default=ServiceStatus.DRAFT.value,
-    )
 
     objects = models.Manager()
     cstm_mng = ServiceManager()
@@ -82,52 +62,6 @@ class Service(TimeCreateUpdateModel):
 
     def __str__(self) -> str:
         return self.title
-
-    def hide(self) -> None:
-        if self.status == ServiceStatus.PUBLISHED.value:
-            self.status = ServiceStatus.HIDDEN.value
-            self.save()
-
-    def send_to_moderation(self) -> None:
-        if not self.status == ServiceStatus.CANCELLED.value:
-            self.status = ServiceStatus.MODERATION.value
-            self.save()
-
-    def publish(self) -> None:
-        if self.status == ServiceStatus.HIDDEN.value:
-            self.status = ServiceStatus.PUBLISHED.value
-            self.save()
-
-    def cancell(self) -> None:
-        if not self.status == ServiceStatus.DRAFT.value:
-            self.status = ServiceStatus.CANCELLED.value
-            self.save()
-
-    def set_changed(self):
-        if self.status in [
-            ServiceStatus.PUBLISHED.value,
-            ServiceStatus.HIDDEN.value,
-        ]:
-            self.status = ServiceStatus.CHANGED.value
-            self.save()
-
-    def moderate(self) -> None:
-        if self.status == ServiceStatus.MODERATION:
-            self.status = ServiceStatus.PUBLISHED.value
-            self.save()
-
-    def refusal_to_publish(self) -> None:
-        if self.status == ServiceStatus.MODERATION:
-            self.status = ServiceStatus.DRAFT.value
-            self.save()
-
-    def get_admin_url(self, request) -> str:
-        """Возвращает ссылку на информацию об услуге в админке."""
-
-        domain = get_current_site(request).domain
-        return "".join(
-            ["https://", domain, f"/admin/services/service/{self.id}/change/"]
-        )
 
 
 class ServiceImage(models.Model):
