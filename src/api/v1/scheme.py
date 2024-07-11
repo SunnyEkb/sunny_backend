@@ -5,7 +5,7 @@ from core.choices import (
     APIResponses,
     ServiceCategory,
     ServicePlace,
-    ServiceStatus,
+    AdvertisementStatus,
 )
 from users.serializers import (
     NonErrorFieldSerializer,
@@ -234,7 +234,7 @@ SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type": {"category": ServiceCategory.BEAUTY.value, "title": "маникюр"},
         "price": {"маникюр": 500},
-        "status": ServiceStatus.DRAFT,
+        "status": AdvertisementStatus.DRAFT,
         "images": [{"image": "string"}],
     },
 )
