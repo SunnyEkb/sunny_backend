@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator
 
 from core.choices import ServiceCategory, ServicePlace
+from core.db_utils import service_image_path, validate_image
 from core.enums import Limits
 from core.models import AbstractAdvertisement
 from services.managers import ServiceManager
@@ -67,7 +68,11 @@ class Service(AbstractAdvertisement):
 class ServiceImage(models.Model):
     """Фото к услуге."""
 
-    image = models.ImageField("Фото к услуге", upload_to="services/")
+    image = models.ImageField(
+        "Фото к услуге",
+        upload_to=service_image_path,
+        validators=[validate_image],
+    )
     service = models.ForeignKey(
         Service,
         on_delete=models.CASCADE,

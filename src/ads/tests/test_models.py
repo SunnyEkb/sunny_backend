@@ -13,21 +13,23 @@ class AdModelsTest(BaseTestCase):
         super().setUpClass()
         cls.ad_1 = AdFactory()
         cls.ad_2 = AdFactory()
-        cls.ad_2_image = AdImage.objects.create(
-            service=cls.ad_1, image=cls.uploaded
+        cls.ad_1_image = AdImage.objects.create(
+            ad=cls.ad_1, image=cls.uploaded
         )
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
 
-    def test_service_image_creation(self):
-        self.assertEqual(self.ad_2_image.image, f"ads/{self.file_name}")
+    def test_ad_image_creation(self):
+        self.assertEqual(
+            self.ad_1_image.image, f"ads/{self.ad_1.id}/{self.file_name}"
+        )
 
     def test_models_have_correct_object_names(self):
         model_str_name = {
             str(self.ad_1): self.ad_1.title,
-            str(self.ad_2_image): self.ad_2_image.service.title,
+            str(self.ad_1_image): self.ad_1_image.ad.title,
         }
         for model, title in model_str_name.items():
             with self.subTest(model=model):
@@ -36,9 +38,9 @@ class AdModelsTest(BaseTestCase):
     def test_models_default_values(self):
         self.assertEqual(self.ad_1.status, AdvertisementStatus.DRAFT.value)
 
-    def test_service_model_methods(self):
+    def test_ad_model_methods(self):
         self.ad_2.send_to_moderation()
-        service = Ad.objects.get(pk=self.ad_2.id)
-        self.assertEqual(service.status, AdvertisementStatus.MODERATION.value)
-        service.cancell()
-        self.assertEqual(service.status, AdvertisementStatus.CANCELLED.value)
+        ad = Ad.objects.get(pk=self.ad_2.id)
+        self.assertEqual(ad.status, AdvertisementStatus.MODERATION.value)
+        ad.cancell()
+        self.assertEqual(ad.status, AdvertisementStatus.CANCELLED.value)
