@@ -25,6 +25,18 @@ class OwnerOrReadOnly(BasePermission):
         return obj.provider == request.user
 
 
+class PhotoOwnerOrReadOnly(BasePermission):
+    """
+    Редактирование только фото своих услуг.
+    """
+
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS or request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        return obj.service.provider == request.user
+
+
 class ReadOnly(BasePermission):
     """
     Разрешения на просмотр услуги незарегистрированному пользователю.

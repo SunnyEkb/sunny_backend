@@ -10,14 +10,14 @@ from rest_framework import mixins, viewsets, status, pagination, response
 from rest_framework.decorators import action
 
 from core.choices import APIResponses, AdvertisementStatus
-from services.models import Service, Type
+from services.models import Service, ServiceImage, Type
 from services.serializers import (
     ServiceImageCreateSerializer,
     ServiceCreateUpdateSerializer,
     ServiceRetrieveSerializer,
     TypeGetSerializer,
 )
-from api.v1.permissions import OwnerOrReadOnly, ReadOnly
+from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import (
     CANT_ADD_PHOTO_406,
@@ -330,3 +330,36 @@ class ServiceViewSet(
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+@extend_schema(
+    tags=["Services"],
+    responses={
+        status.HTTP_204_NO_CONTENT: None,
+    },
+)
+@extend_schema_view(
+    destroy=extend_schema(summary="Удаление фото."),
+    responses={
+        status.HTTP_204_NO_CONTENT: None,
+        status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+    },
+)
+class ServiceImageViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """Фото к услугам."""
+
+    queryset = ServiceImage.objects.all()
+    serializer_class = None
+
+    def get_permissions(self):
+        if self.action == "retrieve":
+            return (ReadOnly(),)
+        return (PhotoOwnerOrReadOnly(),)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # удаляем файл
+        os.remove(os.path.join(settings.MEDIA_ROOT, str(instance.image)))
+
+        return super().destroy(request, *args, **kwargs)
