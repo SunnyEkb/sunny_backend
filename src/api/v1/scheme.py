@@ -248,7 +248,6 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type": "some_type",
         "price": {"маникюр": 500},
-        "images": [{"image": "string"}],
     },
 )
 

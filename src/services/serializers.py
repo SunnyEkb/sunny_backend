@@ -22,7 +22,6 @@ class ServiceImageSerializer(serializers.ModelSerializer):
 class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания и изменения услуги."""
 
-    images = ServiceImageSerializer(many=True, required=False)
     type = serializers.StringRelatedField()
 
     class Meta:
@@ -34,18 +33,7 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             "place_of_provision",
             "type",
             "price",
-            "images",
         )
-
-    def create(self, validated_data):
-        if "images" not in validated_data.keys():
-            service = Service.objects.create(**validated_data)
-            return service
-        images = validated_data.pop("images")
-        service = Service.objects.create(**validated_data)
-        for image in images:
-            ServiceImage.objects.create(service=service, image=image)
-        return service
 
 
 class ServiceRetrieveSerializer(serializers.ModelSerializer):
