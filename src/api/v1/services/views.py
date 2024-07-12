@@ -12,6 +12,7 @@ from rest_framework.decorators import action
 from core.choices import APIResponses, AdvertisementStatus
 from services.models import Service, Type
 from services.serializers import (
+    ServiceImageCreateSerializer,
     ServiceCreateUpdateSerializer,
     ServiceRetrieveSerializer,
     TypeGetSerializer,
@@ -19,6 +20,7 @@ from services.serializers import (
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import (
+    CANT_ADD_PHOTO_406,
     CANT_CANCELL_SERVICE_406,
     CANT_DELETE_SERVICE_406,
     CANT_HIDE_SERVICE_406,
@@ -291,3 +293,40 @@ class ServiceViewSet(
         service.publish()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Добавить фото к услуге.",
+        methods=["POST"],
+        request=ServiceImageCreateSerializer,
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_ADD_PHOTO_406,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="add_photo",
+        url_name="add_photo",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def add_photo(self, request, *args, **kwargs):
+        """Добавить фото к услуге."""
+
+        service: Service = self.get_object()
+        data = request.data
+        img_serializer = ServiceImageCreateSerializer(data=data)
+        images = service.images.all()
+        if len(images) >= 5:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.MAX_IMAGE_QUANTITY.value,
+            )
+        if img_serializer.is_valid():
+            img_serializer.save(service=service)
+            srvc_serializer = ServiceRetrieveSerializer(service)
+            return response.Response(srvc_serializer.data)
+        return response.Response(
+            img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )

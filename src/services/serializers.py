@@ -11,12 +11,27 @@ class TypeGetSerializer(serializers.ModelSerializer):
         fields = ("id", "category", "title")
 
 
-class ServiceImageSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения фото услуг."""
+class ServiceImageCreateSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания фото к услуге."""
+
+    image = serializers.ImageField(required=True, allow_null=False)
 
     class Meta:
         model = ServiceImage
         fields = ("image",)
+
+
+class ServiceImageRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения фото услуг."""
+
+    image = serializers.ImageField(required=True)
+
+    class Meta:
+        model = ServiceImage
+        fields = (
+            "id",
+            "image",
+        )
 
 
 class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
@@ -40,7 +55,7 @@ class ServiceRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра услуги."""
 
     provider = serializers.StringRelatedField(read_only=True)
-    images = ServiceImageSerializer(many=True, read_only=True)
+    images = ServiceImageRetrieveSerializer(many=True, read_only=True)
     type = TypeGetSerializer()
 
     class Meta:
