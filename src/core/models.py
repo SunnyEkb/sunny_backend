@@ -9,9 +9,7 @@ User = get_user_model()
 
 
 class TimeCreateModel(models.Model):
-    """
-    Абстрактная модель с полем "Время создания".
-    """
+    """Абстрактная модель с полем "Время создания"."""
 
     created_at = models.DateTimeField(
         "Время создания",

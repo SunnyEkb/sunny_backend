@@ -40,6 +40,7 @@ class APIResponses(models.TextChoices):
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     SERVICE_IS_CANCELLED = "Данная услуга отменена."
     SERVICE_IS_NOT_HIDDEN = "Данная услуга не скрыта."
+    MAX_IMAGE_QUANTITY = "Можно добавить только 5 фотографий."
 
 
 class SystemMessages(models.TextChoices):

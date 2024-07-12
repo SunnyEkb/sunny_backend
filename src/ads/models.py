@@ -5,6 +5,7 @@ from django.db import models
 
 from ads.managers import AdManager
 from core.choices import AdCategory
+from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.models import AbstractAdvertisement
 
@@ -37,8 +38,12 @@ class Ad(AbstractAdvertisement):
 class AdImage(models.Model):
     """Фото к объявлению."""
 
-    image = models.ImageField("Фото к объявлению", upload_to="ads/")
-    service = models.ForeignKey(
+    image = models.ImageField(
+        "Фото к объявлению",
+        upload_to=ad_image_path,
+        validators=[validate_image],
+    )
+    ad = models.ForeignKey(
         Ad,
         on_delete=models.CASCADE,
         verbose_name="Объявление",
@@ -50,4 +55,4 @@ class AdImage(models.Model):
         verbose_name_plural = "Фото к объявлениям"
 
     def __str__(self) -> str:
-        return self.service.title
+        return self.ad.title
