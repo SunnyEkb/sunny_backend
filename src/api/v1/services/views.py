@@ -1,5 +1,8 @@
+import os
+import shutil
 import sys
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -150,6 +153,18 @@ class ServiceViewSet(
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         if instance.status == AdvertisementStatus.DRAFT:
+
+            # удаляем фото, если есть
+            images = instance.images.all()
+            if images:
+                shutil.rmtree(
+                    os.path.join(
+                        settings.MEDIA_ROOT, f"services/{instance.id}/"
+                    )
+                )
+                for image in images:
+                    image.delete()
+
             return super().destroy(request, *args, **kwargs)
         return response.Response(
             APIResponses.CAN_NOT_DELETE_SEVICE.value,
