@@ -1,21 +1,26 @@
+import os
+import shutil
 import sys
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import mixins, viewsets, status, pagination, response
 from rest_framework.decorators import action
 
-from core.choices import APIResponses, ServiceStatus
-from services.models import Service, Type
+from core.choices import APIResponses, AdvertisementStatus
+from services.models import Service, ServiceImage, Type
 from services.serializers import (
+    ServiceImageCreateSerializer,
     ServiceCreateUpdateSerializer,
     ServiceRetrieveSerializer,
     TypeGetSerializer,
 )
-from api.v1.permissions import OwnerOrReadOnly, ReadOnly
+from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import (
+    CANT_ADD_PHOTO_406,
     CANT_CANCELL_SERVICE_406,
     CANT_DELETE_SERVICE_406,
     CANT_HIDE_SERVICE_406,
@@ -115,7 +120,7 @@ class ServiceViewSet(
     def get_queryset(self):
         if self.action == "list":
             return Service.cstm_mng.filter(
-                status=ServiceStatus.PUBLISHED.value
+                status=AdvertisementStatus.PUBLISHED.value
             )
         return Service.cstm_mng.all()
 
@@ -149,7 +154,19 @@ class ServiceViewSet(
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.status == ServiceStatus.DRAFT:
+        if instance.status == AdvertisementStatus.DRAFT:
+
+            # удаляем фото, если есть
+            images = instance.images.all()
+            if images:
+                shutil.rmtree(
+                    os.path.join(
+                        settings.MEDIA_ROOT, f"services/{instance.id}/"
+                    )
+                )
+                for image in images:
+                    image.delete()
+
             return super().destroy(request, *args, **kwargs)
         return response.Response(
             APIResponses.CAN_NOT_DELETE_SEVICE.value,
@@ -177,7 +194,7 @@ class ServiceViewSet(
         """Отменить услугу."""
 
         service: Service = self.get_object()
-        if service.status == ServiceStatus.DRAFT.value:
+        if service.status == AdvertisementStatus.DRAFT.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.CAN_NOT_CANCELL_SERVICE.value,
@@ -206,7 +223,7 @@ class ServiceViewSet(
         """Скрыть услугу."""
 
         service: Service = self.get_object()
-        if not service.status == ServiceStatus.PUBLISHED.value:
+        if not service.status == AdvertisementStatus.PUBLISHED.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.CAN_NOT_HIDE_SERVICE.value,
@@ -236,7 +253,7 @@ class ServiceViewSet(
         """Отправить на модерацию."""
 
         service: Service = self.get_object()
-        if service.status == ServiceStatus.CANCELLED.value:
+        if service.status == AdvertisementStatus.CANCELLED.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.SERVICE_IS_CANCELLED.value,
@@ -268,7 +285,7 @@ class ServiceViewSet(
         """Опубликовать скрытую услугу."""
 
         service: Service = self.get_object()
-        if not service.status == ServiceStatus.HIDDEN.value:
+        if not service.status == AdvertisementStatus.HIDDEN.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.SERVICE_IS_NOT_HIDDEN.value,
@@ -276,3 +293,73 @@ class ServiceViewSet(
         service.publish()
         serializer = self.get_serializer(service)
         return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Добавить фото к услуге.",
+        methods=["POST"],
+        request=ServiceImageCreateSerializer,
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: CANT_ADD_PHOTO_406,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="add_photo",
+        url_name="add_photo",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def add_photo(self, request, *args, **kwargs):
+        """Добавить фото к услуге."""
+
+        service: Service = self.get_object()
+        data = request.data
+        img_serializer = ServiceImageCreateSerializer(data=data)
+        images = service.images.all()
+        if len(images) >= 5:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.MAX_IMAGE_QUANTITY.value,
+            )
+        if img_serializer.is_valid():
+            img_serializer.save(service=service)
+            srvc_serializer = ServiceRetrieveSerializer(service)
+            return response.Response(srvc_serializer.data)
+        return response.Response(
+            img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@extend_schema(
+    tags=["Services"],
+    responses={
+        status.HTTP_204_NO_CONTENT: None,
+    },
+)
+@extend_schema_view(
+    destroy=extend_schema(summary="Удаление фото."),
+    responses={
+        status.HTTP_204_NO_CONTENT: None,
+        status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+    },
+)
+class ServiceImageViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """Фото к услугам."""
+
+    queryset = ServiceImage.objects.all()
+    serializer_class = None
+
+    def get_permissions(self):
+        if self.action == "retrieve":
+            return (ReadOnly(),)
+        return (PhotoOwnerOrReadOnly(),)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # удаляем файл
+        os.remove(os.path.join(settings.MEDIA_ROOT, str(instance.image)))
+
+        return super().destroy(request, *args, **kwargs)

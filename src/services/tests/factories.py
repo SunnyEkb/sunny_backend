@@ -34,5 +34,5 @@ class ServiceFactory(DjangoModelFactory):
     experience = fuzzy.FuzzyInteger(0, 25)
     place_of_provision = fuzzy.FuzzyChoice(ServicePlace.choices)
     description = fuzzy.FuzzyText(
-        length=Limits.MAX_LENGTH_SERVICE_DESCRIPTION.value
+        length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION.value
     )

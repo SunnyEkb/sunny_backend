@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "users",
     "notifications",
     "services",
+    "ads",
 ]
 
 MIDDLEWARE = [

@@ -5,7 +5,7 @@ from core.choices import (
     APIResponses,
     ServiceCategory,
     ServicePlace,
-    ServiceStatus,
+    AdvertisementStatus,
 )
 from users.serializers import (
     NonErrorFieldSerializer,
@@ -216,7 +216,6 @@ USER_PATCH_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[USER_PART_CHANGE_EXAMPLE],
 )
 
-
 TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=TypeGetSerializer,
     description="Получение списка типов услуг.",
@@ -234,8 +233,8 @@ SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type": {"category": ServiceCategory.BEAUTY.value, "title": "маникюр"},
         "price": {"маникюр": 500},
-        "status": ServiceStatus.DRAFT,
-        "images": [{"image": "string"}],
+        "status": AdvertisementStatus.DRAFT,
+        "images": [{"id": 1, "image": "string"}],
     },
 )
 
@@ -248,7 +247,6 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type": "some_type",
         "price": {"маникюр": 500},
-        "images": [{"image": "string"}],
     },
 )
 
@@ -328,4 +326,15 @@ CANT_PUBLISH_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга не скрыта.",
     examples=[CANT_PUBLISH_SERVICE_EXAMPLE],
+)
+
+CANT_ADD_PHOTO_EXAMPLE = OpenApiExample(
+    name="Максимальное количество фотографий.",
+    value={"detail": APIResponses.MAX_IMAGE_QUANTITY.value},
+)
+
+CANT_ADD_PHOTO_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Максимальное количество фотографий.",
+    examples=[CANT_ADD_PHOTO_EXAMPLE],
 )

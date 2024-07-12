@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
-from core.choices import ServiceCategory, ServiceStatus
+from core.choices import ServiceCategory, AdvertisementStatus
 from services.tests.factories import ServiceFactory, TypeFactory
 from users.tests.factories import CustomUserFactory
 
@@ -90,19 +90,19 @@ class TestServiceFixtures(TestUserFixtures):
         cls.service_2 = ServiceFactory(
             provider=cls.user_2,
             type=cls.type_2,
-            status=ServiceStatus.PUBLISHED.value,
+            status=AdvertisementStatus.PUBLISHED.value,
         )
         cls.service_3 = ServiceFactory(
             provider=cls.user_2,
             type=cls.type_2,
-            status=ServiceStatus.HIDDEN.value,
+            status=AdvertisementStatus.HIDDEN.value,
         )
         cls.service_4 = ServiceFactory(provider=cls.user_2, type=cls.type_2)
         cls.service_5 = ServiceFactory(provider=cls.user_2, type=cls.type_2)
         cls.service_6 = ServiceFactory(
             provider=cls.user_2,
             type=cls.type_2,
-            status=ServiceStatus.PUBLISHED.value,
+            status=AdvertisementStatus.PUBLISHED.value,
         )
         cls.service_title = "Super_service"
         cls.new_service_title = "Super_service"

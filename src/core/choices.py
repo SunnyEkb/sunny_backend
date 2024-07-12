@@ -14,7 +14,7 @@ class ServicePlace(models.TextChoices):
     OPTIONS = "По выбору"
 
 
-class ServiceStatus(models.IntegerChoices):
+class AdvertisementStatus(models.IntegerChoices):
     DRAFT = 0
     MODERATION = 1
     PUBLISHED = 2
@@ -40,6 +40,7 @@ class APIResponses(models.TextChoices):
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     SERVICE_IS_CANCELLED = "Данная услуга отменена."
     SERVICE_IS_NOT_HIDDEN = "Данная услуга не скрыта."
+    MAX_IMAGE_QUANTITY = "Можно добавить только 5 фотографий."
 
 
 class SystemMessages(models.TextChoices):
@@ -64,3 +65,8 @@ class ServiceCategory(models.TextChoices):
     CHILDREN = "Для детей"
     REPAIR = "Ремонт"
     OTHER = "Другое"
+
+
+class AdCategory(models.TextChoices):
+    SHOES = "Обувь"
+    CLOTHES = "Одежда"
