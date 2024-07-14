@@ -98,10 +98,11 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
             self.save()
 
     def get_admin_url(self, request) -> str:
-        """Возвращает ссылку на информацию об услуге в админке."""
+        """Возвращает ссылку на экземпляр модели в админке."""
 
         domain = get_current_site(request).domain
+        app_name = self._meta.app_label
         name: str = self.__class__.__name__.lower()
         return "".join(
-            ["https://", domain, f"/admin/{name}s/{name}/{self.id}/change/"]
+            ["https://", domain, f"/admin/{app_name}/{name}/{self.id}/change/"]
         )
