@@ -269,7 +269,7 @@ SERVICE_NOT_PROVIDER_EXAMPLE = OpenApiExample(
 
 SERVICE_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Услугу пытается изменить не исполнитель.",
+    description="Только испольнитель может изменить информацию об услуге.",
     examples=[SERVICE_NOT_PROVIDER_EXAMPLE],
 )
 
@@ -329,12 +329,23 @@ CANT_PUBLISH_SERVICE_406: OpenApiResponse = OpenApiResponse(
 )
 
 CANT_ADD_PHOTO_EXAMPLE = OpenApiExample(
-    name="Максимальное количество фотографий.",
-    value={"detail": APIResponses.MAX_IMAGE_QUANTITY.value},
+    name="Превышено максимальное количество фотографий.",
+    value={"detail": APIResponses.MAX_IMAGE_QUANTITY_EXEED.value},
 )
 
 CANT_ADD_PHOTO_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Максимальное количество фотографий.",
+    description="Превышено максимальное количество фотографий.",
     examples=[CANT_ADD_PHOTO_EXAMPLE],
+)
+
+MAX_FILE_SIZE_EXAMPLE = OpenApiExample(
+    name="Превышен допустимый размер файла.",
+    value={"detail": APIResponses.MAX_FILE_SIZE_EXEED.value},
+)
+
+CANT_ADD_PHOTO_400: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Превышен допустимый размер файла.",
+    examples=[MAX_FILE_SIZE_EXAMPLE],
 )
