@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from api.v1.validators import validate_file_size
 from services.models import Service, ServiceImage, Type
 
 
@@ -14,7 +15,13 @@ class TypeGetSerializer(serializers.ModelSerializer):
 class ServiceImageCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания фото к услуге."""
 
-    image = serializers.ImageField(required=True, allow_null=False)
+    image = serializers.ImageField(
+        required=True,
+        allow_null=False,
+        validators=[
+            validate_file_size,
+        ],
+    )
 
     class Meta:
         model = ServiceImage

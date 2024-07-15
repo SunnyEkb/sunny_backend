@@ -17,6 +17,7 @@ from services.serializers import (
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import (
+    CANT_ADD_PHOTO_400,
     CANT_ADD_PHOTO_406,
     CANT_CANCELL_SERVICE_406,
     CANT_DELETE_SERVICE_406,
@@ -286,6 +287,7 @@ class ServiceViewSet(
         request=ServiceImageCreateSerializer,
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_400_BAD_REQUEST: CANT_ADD_PHOTO_400,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_ADD_PHOTO_406,
         },
