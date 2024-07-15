@@ -1,5 +1,7 @@
 from django.db import models
 
+from core.enums import Limits
+
 
 class Role(models.TextChoices):
     ADMIN = "admin"
@@ -40,7 +42,12 @@ class APIResponses(models.TextChoices):
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     SERVICE_IS_CANCELLED = "Данная услуга отменена."
     SERVICE_IS_NOT_HIDDEN = "Данная услуга не скрыта."
-    MAX_IMAGE_QUANTITY = "Можно добавить только 5 фотографий."
+    MAX_IMAGE_QUANTITY_EXEED = (
+        f"Можно добавить только {Limits.MAX_FILE_QUANTITY} фотографий."
+    )
+    MAX_FILE_SIZE_EXEED = (
+        f"Максимальный размер файла - {Limits.MAX_FILE_SIZE} байт."
+    )
 
 
 class SystemMessages(models.TextChoices):
