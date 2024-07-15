@@ -1,8 +1,5 @@
-import os
-import shutil
 import sys
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -153,20 +150,9 @@ class ServiceViewSet(
         return response.Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance: Service = self.get_object()
         if instance.status == AdvertisementStatus.DRAFT:
-
-            # удаляем фото, если есть
-            images = instance.images.all()
-            if images:
-                shutil.rmtree(
-                    os.path.join(
-                        settings.MEDIA_ROOT, f"services/{instance.id}/"
-                    )
-                )
-                for image in images:
-                    image.delete()
-
+            instance.delete_service_images()
             return super().destroy(request, *args, **kwargs)
         return response.Response(
             APIResponses.CAN_NOT_DELETE_SEVICE.value,
@@ -357,9 +343,9 @@ class ServiceImageViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
         return (PhotoOwnerOrReadOnly(),)
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
+        instance: ServiceImage = self.get_object()
 
         # удаляем файл
-        os.remove(os.path.join(settings.MEDIA_ROOT, str(instance.image)))
+        instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)

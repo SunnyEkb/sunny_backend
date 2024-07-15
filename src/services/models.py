@@ -6,6 +6,7 @@ from core.db_utils import service_image_path, validate_image
 from core.enums import Limits
 from core.models import AbstractAdvertisement
 from services.managers import ServiceManager
+from services.tasks import delete_image_files, delete_service_images_dir
 
 
 class Type(models.Model):
@@ -64,6 +65,15 @@ class Service(AbstractAdvertisement):
     def __str__(self) -> str:
         return self.title
 
+    def delete_service_images(self):
+        """Удаление фото к услуге."""
+
+        images = self.images.all()
+        if images:
+            for image in images:
+                image.delete()
+            delete_service_images_dir.delay(f"services/{self.id}")
+
 
 class ServiceImage(models.Model):
     """Фото к услуге."""
@@ -90,3 +100,8 @@ class ServiceImage(models.Model):
 
     def __str__(self) -> str:
         return self.service.title
+
+    def delete_image_files(self):
+        """Удаление файлов изображений."""
+
+        delete_image_files.delay(str(self.image))
