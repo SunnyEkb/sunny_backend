@@ -18,9 +18,7 @@ class ServiceImageCreateSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(
         required=True,
         allow_null=False,
-        validators=[
-            validate_file_size,
-        ],
+        validators=[validate_file_size],
     )
 
     class Meta:
