@@ -61,14 +61,14 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 @extend_schema_view(
     list=extend_schema(summary="Список услуг"),
     retrieve=extend_schema(
-        summary="Информация о конкретной услуге",
+        summary="Информация о конкретной услуге.",
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
         },
     ),
     create=extend_schema(
         request=ServiceCreateUpdateSerializer,
-        summary="Создание услуги",
+        summary="Создание услуги.",
         responses={
             status.HTTP_201_CREATED: SERVICE_CREATED_201,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
@@ -76,7 +76,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ),
     update=extend_schema(
         request=ServiceCreateUpdateSerializer,
-        summary="Изменение данных услуги",
+        summary="Изменение данных услуги.",
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
@@ -85,7 +85,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ),
     partial_update=extend_schema(
         request=ServiceCreateUpdateSerializer,
-        summary="Изменение данных услуги",
+        summary="Изменение данных услуги.",
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
@@ -93,7 +93,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         },
     ),
     destroy=extend_schema(
-        summary="Удалить услугу",
+        summary="Удалить услугу.",
         responses={
             status.HTTP_204_NO_CONTENT: None,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_DELETE_SERVICE_406,
@@ -161,7 +161,7 @@ class ServiceViewSet(
         )
 
     @extend_schema(
-        summary="Отменить услугу",
+        summary="Отменить услугу.",
         methods=["POST"],
         request=None,
         responses={
@@ -191,7 +191,7 @@ class ServiceViewSet(
         return response.Response(serializer.data)
 
     @extend_schema(
-        summary="Скрыть услугу",
+        summary="Скрыть услугу.",
         methods=["POST"],
         request=None,
         responses={
@@ -220,7 +220,7 @@ class ServiceViewSet(
         return response.Response(serializer.data)
 
     @extend_schema(
-        summary="Отправить на модерацию",
+        summary="Отправить на модерацию.",
         methods=["POST"],
         request=None,
         responses={
@@ -252,7 +252,7 @@ class ServiceViewSet(
         return response.Response(serializer.data)
 
     @extend_schema(
-        summary="Опубликовать скрытую услугу",
+        summary="Опубликовать скрытую услугу.",
         methods=["POST"],
         request=None,
         responses={

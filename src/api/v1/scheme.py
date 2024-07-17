@@ -50,7 +50,7 @@ USER_CREATED_EXAMPLE = OpenApiExample(
 )
 
 USER_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Изменение данных о пользователе.",
+    name="Изменение данных о пользователе",
     value={
         "username": "Some_username",
         "first_name": "Some_name",
@@ -60,13 +60,13 @@ USER_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Частичное изменение данных о пользователе.",
+    name="Частичное изменение данных о пользователе",
     value={"last_name": "Some_name"},
 )
 
 
 USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Изменение данных о пользователе.",
+    name="Изменение данных о пользователе",
     value={
         "username": "Some_username",
         "email": "example@example.com",
@@ -218,7 +218,7 @@ USER_PATCH_OK_200: OpenApiResponse = OpenApiResponse(
 
 TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=TypeGetSerializer,
-    description="Получение списка типов услуг.",
+    description="Получение списка типов услуг",
     examples=[TYPE_LIST_EXAMPLE],
 )
 
@@ -252,24 +252,24 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
 
 SERVICE_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=ServiceRetrieveSerializer,
-    description="Получение информауции об услуге.",
+    description="Получение информауции об услуге",
     examples=[SERVICE_GET_EXAMPLE],
 )
 
 SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=ServiceCreateUpdateSerializer,
-    description="Услуга содана.",
+    description="Услуга содана",
     examples=[SERVICE_CREATE_EXAMPLE],
 )
 
 SERVICE_NOT_PROVIDER_EXAMPLE = OpenApiExample(
-    name="Услугу пытается изменить не исполнитель.",
+    name="Услугу пытается изменить не исполнитель",
     value={"detail": APIResponses.NO_PERMISSION.value},
 )
 
 SERVICE_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Только испольнитель может изменить информацию об услуге.",
+    description="Только испольнитель может изменить информацию об услуге",
     examples=[SERVICE_NOT_PROVIDER_EXAMPLE],
 )
 
@@ -280,72 +280,72 @@ CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(
 
 CANT_HIDE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Нельзя скрыть услугу.",
+    description="Нельзя скрыть услугу",
     examples=[CANT_HIDE_SERVICE_EXAMPLE],
 )
 
 CANT_DELETE_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не может быть удалена.",
+    name="Услуга не может быть удалена",
     value={"detail": APIResponses.CAN_NOT_DELETE_SEVICE.value},
 )
 
 CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Услуга не может быть удалена.",
+    description="Услуга не может быть удалена",
     examples=[CANT_DELETE_SERVICE_EXAMPLE],
 )
 
 CANT_CANCELL_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не может быть отменена.",
+    name="Услуга не может быть отменена",
     value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE.value},
 )
 
 CANT_CANCELL_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Услуга не может быть отменена.",
+    description="Услуга не может быть отменена",
     examples=[CANT_CANCELL_SERVICE_EXAMPLE],
 )
 
 CANT_MODERATE_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не может быть отправлена на модерацию.",
+    name="Услуга не может быть отправлена на модерацию",
     value={"detail": APIResponses.SERVICE_IS_CANCELLED.value},
 )
 
 CANT_MODERATE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Услуга не может быть отправлена на модерацию.",
+    description="Услуга не может быть отправлена на модерацию",
     examples=[CANT_MODERATE_SERVICE_EXAMPLE],
 )
 
 CANT_PUBLISH_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не скрыта.",
+    name="Услуга не скрыта",
     value={"detail": APIResponses.SERVICE_IS_NOT_HIDDEN.value},
 )
 
 CANT_PUBLISH_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Услуга не скрыта.",
+    description="Услуга не скрыта",
     examples=[CANT_PUBLISH_SERVICE_EXAMPLE],
 )
 
 CANT_ADD_PHOTO_EXAMPLE = OpenApiExample(
-    name="Превышено максимальное количество фотографий.",
+    name="Превышено максимальное количество фотографий",
     value={"detail": APIResponses.MAX_IMAGE_QUANTITY_EXEED.value},
 )
 
 CANT_ADD_PHOTO_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Превышено максимальное количество фотографий.",
+    description="Превышено максимальное количество фотографий",
     examples=[CANT_ADD_PHOTO_EXAMPLE],
 )
 
 MAX_FILE_SIZE_EXAMPLE = OpenApiExample(
-    name="Превышен допустимый размер файла.",
+    name="Превышен допустимый размер файла",
     value={"detail": APIResponses.MAX_FILE_SIZE_EXEED.value},
 )
 
 CANT_ADD_PHOTO_400: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Превышен допустимый размер файла.",
+    description="Превышен допустимый размер файла",
     examples=[MAX_FILE_SIZE_EXAMPLE],
 )
