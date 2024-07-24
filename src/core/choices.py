@@ -75,8 +75,12 @@ class ServiceCategory(models.TextChoices):
 
 
 class AdCategory(models.TextChoices):
-    SHOES = "Обувь"
-    CLOTHES = "Одежда"
+    PERSONAL_ITEMS = "Личные вещи"
+    ELECTRONICS = "Электроника"
+    CHILDREN = "Для детей"
+    HOBBIES = "Хобби и отдых"
+    PETS = "Животные"
+    OTHER = "Другое"
 
 
 class AdState(models.TextChoices):

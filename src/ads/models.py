@@ -10,6 +10,29 @@ from core.enums import Limits
 from core.models import AbstractAdvertisement
 
 
+class AdvCategory(models.Model):
+    """Категория объявления."""
+
+    title = models.CharField(
+        "Название",
+        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY,
+    )
+    parent = models.ForeignKey(
+        "self",
+        blank=True,
+        verbose_name="Высшая категория",
+        related_name="subcategories",
+        on_delete=models.PROTECT,
+    )
+
+    class Meta:
+        verbose_name = "Категория объявления"
+        verbose_name_plural = "Категории объявлений"
+
+    def __str__(self) -> str:
+        return self.title
+
+
 class Ad(AbstractAdvertisement):
     """Объявление."""
 
