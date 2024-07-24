@@ -4,7 +4,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from ads.managers import AdManager
-from core.choices import AdCategory
+from core.choices import AdCategory, AdState
 from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.models import AbstractAdvertisement
@@ -14,7 +14,7 @@ class Ad(AbstractAdvertisement):
     """Объявление."""
 
     category = models.CharField(
-        verbose_name="Категория",
+        "Категория",
         choices=AdCategory,
         max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY,
     )
@@ -25,6 +25,12 @@ class Ad(AbstractAdvertisement):
         validators=[
             MinValueValidator(Decimal(0), "Цена не может быть меньше 0"),
         ],
+    )
+    condition = models.CharField(
+        "Состояние",
+        choices=AdState,
+        max_length=Limits.MAX_LENGTH_ADVMNT_STATE,
+        default=AdState.USED.value,
     )
 
     objects = models.Manager()

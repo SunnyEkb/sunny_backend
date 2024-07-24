@@ -41,6 +41,7 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
             "description",
             "category",
             "price",
+            "state",
         )
 
 
@@ -61,4 +62,5 @@ class AdRetrieveSerializer(serializers.ModelSerializer):
             "price",
             "status",
             "images",
+            "state",
         )
