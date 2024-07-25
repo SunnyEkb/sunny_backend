@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from ads.managers import AdManager
+from ads.managers import AdCategoryManager, AdManager
 from core.choices import AdState
 from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
@@ -19,15 +19,21 @@ class AdCategory(models.Model):
     )
     parent = models.ForeignKey(
         "self",
+        null=True,
         blank=True,
         verbose_name="Высшая категория",
         related_name="subcategories",
         on_delete=models.PROTECT,
+        db_index=True,
     )
+
+    objects = models.Manager()
+    cstm_mng = AdCategoryManager()
 
     class Meta:
         verbose_name = "Категория объявления"
         verbose_name_plural = "Категории объявлений"
+        ordering = ["parent_id", "id"]
 
     def __str__(self) -> str:
         return self.title

@@ -6,7 +6,6 @@ from factory import (
 from factory.django import DjangoModelFactory
 
 from ads.models import Ad
-from core.choices import AdCategory
 from core.enums import Limits
 from users.tests.factories import CustomUserFactory
 
@@ -22,5 +21,4 @@ class AdFactory(DjangoModelFactory):
     description = fuzzy.FuzzyText(
         length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION.value
     )
-    category = fuzzy.FuzzyChoice(AdCategory.choices)
     price = fuzzy.FuzzyDecimal(0, 1000)
