@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ads.models import Ad, AdImage
+from ads.models import Ad, AdCategory, AdImage
 
 
 @admin.register(Ad)
@@ -10,14 +10,13 @@ class AdAdmin(admin.ModelAdmin):
     list_display = [
         "provider",
         "title",
-        "category",
         "created_at",
         "updated_at",
         "status",
     ]
     search_fields = ["title", "provider__email"]
-    list_filter = ["category", "status"]
-    ordering = ["created_at"]
+    list_filter = ["status"]
+    ordering = ["-created_at"]
 
 
 @admin.register(AdImage)
@@ -26,3 +25,12 @@ class AdImageAdmin(admin.ModelAdmin):
 
     list_display = ["ad"]
     search_fields = ["ad__title"]
+
+
+@admin.register(AdCategory)
+class AdvCategoryAdmin(admin.ModelAdmin):
+    """Отображение модели категорий к объявлений в админке."""
+
+    list_display = ["id", "title"]
+    search_fields = ["title"]
+    list_filter = ["parent"]

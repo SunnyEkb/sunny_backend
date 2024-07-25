@@ -3,7 +3,7 @@ import sys
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import mixins, viewsets, status, pagination, response
+from rest_framework import mixins, viewsets, status, response
 from rest_framework.decorators import action
 
 from core.choices import APIResponses, AdvertisementStatus
@@ -31,6 +31,7 @@ from api.v1.scheme import (
     TYPE_LIST_EXAMPLE,
     UNAUTHORIZED_401,
 )
+from api.v1.paginators import CustomPaginator
 from core.utils import notify_about_moderation
 
 User = get_user_model()
@@ -111,7 +112,7 @@ class ServiceViewSet(
 ):
     """Операции с услугами."""
 
-    pagination_class = pagination.LimitOffsetPagination
+    pagination_class = CustomPaginator
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ServiceFilter
 
