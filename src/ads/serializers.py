@@ -39,7 +39,6 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
         fields = (
             "title",
             "description",
-            "category",
             "price",
             "state",
         )
@@ -58,7 +57,6 @@ class AdRetrieveSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "provider",
-            "category",
             "price",
             "status",
             "images",

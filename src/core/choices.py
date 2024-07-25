@@ -74,15 +74,6 @@ class ServiceCategory(models.TextChoices):
     OTHER = "Другое"
 
 
-class AdCategory(models.TextChoices):
-    PERSONAL_ITEMS = "Личные вещи"
-    ELECTRONICS = "Электроника"
-    CHILDREN = "Для детей"
-    HOBBIES = "Хобби и отдых"
-    PETS = "Животные"
-    OTHER = "Другое"
-
-
 class AdState(models.TextChoices):
     USED = "Б/у"
     NEW = "Новый"
