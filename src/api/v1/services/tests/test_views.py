@@ -44,7 +44,7 @@ class TestServivecesView(TestServiceFixtures):
         response_auth_user = self.client_1.get(reverse("services-list"))
         self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
         self.assertEqual(
-            len(response_auth_user.json()),
+            len(response_auth_user.json()["results"]),
             len(
                 Service.objects.filter(
                     status=AdvertisementStatus.PUBLISHED.value
@@ -56,7 +56,7 @@ class TestServivecesView(TestServiceFixtures):
         response_anon_user = self.client_1.get(reverse("services-list"))
         self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
         self.assertEqual(
-            len(response_anon_user.json()),
+            len(response_anon_user.json()["results"]),
             len(
                 Service.objects.filter(
                     status=AdvertisementStatus.PUBLISHED.value
@@ -124,7 +124,7 @@ class TestServivecesView(TestServiceFixtures):
                 response = self.client_1.get(
                     reverse("services-list") + f"?{k}={v[0]}"
                 )
-                self.assertEqual(len(response.data), len(v[1]))
+                self.assertEqual(len(response.data["results"]), len(v[1]))
 
     def test_services_create(self):
         response = self.client_1.post(
