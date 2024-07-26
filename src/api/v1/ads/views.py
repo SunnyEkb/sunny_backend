@@ -9,7 +9,13 @@ from drf_spectacular.utils import (
 from rest_framework import mixins, viewsets
 
 from ads.models import Ad, Category
-from ads.serializers import AdRetrieveSerializer, CategorySerializer
+from ads.serializers import (
+    AdRetrieveSerializer,
+    AdCreateUpdateSerializer,
+    CategorySerializer,
+)
+from api.v1.paginators import CustomPaginator
+from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from core.choices import AdvertisementStatus
 
 
@@ -25,7 +31,7 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Category.objects.filter(parent=None)
     serializer_class = CategorySerializer
 
-    @method_decorator(cache_page(60 * 60 * 2))
+    @method_decorator(cache_page(60 * 2))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -33,8 +39,14 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 @extend_schema(tags=["Ads"], parameters=[OpenApiParameter("category_id", int)])
 @extend_schema_view(
     list=extend_schema(summary="Список объявлений"),
+    create=extend_schema(
+        request=AdCreateUpdateSerializer,
+        summary="Создание объявления",
+    ),
 )
-class AdViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class AdViewSet(
+    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+):
     """
     Объявления.
     Для получения списка объявлений необходимо указать
@@ -42,7 +54,12 @@ class AdViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     При отсутствии параметра будет выведен пустой список.
     """
 
-    serializer_class = AdRetrieveSerializer
+    pagination_class = CustomPaginator
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retreive"):
+            return AdRetrieveSerializer
+        return AdCreateUpdateSerializer
 
     def get_queryset(self):
         queryset = Ad.objects.filter(
@@ -57,3 +74,11 @@ class AdViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             else:
                 queryset = Ad.objects.none()
         return queryset
+
+    def get_permissions(self):
+        if self.action == "retrieve":
+            return (ReadOnly(),)
+        return (OwnerOrReadOnly(),)
+
+    def perform_create(self, serializer):
+        serializer.save(provider=self.request.user)
