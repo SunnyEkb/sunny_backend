@@ -74,6 +74,6 @@ class ServiceCategory(models.TextChoices):
     OTHER = "Другое"
 
 
-class AdCategory(models.TextChoices):
-    SHOES = "Обувь"
-    CLOTHES = "Одежда"
+class AdState(models.TextChoices):
+    USED = "Б/у"
+    NEW = "Новый"

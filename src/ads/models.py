@@ -3,21 +3,45 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 
-from ads.managers import AdManager
-from core.choices import AdCategory
+from ads.managers import AdCategoryManager, AdManager
+from core.choices import AdState
 from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.models import AbstractAdvertisement
 
 
+class Category(models.Model):
+    """Категория объявления."""
+
+    title = models.CharField(
+        "Название",
+        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY,
+    )
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        verbose_name="Высшая категория",
+        related_name="subcategories",
+        on_delete=models.PROTECT,
+        db_index=True,
+    )
+
+    objects = models.Manager()
+    cstm_mng = AdCategoryManager()
+
+    class Meta:
+        verbose_name = "Категория объявления"
+        verbose_name_plural = "Категории объявлений"
+        ordering = ["parent_id", "id"]
+
+    def __str__(self) -> str:
+        return self.title
+
+
 class Ad(AbstractAdvertisement):
     """Объявление."""
 
-    category = models.CharField(
-        verbose_name="Категория",
-        choices=AdCategory,
-        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY,
-    )
     price = models.DecimalField(
         "Цена",
         max_digits=10,
@@ -26,6 +50,17 @@ class Ad(AbstractAdvertisement):
             MinValueValidator(Decimal(0), "Цена не может быть меньше 0"),
         ],
     )
+    condition = models.CharField(
+        "Состояние",
+        choices=AdState,
+        max_length=Limits.MAX_LENGTH_ADVMNT_STATE,
+        default=AdState.USED.value,
+    )
+    category = models.ManyToManyField(
+        Category,
+        verbose_name="Kатегории",
+        related_name="ads",
+    )
 
     objects = models.Manager()
     cstm_mng = AdManager()
@@ -33,6 +68,7 @@ class Ad(AbstractAdvertisement):
     class Meta:
         verbose_name = "Объявление"
         verbose_name_plural = "Объявления"
+        ordering = ["-created_at"]
 
 
 class AdImage(models.Model):

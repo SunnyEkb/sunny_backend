@@ -2,7 +2,7 @@ from core.fixtures import BaseTestCase
 from ads.models import Ad, AdImage
 from ads.tests.factories import AdFactory
 
-from core.choices import AdvertisementStatus
+from core.choices import AdvertisementStatus, AdState
 
 
 class AdModelsTest(BaseTestCase):
@@ -36,7 +36,13 @@ class AdModelsTest(BaseTestCase):
                 self.assertEqual(model, title)
 
     def test_models_default_values(self):
-        self.assertEqual(self.ad_1.status, AdvertisementStatus.DRAFT.value)
+        field_default_value = {
+            self.ad_1.status: AdvertisementStatus.DRAFT.value,
+            self.ad_1.condition: AdState.USED.value,
+        }
+        for field, value in field_default_value.items():
+            with self.subTest(field=field):
+                self.assertEqual(field, value)
 
     def test_ad_model_methods(self):
         self.ad_2.send_to_moderation()
