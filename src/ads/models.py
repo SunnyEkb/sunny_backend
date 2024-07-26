@@ -10,7 +10,7 @@ from core.enums import Limits
 from core.models import AbstractAdvertisement
 
 
-class AdCategory(models.Model):
+class Category(models.Model):
     """Категория объявления."""
 
     title = models.CharField(
@@ -55,6 +55,11 @@ class Ad(AbstractAdvertisement):
         choices=AdState,
         max_length=Limits.MAX_LENGTH_ADVMNT_STATE,
         default=AdState.USED.value,
+    )
+    category = models.ManyToManyField(
+        Category,
+        verbose_name="Kатегории",
+        related_name="ads",
     )
 
     objects = models.Manager()
