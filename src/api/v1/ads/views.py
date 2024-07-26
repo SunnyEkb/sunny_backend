@@ -41,7 +41,7 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     list=extend_schema(summary="Список объявлений"),
     create=extend_schema(
         request=AdCreateUpdateSerializer,
-        summary="Создание объявления.",
+        summary="Создание объявления",
     ),
 )
 class AdViewSet(
