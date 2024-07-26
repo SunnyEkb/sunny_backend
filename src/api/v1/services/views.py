@@ -65,6 +65,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         summary="Информация о конкретной услуге.",
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
         },
     ),
     create=extend_schema(
