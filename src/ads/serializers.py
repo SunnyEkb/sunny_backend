@@ -1,23 +1,23 @@
 from rest_framework import serializers
 
-from ads.models import Ad, AdCategory, AdImage
+from ads.models import Ad, Category, AdImage
 from api.v1.validators import validate_file_size
 
 
-class AdCategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор для получения списка категорий объявлений."""
 
     subcategories = serializers.SerializerMethodField()
 
     class Meta:
-        model = AdCategory
+        model = Category
         fields = ("id", "title", "subcategories")
 
     def get_subcategories(self, obj):
         if obj.subcategories.exists():
             subcat = []
             for subcategory in obj.subcategories.all():
-                subcat.append(AdCategorySerializer(subcategory).data)
+                subcat.append(CategorySerializer(subcategory).data)
             return subcat
         else:
             return None
@@ -55,12 +55,7 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ad
-        fields = (
-            "title",
-            "description",
-            "price",
-            "state",
-        )
+        fields = ("title", "description", "price", "condition", "category")
 
 
 class AdRetrieveSerializer(serializers.ModelSerializer):
@@ -79,5 +74,7 @@ class AdRetrieveSerializer(serializers.ModelSerializer):
             "price",
             "status",
             "images",
-            "state",
+            "condition",
+            "condition",
+            "category",
         )

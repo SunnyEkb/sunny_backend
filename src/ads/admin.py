@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from ads.models import Ad, AdCategory, AdImage
+from ads.models import Ad, Category, AdImage
 
 
 @admin.register(Ad)
@@ -27,7 +27,7 @@ class AdImageAdmin(admin.ModelAdmin):
     search_fields = ["ad__title"]
 
 
-@admin.register(AdCategory)
+@admin.register(Category)
 class AdvCategoryAdmin(admin.ModelAdmin):
     """Отображение модели категорий к объявлений в админке."""
 
