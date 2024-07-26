@@ -41,7 +41,8 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     list=extend_schema(
         summary=(
             "Список объявлений. Для получения списка объявлений необходимо"
-            " указать query ""параметр 'category_id'. При отсутствии параметра"
+            " указать query "
+            "параметр 'category_id'. При отсутствии параметра"
             " будет выведен пустой список."
         )
     ),
@@ -66,7 +67,7 @@ class AdViewSet(
     mixins.CreateModelMixin,
     mixins.RetrieveModelMixin,
     mixins.UpdateModelMixin,
-    viewsets.GenericViewSet
+    viewsets.GenericViewSet,
 ):
     """
     Объявления.
