@@ -1,6 +1,7 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from ads.models import Ad, Category, AdImage
+from ads.models import Ad, AdImage, Category
 from api.v1.validators import validate_file_size
 
 
@@ -53,9 +54,32 @@ class AdImageRetrieveSerializer(serializers.ModelSerializer):
 class AdCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания и изменения объявления."""
 
+    category_id = serializers.IntegerField(write_only=True)
+
     class Meta:
         model = Ad
-        fields = ("title", "description", "price", "condition", "category")
+        fields = (
+            "title",
+            "description",
+            "price",
+            "condition",
+            "category_id",
+            "category",
+        )
+        read_only_fields = ("category",)
+
+    def create(self, validated_data):
+        category = get_object_or_404(
+            Category, pk=validated_data.pop("category_id")
+        )
+        ad = Ad.objects.create(**validated_data)
+        self.__ad_category(ad, category)
+        return ad
+
+    def __ad_category(self, ad: Ad, category: Category) -> None:
+        ad.category.add(category)
+        if category.parent:
+            self.__ad_category(ad, category.parent)
 
 
 class AdRetrieveSerializer(serializers.ModelSerializer):

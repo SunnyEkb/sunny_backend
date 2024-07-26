@@ -14,6 +14,7 @@ from services.serializers import (
     ServiceRetrieveSerializer,
     TypeGetSerializer,
 )
+from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.scheme import (
@@ -31,7 +32,6 @@ from api.v1.scheme import (
     TYPE_LIST_EXAMPLE,
     UNAUTHORIZED_401,
 )
-from api.v1.paginators import CustomPaginator
 from core.utils import notify_about_moderation
 
 User = get_user_model()
