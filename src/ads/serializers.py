@@ -76,6 +76,20 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
         self.__ad_category(ad, category)
         return ad
 
+    def update(self, instance, validated_data):
+        if "category_id" in validated_data:
+            category = get_object_or_404(
+                Category, pk=validated_data.pop("category_id")
+            )
+            if category not in instance.category.all():
+                categories = instance.category.all()
+                for cat in categories:
+                    instance.category.remove(cat)
+                instance = super().update(instance, validated_data)
+                self.__ad_category(instance, category)
+        instance = super().update(instance, validated_data)
+        return instance
+
     def __ad_category(self, ad: Ad, category: Category) -> None:
         ad.category.add(category)
         if category.parent:
@@ -98,7 +112,6 @@ class AdRetrieveSerializer(serializers.ModelSerializer):
             "price",
             "status",
             "images",
-            "condition",
             "condition",
             "category",
         )
