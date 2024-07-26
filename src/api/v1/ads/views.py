@@ -20,13 +20,13 @@ from core.choices import AdvertisementStatus
 
 
 @extend_schema(
-    tags=["Ads"],
+    tags=["Ads categories"],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список категорий объявлений"),
+    list=extend_schema(summary="Список категорий объявлений."),
 )
 class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    """Список категорий объявлений."""
+    """Вьюсет для категорий объявлений."""
 
     queryset = Category.objects.filter(parent=None)
     serializer_class = CategorySerializer
@@ -36,7 +36,7 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
-@extend_schema(tags=["Ads"], parameters=[OpenApiParameter("category_id", int)])
+@extend_schema(tags=["Ads"])
 @extend_schema_view(
     list=extend_schema(
         summary=(
@@ -44,22 +44,23 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             " указать query "
             "параметр 'category_id'. При отсутствии параметра"
             " будет выведен пустой список."
-        )
+        ),
+        parameters=[OpenApiParameter("category_id", int)],
     ),
     retrieve=extend_schema(
-        summary="Информация о конкретном объявлении",
+        summary="Информация о конкретном объявлении.",
     ),
     create=extend_schema(
         request=AdCreateUpdateSerializer,
-        summary="Создание объявления",
+        summary="Создание объявления.",
     ),
     update=extend_schema(
         request=AdCreateUpdateSerializer,
-        summary="Изменение данных объявления",
+        summary="Изменение данных объявления.",
     ),
     partial_update=extend_schema(
         request=AdCreateUpdateSerializer,
-        summary="Изменение данных объявления",
+        summary="Изменение данных объявления.",
     ),
 )
 class AdViewSet(
@@ -69,12 +70,7 @@ class AdViewSet(
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    """
-    Объявления.
-    Для получения списка объявлений необходимо указать
-    query параметр "category_id".
-    При отсутствии параметра будет выведен пустой список.
-    """
+    """Вьюсет для объявлений."""
 
     pagination_class = CustomPaginator
 
