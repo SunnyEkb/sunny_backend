@@ -6,7 +6,7 @@ from drf_spectacular.utils import (
     extend_schema_view,
     OpenApiParameter,
 )
-from rest_framework import mixins, viewsets
+from rest_framework import mixins, response, viewsets
 
 from ads.models import Ad, Category
 from ads.serializers import (
@@ -20,13 +20,13 @@ from core.choices import AdvertisementStatus
 
 
 @extend_schema(
-    tags=["Ads"],
+    tags=["Ads categories"],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список категорий объявлений"),
+    list=extend_schema(summary="Список категорий объявлений."),
 )
 class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    """Список категорий объявлений."""
+    """Вьюсет для категорий объявлений."""
 
     queryset = Category.objects.filter(parent=None)
     serializer_class = CategorySerializer
@@ -36,28 +36,46 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         return super().list(request, *args, **kwargs)
 
 
-@extend_schema(tags=["Ads"], parameters=[OpenApiParameter("category_id", int)])
+@extend_schema(tags=["Ads"])
 @extend_schema_view(
-    list=extend_schema(summary="Список объявлений"),
+    list=extend_schema(
+        summary=(
+            "Список объявлений. Для получения списка объявлений необходимо"
+            " указать query "
+            "параметр 'category_id'. При отсутствии параметра"
+            " будет выведен пустой список."
+        ),
+        parameters=[OpenApiParameter("category_id", int)],
+    ),
+    retrieve=extend_schema(
+        summary="Информация о конкретном объявлении.",
+    ),
     create=extend_schema(
         request=AdCreateUpdateSerializer,
-        summary="Создание объявления",
+        summary="Создание объявления.",
+    ),
+    update=extend_schema(
+        request=AdCreateUpdateSerializer,
+        summary="Изменение данных объявления.",
+    ),
+    partial_update=extend_schema(
+        request=AdCreateUpdateSerializer,
+        summary="Изменение данных объявления.",
     ),
 )
 class AdViewSet(
-    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
 ):
-    """
-    Объявления.
-    Для получения списка объявлений необходимо указать
-    query параметр "category_id".
-    При отсутствии параметра будет выведен пустой список.
-    """
+    """Вьюсет для объявлений."""
 
     pagination_class = CustomPaginator
 
     def get_serializer_class(self):
-        if self.action in ("list", "retreive"):
+        if self.action in ("list", "retrieve"):
             return AdRetrieveSerializer
         return AdCreateUpdateSerializer
 
@@ -82,3 +100,18 @@ class AdViewSet(
 
     def perform_create(self, serializer):
         serializer.save(provider=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance: Ad = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        # смена статуса на CHANGED для повторной модерации
+        instance.set_changed()
+        return response.Response(serializer.data)

@@ -1,5 +1,7 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
+from core.choices import AdvertisementStatus
+
 
 class SelfOnly(BasePermission):
     """
@@ -44,3 +46,9 @@ class ReadOnly(BasePermission):
 
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
+
+    def has_object_permission(self, request, view, obj):
+        return (
+            obj.provider == request.user
+            or obj.status == AdvertisementStatus.PUBLISHED.value
+        )

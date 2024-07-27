@@ -52,7 +52,7 @@ User = get_user_model()
 
 @extend_schema(
     request=UserCreateSerializer,
-    summary="Регистрация пользователя",
+    summary="Регистрация пользователя.",
     tags=["Users"],
     examples=[USER_CREATE_EXAMPLE],
     responses={
@@ -76,7 +76,7 @@ class RegisrtyView(APIView):
 @extend_schema(
     tags=["Users"],
     request=LoginSerializer,
-    summary="Login",
+    summary="Login.",
     examples=[LOGIN_EXAMPLE],
     responses={
         status.HTTP_200_OK: LOGIN_OK_200,
@@ -121,7 +121,7 @@ class LoginView(APIView):
 
 @extend_schema(
     tags=["Users"],
-    summary="Logout",
+    summary="Logout.",
     responses={
         status.HTTP_200_OK: LOGOUT_OK_200,
         status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
@@ -158,7 +158,7 @@ class LogoutView(APIView):
 @extend_schema(
     tags=["Users"],
     request=None,
-    summary="Обновление refresh токена",
+    summary="Обновление refresh токена.",
     responses={
         status.HTTP_200_OK: REFRESH_OK_200,
         status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
@@ -190,7 +190,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 
 @extend_schema(
     tags=["Users"],
-    summary="Изменение пароля пользователя",
+    summary="Изменение пароля пользователя.",
     request=PasswordChangeSerializer,
     examples=[PASSWORD_CHANGE_EXAMPLE],
     responses={
@@ -225,14 +225,14 @@ class ChangePassowrdView(GenericAPIView):
 @extend_schema(tags=["Users"])
 @extend_schema_view(
     update=extend_schema(
-        summary="Изменение сведений о пользователе",
+        summary="Изменение сведений о пользователе.",
         responses={
             status.HTTP_200_OK: USER_PUT_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
         },
     ),
     partial_update=extend_schema(
-        summary="Изменение сведений о пользователе",
+        summary="Изменение сведений о пользователе.",
         responses={
             status.HTTP_200_OK: USER_PATCH_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
@@ -240,7 +240,7 @@ class ChangePassowrdView(GenericAPIView):
         examples=[USER_PART_CHANGE_EXAMPLE],
     ),
     retrieve=extend_schema(
-        summary="Просмотр сведений о пользователе",
+        summary="Просмотр сведений о пользователе.",
         responses={
             status.HTTP_200_OK: USER_GET_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
