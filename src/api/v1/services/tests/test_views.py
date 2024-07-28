@@ -234,3 +234,42 @@ class TestServivecesView(TestServiceFixtures):
             reverse("services-detail", kwargs={"pk": self.service_2.pk})
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_owner_can_get_any_of_his_service(self):
+        services = [
+            self.draft_service,
+            self.moderate_service,
+            self.changed_service,
+            self.cancelled_service,
+            self.hidden_service,
+            self.published_service,
+        ]
+        for service in services:
+            with self.subTest(service=service):
+                response = self.client_3.get(
+                    reverse("services-detail", kwargs={"pk": service.id})
+                )
+                self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_not_owner_cant_get_not_published_service(self):
+        services = [
+            self.draft_service,
+            self.moderate_service,
+            self.changed_service,
+            self.cancelled_service,
+            self.hidden_service,
+        ]
+        for service in services:
+            with self.subTest(service=service):
+                response = self.client_2.get(
+                    reverse("services-detail", kwargs={"pk": service.id})
+                )
+                self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_not_owner_can_get_published_service(self):
+        response = self.client_2.get(
+            reverse(
+                "services-detail", kwargs={"pk": self.published_service.id}
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)

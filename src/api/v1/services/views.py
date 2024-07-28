@@ -38,14 +38,14 @@ User = get_user_model()
 
 
 @extend_schema(
-    tags=["Types"],
+    tags=["Services types"],
     examples=[TYPE_LIST_EXAMPLE],
     responses={
         status.HTTP_200_OK: TYPES_GET_OK_200,
     },
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список типов услуг"),
+    list=extend_schema(summary="Список типов услуг."),
 )
 class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список типов услуг."""
@@ -60,11 +60,12 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     tags=["Services"],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список услуг"),
+    list=extend_schema(summary="Список услуг."),
     retrieve=extend_schema(
         summary="Информация о конкретной услуге.",
         responses={
             status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
         },
     ),
     create=extend_schema(

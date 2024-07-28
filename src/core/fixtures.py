@@ -104,6 +104,24 @@ class TestServiceFixtures(TestUserFixtures):
             type=cls.type_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
+        cls.draft_service = ServiceFactory(
+            provider=cls.user_3, status=AdvertisementStatus.DRAFT.value
+        )
+        cls.published_service = ServiceFactory(
+            provider=cls.user_3, status=AdvertisementStatus.PUBLISHED.value
+        )
+        cls.cancelled_service = ServiceFactory(
+            provider=cls.user_3, status=AdvertisementStatus.CANCELLED.value
+        )
+        cls.changed_service = ServiceFactory(
+            provider=cls.user_3, status=AdvertisementStatus.CHANGED.value
+        )
+        cls.moderate_service = ServiceFactory(
+            provider=cls.user_3, status=AdvertisementStatus.MODERATION.value
+        )
+        cls.hidden_service = ServiceFactory(
+            provider=cls.user_3, status=AdvertisementStatus.MODERATION.value
+        )
         cls.service_title = "Super_service"
         cls.new_service_title = "Super_service"
         cls.service_data = {
