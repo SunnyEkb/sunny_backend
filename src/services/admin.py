@@ -14,8 +14,8 @@ class ServiceAdmin(admin.ModelAdmin):
         "updated_at",
         "status",
     ]
-    search_fields = ["title", "type__category", "type__title"]
-    list_filter = ["type__category", "type__title", "status"]
+    search_fields = ["title", "type__title"]
+    list_filter = ["type__title", "status"]
     ordering = ["created_at"]
 
 
@@ -31,7 +31,6 @@ class ServiceImageAdmin(admin.ModelAdmin):
 class TypeAdmin(admin.ModelAdmin):
     """Отображение модели типов услуг в админке."""
 
-    list_display = ["title", "category"]
+    list_display = ["id", "title"]
     search_fields = ["title"]
-    list_filter = ["category"]
-    ordering = ["category"]
+    list_filter = ["parent"]

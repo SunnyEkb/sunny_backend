@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
-from core.choices import ServiceCategory, AdvertisementStatus
+from core.choices import AdvertisementStatus
 from services.tests.factories import ServiceFactory, TypeFactory
 from users.tests.factories import CustomUserFactory
 
@@ -84,26 +84,29 @@ class TestServiceFixtures(TestUserFixtures):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.type_1 = TypeFactory(category=ServiceCategory.BEAUTY.value)
-        cls.type_2 = TypeFactory(category=ServiceCategory.SPORT.value)
-        cls.service_1 = ServiceFactory(provider=cls.user_1, type=cls.type_1)
+        cls.type_1 = TypeFactory()
+        cls.type_2 = TypeFactory(parent=cls.type_1)
+        cls.service_1 = ServiceFactory(provider=cls.user_1)
+        cls.service_1.type.set([cls.type_1])
         cls.service_2 = ServiceFactory(
             provider=cls.user_2,
-            type=cls.type_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
+        cls.service_2 = ServiceFactory(provider=cls.user_2)
         cls.service_3 = ServiceFactory(
             provider=cls.user_2,
-            type=cls.type_2,
             status=AdvertisementStatus.HIDDEN.value,
         )
-        cls.service_4 = ServiceFactory(provider=cls.user_2, type=cls.type_2)
-        cls.service_5 = ServiceFactory(provider=cls.user_2, type=cls.type_2)
+        cls.service_3 = ServiceFactory(provider=cls.user_2)
+        cls.service_4 = ServiceFactory(provider=cls.user_2)
+        cls.service_4.type.set([cls.type_2])
+        cls.service_5 = ServiceFactory(provider=cls.user_2)
+        cls.service_5.type.set([cls.type_2])
         cls.service_6 = ServiceFactory(
             provider=cls.user_2,
-            type=cls.type_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
+        cls.service_6.type.set([cls.type_2])
         cls.draft_service = ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.DRAFT.value
         )
@@ -129,4 +132,5 @@ class TestServiceFixtures(TestUserFixtures):
             "description": "Some_service",
             "experience": 12,
             "place_of_provision": "Выезд",
+            "type_id": cls.type_1.id,
         }

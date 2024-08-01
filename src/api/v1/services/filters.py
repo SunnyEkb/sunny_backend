@@ -3,11 +3,10 @@ from django_filters import (
     CharFilter,
     ChoiceFilter,
     FilterSet,
-    ModelChoiceFilter,
     RangeFilter,
 )
 
-from core.choices import ServiceCategory, ServicePlace
+from core.choices import ServicePlace
 from services.models import Service, Type
 
 
@@ -16,9 +15,6 @@ class TypeFilter(FilterSet):
     Фильтры для типов услуг.
     """
 
-    category = ChoiceFilter(
-        choices=ServiceCategory.choices, label="Категория услуги"
-    )
     title = CharFilter(
         field_name="title",
         lookup_expr="icontains",
@@ -27,7 +23,7 @@ class TypeFilter(FilterSet):
 
     class Meta:
         model = Type
-        fields = ("category", "title")
+        fields = ("title",)
 
 
 class ServiceFilter(FilterSet):
@@ -35,17 +31,6 @@ class ServiceFilter(FilterSet):
     Фильтры для услуг.
     """
 
-    category = ChoiceFilter(
-        choices=ServiceCategory.choices,
-        label="Категория услуги",
-        field_name="type__category",
-    )
-    type = ModelChoiceFilter(
-        field_name="type__title",
-        to_field_name="title",
-        queryset=Type.objects.all(),
-        label="Тип услуги",
-    )
     title = CharFilter(
         field_name="title",
         lookup_expr="icontains",
@@ -69,8 +54,6 @@ class ServiceFilter(FilterSet):
     class Meta:
         model = Service
         fields = (
-            "category",
-            "type",
             "title",
             "place_of_provision",
             "experience",

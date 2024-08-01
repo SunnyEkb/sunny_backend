@@ -3,7 +3,6 @@ from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
 from core.choices import (
     APIResponses,
-    ServiceCategory,
     ServicePlace,
     AdvertisementStatus,
 )
@@ -139,8 +138,19 @@ WRONG_EMAIL_EXAMPLE = OpenApiExample(
 TYPE_LIST_EXAMPLE = OpenApiExample(
     name="Список типов услуг",
     value=[
-        {"id": 1, "category": "Красота и здоровье", "title": "Маникюр"},
-        {"id": 2, "category": "Красота и здоровье", "title": "Массаж"},
+        {
+            "id": 1,
+            "title": "Красота и здоровье",
+            "subcategories": {
+                "id": 3,
+                "title": "Массаж",
+                "subcategories": {
+                    "id": 4,
+                    "title": "Массаж воротниковой зоны",
+                },
+            },
+        },
+        {"id": 2, "title": "Ремонт"},
     ],
 )
 
@@ -231,7 +241,7 @@ SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
         "description": "string",
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS.value,
-        "type": {"category": ServiceCategory.BEAUTY.value, "title": "маникюр"},
+        "type": [1, 2, 3],
         "price": {"маникюр": 500},
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
