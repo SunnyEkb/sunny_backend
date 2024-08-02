@@ -1,9 +1,10 @@
 from django.db import models
 from django.core.validators import MaxValueValidator
 
-from core.choices import ServiceCategory, ServicePlace
+from core.choices import ServicePlace
 from core.db_utils import service_image_path, validate_image
 from core.enums import Limits
+from core.managers import TypeCategoryManager
 from core.models import AbstractAdvertisement
 from services.managers import ServiceManager
 from services.tasks import delete_image_files, delete_service_images_dir
@@ -14,20 +15,25 @@ class Type(models.Model):
 
     title = models.CharField(
         "Название",
-        max_length=Limits.MAX_LENGTH_TYPE_TITLE.value,
+        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY,
+    )
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        verbose_name="Высшая категория",
+        related_name="subcategories",
+        on_delete=models.PROTECT,
+        db_index=True,
     )
 
-    category = models.CharField(
-        "Вид услуги",
-        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY.value,
-        choices=ServiceCategory,
-    )
+    objects = models.Manager()
+    cstm_mng = TypeCategoryManager()
 
     class Meta:
         verbose_name = "Тип услуги"
-        verbose_name_plural = "Типы услуг"
-        index_together = ["category", "title"]
-        ordering = ["category", "title"]
+        verbose_name_plural = "Тип услуги"
+        ordering = ["parent_id", "id"]
 
     def __str__(self) -> str:
         return self.title
@@ -47,11 +53,10 @@ class Service(AbstractAdvertisement):
         choices=ServicePlace.choices,
         default=ServicePlace.OPTIONS.value,
     )
-    type = models.ForeignKey(
+    type = models.ManyToManyField(
         Type,
-        on_delete=models.PROTECT,
         verbose_name="Тип услуги",
-        null=True,
+        related_name="types",
     )
     price = models.JSONField("Прайс", blank=True, null=True)
 
