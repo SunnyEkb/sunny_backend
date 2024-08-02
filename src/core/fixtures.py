@@ -92,12 +92,10 @@ class TestServiceFixtures(TestUserFixtures):
             provider=cls.user_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
-        cls.service_2 = ServiceFactory(provider=cls.user_2)
         cls.service_3 = ServiceFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.HIDDEN.value,
         )
-        cls.service_3 = ServiceFactory(provider=cls.user_2)
         cls.service_4 = ServiceFactory(provider=cls.user_2)
         cls.service_4.type.set([cls.type_2])
         cls.service_5 = ServiceFactory(provider=cls.user_2)
