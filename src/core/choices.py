@@ -65,15 +65,6 @@ class EmailSubjects(models.TextChoices):
     PASSWORD_CHANGE = "Сброс пароля на сервисе Солнечный Екатеринбург"
 
 
-class ServiceCategory(models.TextChoices):
-    BEAUTY = "Красота и здоровье"
-    SPORT = "Спорт"
-    PETS = "Домашние животные"
-    CHILDREN = "Для детей"
-    REPAIR = "Ремонт"
-    OTHER = "Другое"
-
-
 class AdState(models.TextChoices):
     USED = "Б/у"
     NEW = "Новый"

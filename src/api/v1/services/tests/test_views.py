@@ -22,10 +22,6 @@ class TestTypeView(TestServiceFixtures):
 
     def test_types_filters(self):
         templates = {
-            "category": [
-                self.type_1.category,
-                Type.objects.filter(category=self.type_1.category),
-            ],
             "title": [
                 self.type_1.title,
                 Type.objects.filter(title__icontains=self.type_1.title),
@@ -66,22 +62,6 @@ class TestServivecesView(TestServiceFixtures):
 
     def test_services_filters(self):
         templates = {
-            "category": [
-                self.type_1.category,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(type__category=self.type_1.category)
-                ),
-            ],
-            "type": [
-                self.type_1.title,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(type__title__icontains=self.type_1.title)
-                ),
-            ],
             "title": [
                 self.service_1.title,
                 (

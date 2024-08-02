@@ -6,7 +6,7 @@ from factory import (
 )
 from factory.django import DjangoModelFactory
 
-from core.choices import ServiceCategory, ServicePlace
+from core.choices import ServicePlace
 from core.enums import Limits
 from services.models import Service, Type
 from users.tests.factories import CustomUserFactory
@@ -19,7 +19,6 @@ class TypeFactory(DjangoModelFactory):
         model = Type
 
     title = Faker("name")
-    category = fuzzy.FuzzyChoice(ServiceCategory.choices)
 
 
 class ServiceFactory(DjangoModelFactory):
@@ -29,7 +28,6 @@ class ServiceFactory(DjangoModelFactory):
         model = Service
 
     provider = SubFactory(CustomUserFactory)
-    type = SubFactory(TypeFactory)
     title = Sequence(lambda o: "service_{0}".format(o))
     experience = fuzzy.FuzzyInteger(0, 25)
     place_of_provision = fuzzy.FuzzyChoice(ServicePlace.choices)

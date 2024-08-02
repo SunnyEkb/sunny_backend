@@ -11,10 +11,3 @@ class AdManager(models.Manager):
             .select_related("provider")
             .prefetch_related("images")
         )
-
-
-class AdCategoryManager(models.Manager):
-    """Пользовательский менеджер для модели Категорий Объявлений."""
-
-    def get_queryset(self) -> models.QuerySet:
-        return super().get_queryset().prefetch_related("subcategories")
