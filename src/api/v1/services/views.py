@@ -50,7 +50,7 @@ User = get_user_model()
 class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список типов услуг."""
 
-    queryset = Type.objects.all()
+    queryset = Type.objects.filter(parent=None)
     serializer_class = TypeGetSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TypeFilter
@@ -125,7 +125,7 @@ class ServiceViewSet(
         return Service.cstm_mng.all()
 
     def get_serializer_class(self):
-        if self.action in ("list", "retreive"):
+        if self.action in ("list", "retrieve"):
             return ServiceRetrieveSerializer
         return ServiceCreateUpdateSerializer
 
