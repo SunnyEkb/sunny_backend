@@ -12,12 +12,14 @@ class TestTypeView(TestServiceFixtures):
         response_auth_user = self.client_1.get(reverse("types-list"))
         self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
         self.assertEqual(
-            len(response_auth_user.json()), len(Type.objects.all())
+            len(response_auth_user.json()),
+            len(Type.objects.filter(parent=None)),
         )
         response_anon_user = self.client_1.get(reverse("types-list"))
         self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
         self.assertEqual(
-            len(response_anon_user.json()), len(Type.objects.all())
+            len(response_anon_user.json()),
+            len(Type.objects.filter(parent=None)),
         )
 
     def test_types_filters(self):
