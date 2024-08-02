@@ -72,6 +72,14 @@ class TestServivecesView(TestServiceFixtures):
                     ).filter(title__icontains=self.service_1.title)
                 ),
             ],
+            "type_id": [
+                self.type_1.id,
+                (
+                    Service.objects.filter(
+                        status=AdvertisementStatus.PUBLISHED.value
+                    ).filter(type__id=self.type_1.id)
+                ),
+            ],
             "experience_max": [
                 1,
                 (

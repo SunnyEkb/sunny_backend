@@ -2,7 +2,11 @@ import sys
 
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import mixins, viewsets, status, response
 from rest_framework.decorators import action
 
@@ -60,7 +64,9 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     tags=["Services"],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список услуг."),
+    list=extend_schema(
+        summary="Список услуг.", parameters=[OpenApiParameter("type_id", int)]
+    ),
     retrieve=extend_schema(
         summary="Информация о конкретной услуге.",
         responses={
@@ -118,11 +124,15 @@ class ServiceViewSet(
     filterset_class = ServiceFilter
 
     def get_queryset(self):
+        queryset = Service.cstm_mng.all()
         if self.action == "list":
-            return Service.cstm_mng.filter(
+            params = self.request.query_params
+            queryset = queryset.filter(
                 status=AdvertisementStatus.PUBLISHED.value
             )
-        return Service.cstm_mng.all()
+            if "type_id" in params:
+                queryset = queryset.filter(type__id=params.get("type_id"))
+        return queryset
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
