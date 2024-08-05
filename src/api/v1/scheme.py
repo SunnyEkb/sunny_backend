@@ -245,6 +245,8 @@ SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
         "price": {"маникюр": 500},
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
+        "address": "Lenina st, 8/13",
+        "salon_name": "Salon",
     },
 )
 
@@ -257,6 +259,8 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type_id": 2,
         "price": {"маникюр": 500},
+        "address": "Lenina st, 8/13",
+        "salon_name": "Salon",
     },
 )
 

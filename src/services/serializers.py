@@ -67,6 +67,8 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             "type_id",
             "price",
             "type",
+            "salon_name",
+            "address",
         )
         read_only_fields = ("type",)
 
@@ -113,4 +115,6 @@ class ServiceRetrieveSerializer(serializers.ModelSerializer):
             "price",
             "status",
             "images",
+            "salon_name",
+            "address",
         )

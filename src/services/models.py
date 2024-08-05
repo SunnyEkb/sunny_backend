@@ -59,6 +59,16 @@ class Service(AbstractAdvertisement):
         related_name="types",
     )
     price = models.JSONField("Прайс", blank=True, null=True)
+    address = models.CharField(
+        "Адрес",
+        max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value,
+        null=True,
+    )
+    salon_name = models.CharField(
+        "Название салона",
+        max_length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value,
+        null=True,
+    )
 
     objects = models.Manager()
     cstm_mng = ServiceManager()

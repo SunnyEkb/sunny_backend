@@ -65,7 +65,11 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 )
 @extend_schema_view(
     list=extend_schema(
-        summary="Список услуг.", parameters=[OpenApiParameter("type_id", int)]
+        summary="Список услуг.",
+        parameters=[OpenApiParameter("type_id", int)],
+        responses={
+            status.HTTP_200_OK: SERVICE_GET_OK_200,
+        },
     ),
     retrieve=extend_schema(
         summary="Информация о конкретной услуге.",
