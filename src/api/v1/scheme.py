@@ -236,7 +236,7 @@ SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Информация об услуге",
     value={
         "id": 1,
-        "provider": "example@example.example",
+        "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
         "experience": 50,
