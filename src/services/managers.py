@@ -9,5 +9,5 @@ class ServiceManager(models.Manager):
             super()
             .get_queryset()
             .select_related("provider")
-            .prefetch_related("images")
+            .prefetch_related("images", "comments")
         )

@@ -46,6 +46,10 @@ class Comment(TimeCreateUpdateModel):
     cstm_mng = CommentManager()
     objects = models.Manager()
 
+    class Meta:
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
+
     def __str__(self) -> str:
         return self.feedback[:30]
 
@@ -75,8 +79,8 @@ class CommentImage(models.Model):
     )
 
     class Meta:
-        verbose_name = "Фото к комментарию."
-        verbose_name_plural = "Фото к комментариям."
+        verbose_name = "Фото к комментарию"
+        verbose_name_plural = "Фото к комментариям"
 
     def __str__(self) -> str:
         return self.comment.feedback[:30]
