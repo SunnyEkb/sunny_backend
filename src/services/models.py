@@ -1,6 +1,8 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.core.validators import MaxValueValidator
 
+from comments.models import Comment
 from core.choices import ServicePlace
 from core.db_utils import service_image_path, validate_image
 from core.enums import Limits
@@ -69,6 +71,7 @@ class Service(AbstractAdvertisement):
         max_length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value,
         null=True,
     )
+    comments = GenericRelation(Comment)
 
     objects = models.Manager()
     cstm_mng = ServiceManager()

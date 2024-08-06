@@ -14,7 +14,7 @@ from users.serializers import (
 )
 from services.serializers import (
     ServiceCreateUpdateSerializer,
-    ServiceRetrieveSerializer,
+    ServiceListSerializer,
     TypeGetSerializer,
 )
 
@@ -247,6 +247,8 @@ SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
         "images": [{"id": 1, "image": "string"}],
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
+        "avg_rating": 4.1,
+        "comments_quantity": 15,
     },
 )
 
@@ -265,7 +267,7 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 SERVICE_GET_OK_200: OpenApiResponse = OpenApiResponse(
-    response=ServiceRetrieveSerializer,
+    response=ServiceListSerializer,
     description="Получение информауции об услуге",
     examples=[SERVICE_GET_EXAMPLE],
 )

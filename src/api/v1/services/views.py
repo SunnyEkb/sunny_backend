@@ -15,7 +15,7 @@ from services.models import Service, ServiceImage, Type
 from services.serializers import (
     ServiceImageCreateSerializer,
     ServiceCreateUpdateSerializer,
-    ServiceRetrieveSerializer,
+    ServiceListSerializer,
     TypeGetSerializer,
 )
 from api.v1.paginators import CustomPaginator
@@ -140,7 +140,7 @@ class ServiceViewSet(
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
-            return ServiceRetrieveSerializer
+            return ServiceListSerializer
         return ServiceCreateUpdateSerializer
 
     def get_permissions(self):
@@ -329,7 +329,7 @@ class ServiceViewSet(
             )
         if img_serializer.is_valid():
             img_serializer.save(service=service)
-            srvc_serializer = ServiceRetrieveSerializer(service)
+            srvc_serializer = ServiceListSerializer(service)
             return response.Response(srvc_serializer.data)
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
