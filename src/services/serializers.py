@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from api.v1.validators import validate_file_size
 from services.models import Service, ServiceImage, Type
+from users.serializers import UserReadSerializer
 
 
 class TypeGetSerializer(serializers.ModelSerializer):
@@ -66,6 +67,8 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             "type_id",
             "price",
             "type",
+            "salon_name",
+            "address",
         )
         read_only_fields = ("type",)
 
@@ -96,7 +99,7 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
 class ServiceRetrieveSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра услуги."""
 
-    provider = serializers.StringRelatedField(read_only=True)
+    provider = UserReadSerializer(read_only=True)
     images = ServiceImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta:
@@ -112,4 +115,6 @@ class ServiceRetrieveSerializer(serializers.ModelSerializer):
             "price",
             "status",
             "images",
+            "salon_name",
+            "address",
         )

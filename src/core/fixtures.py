@@ -131,4 +131,6 @@ class TestServiceFixtures(TestUserFixtures):
             "experience": 12,
             "place_of_provision": "Выезд",
             "type_id": cls.type_1.id,
+            "salon_name": "Some Name",
+            "address": "Some Address",
         }
