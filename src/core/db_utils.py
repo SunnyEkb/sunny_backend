@@ -18,6 +18,14 @@ def service_image_path(instance: object, filename: str) -> str:
     )
 
 
+def comment_image_path(instance: object, filename: str) -> str:
+    """Возвращает путь для сохранения фото к услуге."""
+
+    return "comments/{}/{}".format(instance.comment.id, filename).replace(
+        "\\\\", "/"
+    )
+
+
 def ad_image_path(instance: object, filename: str) -> str:
     """Возвращает путь для сохранения фото к объявлению."""
 

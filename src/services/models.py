@@ -7,7 +7,7 @@ from core.enums import Limits
 from core.managers import TypeCategoryManager
 from core.models import AbstractAdvertisement
 from services.managers import ServiceManager
-from services.tasks import delete_image_files, delete_service_images_dir
+from services.tasks import delete_image_files, delete_images_dir
 
 
 class Type(models.Model):
@@ -90,7 +90,7 @@ class Service(AbstractAdvertisement):
         if images:
             for image in images:
                 image.delete()
-            delete_service_images_dir.delay(f"services/{self.id}")
+            delete_images_dir.delay(f"services/{self.id}")
 
 
 class ServiceImage(models.Model):
