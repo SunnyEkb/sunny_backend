@@ -34,3 +34,7 @@ class ServiceFactory(DjangoModelFactory):
     description = fuzzy.FuzzyText(
         length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION.value
     )
+    salon_name = fuzzy.FuzzyText(
+        length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value
+    )
+    address = fuzzy.FuzzyText(length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value)

@@ -1,13 +1,15 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.core.validators import MaxValueValidator
 
+from comments.models import Comment
 from core.choices import ServicePlace
 from core.db_utils import service_image_path, validate_image
 from core.enums import Limits
 from core.managers import TypeCategoryManager
 from core.models import AbstractAdvertisement
 from services.managers import ServiceManager
-from services.tasks import delete_image_files, delete_service_images_dir
+from services.tasks import delete_image_files, delete_images_dir
 
 
 class Type(models.Model):
@@ -59,6 +61,17 @@ class Service(AbstractAdvertisement):
         related_name="types",
     )
     price = models.JSONField("Прайс", blank=True, null=True)
+    address = models.CharField(
+        "Адрес",
+        max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value,
+        null=True,
+    )
+    salon_name = models.CharField(
+        "Название салона",
+        max_length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value,
+        null=True,
+    )
+    comments = GenericRelation(Comment)
 
     objects = models.Manager()
     cstm_mng = ServiceManager()
@@ -80,7 +93,7 @@ class Service(AbstractAdvertisement):
         if images:
             for image in images:
                 image.delete()
-            delete_service_images_dir.delay(f"services/{self.id}")
+            delete_images_dir.delay(f"services/{self.id}")
 
 
 class ServiceImage(models.Model):

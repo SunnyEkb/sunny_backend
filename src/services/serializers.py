@@ -1,8 +1,11 @@
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.v1.validators import validate_file_size
+from comments.serializers import CommentReadSerializer
 from services.models import Service, ServiceImage, Type
+from users.serializers import UserReadSerializer
 
 
 class TypeGetSerializer(serializers.ModelSerializer):
@@ -66,6 +69,8 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             "type_id",
             "price",
             "type",
+            "salon_name",
+            "address",
         )
         read_only_fields = ("type",)
 
@@ -93,11 +98,13 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             self.__ad_type(service, type.parent)
 
 
-class ServiceRetrieveSerializer(serializers.ModelSerializer):
-    """Сериализатор для просмотра услуги."""
+class ServiceListSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения списка услуг."""
 
-    provider = serializers.StringRelatedField(read_only=True)
+    provider = UserReadSerializer(read_only=True)
     images = ServiceImageRetrieveSerializer(many=True, read_only=True)
+    avg_rating = serializers.SerializerMethodField()
+    comments_quantity = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
@@ -112,4 +119,27 @@ class ServiceRetrieveSerializer(serializers.ModelSerializer):
             "price",
             "status",
             "images",
+            "salon_name",
+            "address",
+            "avg_rating",
+            "comments_quantity",
         )
+
+    def get_comments_quantity(self, obj):
+        return obj.comments.count()
+
+    def get_avg_rating(self, obj):
+        rating = obj.comments.aggregate(Avg("rating"))
+        rating = rating["rating__avg"]
+        if rating is None:
+            return None
+        return round(rating, 1)
+
+
+class ServiceRetrieveSerializer(ServiceListSerializer):
+    """Сериализатор для получения данных о конкретной услуге."""
+
+    comments = CommentReadSerializer(many=True)
+
+    class Meta(ServiceListSerializer.Meta):
+        fields = ServiceListSerializer.Meta.fields + ("comments",)

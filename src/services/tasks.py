@@ -12,6 +12,6 @@ def delete_image_files(path: str):
 
 
 @shared_task
-def delete_service_images_dir(path: str):
+def delete_images_dir(path: str):
     if os.path.exists(path):
         shutil.rmtree(os.path.join(settings.MEDIA_ROOT, path))
