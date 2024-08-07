@@ -23,4 +23,5 @@ class Limits(IntEnum):
     MAX_FILE_SIZE = 5 * 1024 * 1024
     MAX_FILE_QUANTITY = 5
     MAX_RATING = 5
+    MIN_RATING = 1
     MAX_COMMENT_TEXT = 500

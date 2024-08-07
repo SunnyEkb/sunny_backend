@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.validators import MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 from core.db_utils import comment_image_path, validate_image
@@ -33,10 +33,14 @@ class Comment(TimeCreateUpdateModel):
     rating = models.PositiveIntegerField(
         "Оценка",
         validators=[
+            MinValueValidator(
+                Limits.MIN_RATING.value,
+                f"Оценка не может быть меньше {Limits.MIN_RATING.value}",
+            ),
             MaxValueValidator(
                 Limits.MAX_RATING.value,
                 f"Оценка не может быть больше {Limits.MAX_RATING.value}",
-            )
+            ),
         ],
     )
     feedback = models.CharField(
@@ -49,6 +53,7 @@ class Comment(TimeCreateUpdateModel):
     class Meta:
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
+        unique_together = ("author", "content_type", "object_id")
 
     def __str__(self) -> str:
         return self.feedback[:30]
