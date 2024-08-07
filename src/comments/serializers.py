@@ -1,15 +1,22 @@
 from rest_framework import serializers
 
+from api.v1.validators import validate_file_size
 from comments.models import Comment, CommentImage
-from services.serializers import ServiceImageCreateSerializer
 from users.serializers import UserReadSerializer
 
 
-class CommentImageCreateSerializer(ServiceImageCreateSerializer):
+class CommentImageCreateSerializer(serializers.Serializer):
     """Сериализатор для создания фото к комментарию."""
 
-    class Meta(ServiceImageCreateSerializer.Meta):
+    image = serializers.ImageField(
+        required=True,
+        allow_null=False,
+        validators=[validate_file_size],
+    )
+
+    class Meta:
         model = CommentImage
+        fields = ("image",)
 
 
 class CommentImageRetrieveSerializer(CommentImageCreateSerializer):

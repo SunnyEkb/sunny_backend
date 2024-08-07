@@ -15,6 +15,7 @@ from services.models import Service, ServiceImage, Type
 from services.serializers import (
     ServiceImageCreateSerializer,
     ServiceCreateUpdateSerializer,
+    ServiceRetrieveSerializer,
     ServiceListSerializer,
     TypeGetSerializer,
 )
@@ -30,7 +31,8 @@ from api.v1.scheme import (
     CANT_MODERATE_SERVICE_406,
     CANT_PUBLISH_SERVICE_406,
     SERVICE_CREATED_201,
-    SERVICE_GET_OK_200,
+    SERVICE_LIST_OK_200,
+    SERVICE_RETRIEVE_OK_200,
     SERVICE_FORBIDDEN_403,
     TYPES_GET_OK_200,
     TYPE_LIST_EXAMPLE,
@@ -68,13 +70,13 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         summary="Список услуг.",
         parameters=[OpenApiParameter("type_id", int)],
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_LIST_OK_200,
         },
     ),
     retrieve=extend_schema(
         summary="Информация о конкретной услуге.",
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_RETRIEVE_OK_200,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
         },
     ),
@@ -90,7 +92,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         request=ServiceCreateUpdateSerializer,
         summary="Изменение данных услуги.",
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
         },
@@ -99,7 +101,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         request=ServiceCreateUpdateSerializer,
         summary="Изменение данных услуги.",
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
         },
@@ -139,8 +141,10 @@ class ServiceViewSet(
         return queryset
 
     def get_serializer_class(self):
-        if self.action in ("list", "retrieve"):
+        if self.action == "list":
             return ServiceListSerializer
+        if self.action == "retrieve":
+            return ServiceRetrieveSerializer
         return ServiceCreateUpdateSerializer
 
     def get_permissions(self):
@@ -181,7 +185,7 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_RETRIEVE_OK_200,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_CANCELL_SERVICE_406,
         },
@@ -211,7 +215,7 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_RETRIEVE_OK_200,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_HIDE_SERVICE_406,
         },
@@ -240,7 +244,7 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_RETRIEVE_OK_200,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_MODERATE_SERVICE_406,
         },
@@ -272,7 +276,7 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_RETRIEVE_OK_200,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_PUBLISH_SERVICE_406,
         },
@@ -302,7 +306,7 @@ class ServiceViewSet(
         methods=["POST"],
         request=ServiceImageCreateSerializer,
         responses={
-            status.HTTP_200_OK: SERVICE_GET_OK_200,
+            status.HTTP_200_OK: SERVICE_RETRIEVE_OK_200,
             status.HTTP_400_BAD_REQUEST: CANT_ADD_PHOTO_400,
             status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: CANT_ADD_PHOTO_406,

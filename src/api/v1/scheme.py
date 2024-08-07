@@ -154,6 +154,21 @@ TYPE_LIST_EXAMPLE = OpenApiExample(
     ],
 )
 
+COMMENT_LIST_EXAMPLE = OpenApiExample(
+    name="Список комментариев",
+    value=[
+        {
+            "content_type": 23,
+            "object_id": 2,
+            "rating": 5,
+            "feedback": "Супер",
+            "id": 1,
+            "author": USER_INFO_EXAMPLE.value,
+            "images": [{"id": 1, "image": "string"}],
+        },
+    ],
+)
+
 USER_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=UserCreateSerializer,
     description="Пользователь зарегистрирован",
@@ -232,8 +247,8 @@ TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[TYPE_LIST_EXAMPLE],
 )
 
-SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Информация об услуге",
+SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список услуг",
     value={
         "id": 1,
         "provider": USER_INFO_EXAMPLE.value,
@@ -252,6 +267,27 @@ SERVICE_GET_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
+SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Информация об услуге",
+    value={
+        "id": 1,
+        "provider": USER_INFO_EXAMPLE.value,
+        "title": "string",
+        "description": "string",
+        "experience": 50,
+        "place_of_provision": ServicePlace.OPTIONS.value,
+        "type": [1, 2, 3],
+        "price": {"маникюр": 500},
+        "status": AdvertisementStatus.DRAFT,
+        "images": [{"id": 1, "image": "string"}],
+        "address": "Lenina st, 8/13",
+        "salon_name": "Salon",
+        "avg_rating": 4.1,
+        "comments_quantity": 15,
+        "comments": COMMENT_LIST_EXAMPLE.value,
+    },
+)
+
 SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Создание услуге",
     value={
@@ -266,10 +302,16 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
-SERVICE_GET_OK_200: OpenApiResponse = OpenApiResponse(
+SERVICE_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     response=ServiceListSerializer,
-    description="Получение информауции об услуге",
-    examples=[SERVICE_GET_EXAMPLE],
+    description="Получение списка услуг",
+    examples=[SERVICE_LIST_EXAMPLE],
+)
+
+SERVICE_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
+    response=ServiceListSerializer,
+    description="Получение информации об услуге",
+    examples=[SERVICE_RETRIEVE_EXAMPLE],
 )
 
 SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
