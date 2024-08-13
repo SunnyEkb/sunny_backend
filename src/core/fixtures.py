@@ -6,6 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
+from comments.tests.factories import CommentFactory
 from core.choices import AdvertisementStatus
 from services.tests.factories import ServiceFactory, TypeFactory
 from users.tests.factories import CustomUserFactory
@@ -134,3 +135,6 @@ class TestServiceFixtures(TestUserFixtures):
             "salon_name": "Some Name",
             "address": "Some Address",
         }
+        cls.comment_1 = CommentFactory(
+            subject=cls.service_1, author=cls.user_1
+        )
