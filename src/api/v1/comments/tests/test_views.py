@@ -10,7 +10,13 @@ from comments.models import Comment
 class TestCommentsView(TestServiceFixtures):
     def test_get_comments_by_authenticated_client(self):
         response = self.client_1.get(
-            reverse("comments-list", kwargs={"service_id": self.service_2.id})
+            reverse(
+                "comments-list",
+                kwargs={
+                    "type": "service",
+                    "obj_id": self.published_service.id,
+                },
+            )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
@@ -20,14 +26,20 @@ class TestCommentsView(TestServiceFixtures):
                     content_type=ContentType.objects.get(
                         app_label="services", model="service"
                     ),
-                    object_id=self.service_2.id,
+                    object_id=self.published_service.id,
                 )
             ),
         )
 
     def test_get_comments_by_anon_client(self):
         response = self.anon_client.get(
-            reverse("comments-list", kwargs={"service_id": self.service_2.id})
+            reverse(
+                "comments-list",
+                kwargs={
+                    "type": "service",
+                    "obj_id": self.published_service.id,
+                },
+            )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
@@ -37,7 +49,7 @@ class TestCommentsView(TestServiceFixtures):
                     content_type=ContentType.objects.get(
                         app_label="services", model="service"
                     ),
-                    object_id=self.service_2.id,
+                    object_id=self.published_service.id,
                 )
             ),
         )

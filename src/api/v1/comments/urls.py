@@ -6,7 +6,9 @@ from api.v1.comments.views import CommentViewSet
 
 v1_comments_router = DefaultRouter()
 v1_comments_router.register(
-    r"comments/(?P<service_id>\d+)", CommentViewSet, basename="comments"
+    r"comments/(?P<type>\w+)/(?P<obj_id>\d+)",
+    CommentViewSet,
+    basename="comments",
 )
 
 

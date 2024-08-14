@@ -5,7 +5,6 @@ from rest_framework import mixins, viewsets
 from api.v1.paginators import CustomPaginator
 from comments.models import Comment
 from comments.serializers import CommentReadSerializer
-from services.models import Service
 
 
 class CommentViewSet(
@@ -18,13 +17,15 @@ class CommentViewSet(
     serializer_class = CommentReadSerializer
 
     def get_queryset(self):
-        service: Service = get_object_or_404(
-            Service, pk=self.kwargs.get("service_id")
-        )
-        queryset = Comment.cstm_mng.filter(
-            content_type=ContentType.objects.get(
-                app_label="services", model="service"
-            ),
-            object_id=service.id,
-        )
-        return queryset
+        obj_id = self.kwargs.get("obj_id")
+        type = self.kwargs.get("type")
+        if obj_id and type:
+            cont_type_model = get_object_or_404(
+                ContentType, app_label=f"{type}s", model=f"{type}"
+            )
+            obj = get_object_or_404(cont_type_model.model_class(), pk=obj_id)
+            return Comment.cstm_mng.filter(
+                content_type=cont_type_model,
+                object_id=obj.id,
+            ).order_by("-created_at")
+        return Comment.cstm_mng.none()

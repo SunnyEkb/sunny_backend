@@ -7,7 +7,7 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import mixins, viewsets, status, response
+from rest_framework import mixins, viewsets, response, status
 from rest_framework.decorators import action
 
 from core.choices import APIResponses, AdvertisementStatus

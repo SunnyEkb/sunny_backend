@@ -136,5 +136,5 @@ class TestServiceFixtures(TestUserFixtures):
             "address": "Some Address",
         }
         cls.comment_1 = CommentFactory(
-            subject=cls.service_2, author=cls.user_1
+            subject=cls.published_service, author=cls.user_1
         )
