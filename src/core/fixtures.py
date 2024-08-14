@@ -138,3 +138,7 @@ class TestServiceFixtures(TestUserFixtures):
         cls.comment_1 = CommentFactory(
             subject=cls.published_service, author=cls.user_1
         )
+        cls.comment_data = {
+            "rating": 2,
+            "feedback": "Some feadback",
+        }

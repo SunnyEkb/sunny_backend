@@ -32,8 +32,6 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = (
-            "content_type",
-            "object_id",
             "rating",
             "feedback",
         )

@@ -53,3 +53,16 @@ class TestCommentsView(TestServiceFixtures):
                 )
             ),
         )
+
+    def test_comment_create(self):
+        response = self.client_2.post(
+            reverse(
+                "comments-list",
+                kwargs={
+                    "type": "service",
+                    "obj_id": self.published_service.id,
+                },
+            ),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)

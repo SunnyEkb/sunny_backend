@@ -9,6 +9,7 @@ from comments.serializers import CommentReadSerializer
 
 class CommentViewSet(
     mixins.ListModelMixin,
+    mixins.CreateModelMixin,
     viewsets.GenericViewSet,
 ):
     """Комментарии к услуге."""
@@ -29,3 +30,16 @@ class CommentViewSet(
                 object_id=obj.id,
             ).order_by("-created_at")
         return Comment.cstm_mng.none()
+
+    def perform_create(self, serializer):
+        obj_id = self.kwargs.get("obj_id")
+        type = self.kwargs.get("type")
+        cont_type_model = get_object_or_404(
+            ContentType, app_label=f"{type}s", model=f"{type}"
+        )
+        obj = get_object_or_404(cont_type_model.model_class(), pk=obj_id)
+        serializer.save(
+            author=self.request.user,
+            object_id=obj.id,
+            content_type=cont_type_model,
+        )
