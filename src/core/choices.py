@@ -48,6 +48,12 @@ class APIResponses(models.TextChoices):
     MAX_FILE_SIZE_EXEED = (
         f"Максимальный размер файла - {Limits.MAX_FILE_SIZE} байт."
     )
+    COMMENT_ALREADY_EXISTS = (
+        "Комментарий от данного пользователя уже существует."
+    )
+    COMMENTS_BY_PROVIDER_PROHIBITED = (
+        "Лицо, оказывающее услуги не может оставлять комментарий."
+    )
 
 
 class SystemMessages(models.TextChoices):
