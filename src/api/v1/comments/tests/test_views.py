@@ -60,3 +60,17 @@ class TestCommentsView(TestServiceFixtures):
             data=self.comment_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_user_cant_create_two_comments(self):
+        response = self.client_1.post(
+            reverse("comments_create-list"),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_anon_client_cant_create_comment(self):
+        response = self.anon_client.post(
+            reverse("comments_create-list"),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)

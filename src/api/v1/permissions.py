@@ -52,3 +52,15 @@ class ReadOnly(BasePermission):
             obj.provider == request.user
             or obj.status == AdvertisementStatus.PUBLISHED.value
         )
+
+
+class CommentAuthorOnly(BasePermission):
+    """
+    Разрешения на удаление комментария автору.
+    """
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        return obj.author == request.user

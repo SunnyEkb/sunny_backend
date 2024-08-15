@@ -4,9 +4,10 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import mixins, viewsets, status
+from rest_framework import mixins, viewsets, permissions, status
 
 from api.v1.paginators import CustomPaginator
+from api.v1.permissions import CommentAuthorOnly
 from api.v1.scheme import (
     COMMENT_CREATE_EXAMPLE,
     COMMENT_LIST_EXAMPLE,
@@ -70,6 +71,11 @@ class CommentCreateDestroyViewSet(
 
     def get_queryset(self):
         return Comment.objects.all()
+
+    def get_permissions(self):
+        if self.action == "create":
+            return [permissions.IsAuthenticated()]
+        return [CommentAuthorOnly()]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

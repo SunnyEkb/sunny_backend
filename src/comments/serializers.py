@@ -44,7 +44,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         object_id = data.get("object_id", None)
         content_type = data.get("content_type", None)
-        user = self.context["request"].parser_context.get("user")
+        user = self.context.get("request").user
         cont_type_model = get_object_or_404(ContentType, pk=content_type.id)
         obj = get_object_or_404(cont_type_model.model_class(), pk=object_id)
         if obj.provider == user:
