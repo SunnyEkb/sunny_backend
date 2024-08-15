@@ -1,12 +1,31 @@
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
-from rest_framework import mixins, viewsets
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_view,
+)
+from rest_framework import mixins, viewsets, status
 
 from api.v1.paginators import CustomPaginator
+from api.v1.scheme import (
+    COMMENT_CREATE_EXAMPLE,
+    COMMENT_LIST_EXAMPLE,
+    COMMENT_LIST_200_OK,
+)
 from comments.models import Comment
 from comments.serializers import CommentCreateSerializer, CommentReadSerializer
 
 
+@extend_schema(
+    tags=["Comments"],
+    examples=[COMMENT_LIST_EXAMPLE],
+    responses={
+        status.HTTP_200_OK: COMMENT_LIST_200_OK,
+    },
+)
+@extend_schema_view(
+    list=extend_schema(summary="Список комментариев."),
+)
 class CommentViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
@@ -31,6 +50,15 @@ class CommentViewSet(
         return Comment.cstm_mng.none()
 
 
+@extend_schema(
+    tags=["Comments"],
+)
+@extend_schema_view(
+    create=extend_schema(
+        summary="Создать комментарий.", examples=[COMMENT_CREATE_EXAMPLE]
+    ),
+    destroy=extend_schema(summary="Удалить комментарий."),
+)
 class CommentCreateDestroyViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
@@ -45,3 +73,8 @@ class CommentCreateDestroyViewSet(
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        instance: Comment = self.get_object()
+        instance.delete_images()
+        return super().destroy(request, *args, **kwargs)

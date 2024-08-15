@@ -1,6 +1,7 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
+from comments.serializers import CommentReadSerializer
 from core.choices import (
     APIResponses,
     ServicePlace,
@@ -165,6 +166,18 @@ COMMENT_LIST_EXAMPLE = OpenApiExample(
             "id": 1,
             "author": USER_INFO_EXAMPLE.value,
             "images": [{"id": 1, "image": "string"}],
+        },
+    ],
+)
+
+COMMENT_CREATE_EXAMPLE = OpenApiExample(
+    name="Создать комментарий",
+    value=[
+        {
+            "content_type": 23,
+            "object_id": 2,
+            "rating": 5,
+            "feedback": "Супер",
         },
     ],
 )
@@ -406,4 +419,10 @@ CANT_ADD_PHOTO_400: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Превышен допустимый размер файла",
     examples=[MAX_FILE_SIZE_EXAMPLE],
+)
+
+COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
+    response=CommentReadSerializer,
+    description="Список комментариев",
+    examples=[COMMENT_LIST_EXAMPLE],
 )
