@@ -9,10 +9,9 @@ from comments.serializers import CommentCreateSerializer, CommentReadSerializer
 
 class CommentViewSet(
     mixins.ListModelMixin,
-    mixins.CreateModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Список комментариев к услуге."""
+    """Список комментариев."""
 
     pagination_class = CustomPaginator
     serializer_class = CommentReadSerializer
@@ -37,7 +36,7 @@ class CommentCreateDestroyViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Создать или удалить комментарий к услуге."""
+    """Создать или удалить комментарий."""
 
     serializer_class = CommentCreateSerializer
 
