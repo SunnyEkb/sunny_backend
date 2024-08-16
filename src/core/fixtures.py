@@ -3,9 +3,11 @@ import tempfile
 
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.contrib.contenttypes.models import ContentType
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
+from comments.tests.factories import CommentFactory
 from core.choices import AdvertisementStatus
 from services.tests.factories import ServiceFactory, TypeFactory
 from users.tests.factories import CustomUserFactory
@@ -134,3 +136,18 @@ class TestServiceFixtures(TestUserFixtures):
             "salon_name": "Some Name",
             "address": "Some Address",
         }
+        cls.comment_1 = CommentFactory(
+            subject=cls.published_service, author=cls.user_1
+        )
+        cls.comment_2 = CommentFactory(
+            subject=cls.published_service, author=cls.user_2
+        )
+        cls.comment_data = {
+            "content_type": ContentType.objects.get(
+                app_label="services", model="service"
+            ).id,
+            "object_id": cls.published_service.id,
+            "rating": 2,
+            "feedback": "Some feadback",
+        }
+        cls.image_data = {"image": cls.uploaded}
