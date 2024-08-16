@@ -123,6 +123,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
             "address",
             "avg_rating",
             "comments_quantity",
+            "created_at",
         )
 
     def get_comments_quantity(self, obj):

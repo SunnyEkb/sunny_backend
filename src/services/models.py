@@ -65,11 +65,13 @@ class Service(AbstractAdvertisement):
         "Адрес",
         max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value,
         null=True,
+        blank=True,
     )
     salon_name = models.CharField(
         "Название салона",
         max_length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value,
         null=True,
+        blank=True,
     )
     comments = GenericRelation(Comment)
 

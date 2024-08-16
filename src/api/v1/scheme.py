@@ -283,6 +283,7 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "salon_name": "Salon",
         "avg_rating": 4.1,
         "comments_quantity": 15,
+        "created_at": "2024-06-20T06:25:52.449498Z",
     },
 )
 
@@ -303,6 +304,7 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "salon_name": "Salon",
         "avg_rating": 4.1,
         "comments_quantity": 15,
+        "created_at": "2024-06-20T06:25:52.449498Z",
         "comments": COMMENT_LIST_EXAMPLE.value,
     },
 )
