@@ -12,6 +12,9 @@ from api.v1.scheme import (
     COMMENT_CREATE_EXAMPLE,
     COMMENT_LIST_EXAMPLE,
     COMMENT_LIST_200_OK,
+    COMMENT_CREATED_201,
+    COMMENT_FORBIDDEN_403,
+    UNAUTHORIZED_401,
 )
 from comments.models import Comment
 from comments.serializers import CommentCreateSerializer, CommentReadSerializer
@@ -56,9 +59,20 @@ class CommentViewSet(
 )
 @extend_schema_view(
     create=extend_schema(
-        summary="Создать комментарий.", examples=[COMMENT_CREATE_EXAMPLE]
+        summary="Создать комментарий.",
+        examples=[COMMENT_CREATE_EXAMPLE],
+        responses={
+            status.HTTP_201_CREATED: COMMENT_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+        },
     ),
-    destroy=extend_schema(summary="Удалить комментарий."),
+    destroy=extend_schema(
+        summary="Удалить комментарий.",
+        responses={
+            status.HTTP_204_NO_CONTENT: None,
+            status.HTTP_403_FORBIDDEN: COMMENT_FORBIDDEN_403,
+        },
+    ),
 )
 class CommentCreateDestroyViewSet(
     mixins.CreateModelMixin,

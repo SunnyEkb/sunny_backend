@@ -1,7 +1,7 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
-from comments.serializers import CommentReadSerializer
+from comments.serializers import CommentCreateSerializer, CommentReadSerializer
 from core.choices import (
     APIResponses,
     ServicePlace,
@@ -182,6 +182,12 @@ COMMENT_CREATE_EXAMPLE = OpenApiExample(
     ],
 )
 
+COMMENT_CREATED_201: OpenApiResponse = OpenApiResponse(
+    response=CommentCreateSerializer,
+    description="Комментарий создан",
+    examples=[COMMENT_CREATE_EXAMPLE],
+)
+
 USER_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=UserCreateSerializer,
     description="Пользователь зарегистрирован",
@@ -338,10 +344,21 @@ SERVICE_NOT_PROVIDER_EXAMPLE = OpenApiExample(
     value={"detail": APIResponses.NO_PERMISSION.value},
 )
 
+COMMENT_NOT_AUTHOR_EXAMPLE = OpenApiExample(
+    name="Комментарий пытается удалить не его автор",
+    value={"detail": APIResponses.NO_PERMISSION.value},
+)
+
 SERVICE_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Только испольнитель может изменить информацию об услуге",
     examples=[SERVICE_NOT_PROVIDER_EXAMPLE],
+)
+
+COMMENT_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Только автор может удалить комментарий",
+    examples=[COMMENT_NOT_AUTHOR_EXAMPLE],
 )
 
 CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(
