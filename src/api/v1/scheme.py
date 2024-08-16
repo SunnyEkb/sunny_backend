@@ -1,6 +1,7 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
+from comments.serializers import CommentCreateSerializer, CommentReadSerializer
 from core.choices import (
     APIResponses,
     ServicePlace,
@@ -169,6 +170,24 @@ COMMENT_LIST_EXAMPLE = OpenApiExample(
     ],
 )
 
+COMMENT_CREATE_EXAMPLE = OpenApiExample(
+    name="Создать комментарий",
+    value=[
+        {
+            "content_type": 23,
+            "object_id": 2,
+            "rating": 5,
+            "feedback": "Супер",
+        },
+    ],
+)
+
+COMMENT_CREATED_201: OpenApiResponse = OpenApiResponse(
+    response=CommentCreateSerializer,
+    description="Комментарий создан",
+    examples=[COMMENT_CREATE_EXAMPLE],
+)
+
 USER_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=UserCreateSerializer,
     description="Пользователь зарегистрирован",
@@ -325,10 +344,21 @@ SERVICE_NOT_PROVIDER_EXAMPLE = OpenApiExample(
     value={"detail": APIResponses.NO_PERMISSION.value},
 )
 
+COMMENT_NOT_AUTHOR_EXAMPLE = OpenApiExample(
+    name="Комментарий пытается удалить не его автор",
+    value={"detail": APIResponses.NO_PERMISSION.value},
+)
+
 SERVICE_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Только испольнитель может изменить информацию об услуге",
     examples=[SERVICE_NOT_PROVIDER_EXAMPLE],
+)
+
+COMMENT_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Только автор может удалить комментарий",
+    examples=[COMMENT_NOT_AUTHOR_EXAMPLE],
 )
 
 CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(
@@ -406,4 +436,10 @@ CANT_ADD_PHOTO_400: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Превышен допустимый размер файла",
     examples=[MAX_FILE_SIZE_EXAMPLE],
+)
+
+COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
+    response=CommentReadSerializer,
+    description="Список комментариев",
+    examples=[COMMENT_LIST_EXAMPLE],
 )
