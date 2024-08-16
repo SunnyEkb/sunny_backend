@@ -55,7 +55,7 @@ class TestCommentsView(TestServiceFixtures):
         )
 
     def test_comment_create(self):
-        response = self.client_2.post(
+        response = self.client_4.post(
             reverse("comments_create-list"),
             data=self.comment_data,
         )
@@ -74,3 +74,27 @@ class TestCommentsView(TestServiceFixtures):
             data=self.comment_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_not_author_cant_delete_comment(self):
+        response = self.client_1.delete(
+            reverse(
+                "comments_create-detail", kwargs={"pk": self.comment_2.id}
+            ),
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_anon_user_cant_delete_comment(self):
+        response = self.anon_client.delete(
+            reverse(
+                "comments_create-detail", kwargs={"pk": self.comment_2.id}
+            ),
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_comment_delete(self):
+        response = self.client_2.delete(
+            reverse(
+                "comments_create-detail", kwargs={"pk": self.comment_2.id}
+            ),
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)

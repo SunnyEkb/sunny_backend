@@ -139,6 +139,9 @@ class TestServiceFixtures(TestUserFixtures):
         cls.comment_1 = CommentFactory(
             subject=cls.published_service, author=cls.user_1
         )
+        cls.comment_2 = CommentFactory(
+            subject=cls.published_service, author=cls.user_2
+        )
         cls.comment_data = {
             "content_type": ContentType.objects.get(
                 app_label="services", model="service"
