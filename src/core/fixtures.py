@@ -150,3 +150,4 @@ class TestServiceFixtures(TestUserFixtures):
             "rating": 2,
             "feedback": "Some feadback",
         }
+        cls.image_data = {"image": cls.uploaded}

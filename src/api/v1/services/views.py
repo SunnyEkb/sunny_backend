@@ -329,7 +329,7 @@ class ServiceViewSet(
         if len(images) >= 5:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.MAX_IMAGE_QUANTITY.value,
+                data=APIResponses.MAX_IMAGE_QUANTITY_EXEED.value,
             )
         if img_serializer.is_valid():
             img_serializer.save(service=service)

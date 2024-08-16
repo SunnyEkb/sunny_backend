@@ -8,7 +8,7 @@ from core.choices import APIResponses
 from users.serializers import UserReadSerializer
 
 
-class CommentImageCreateSerializer(serializers.Serializer):
+class CommentImageCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания фото к комментарию."""
 
     image = serializers.ImageField(

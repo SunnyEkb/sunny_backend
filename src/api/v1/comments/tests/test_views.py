@@ -98,3 +98,30 @@ class TestCommentsView(TestServiceFixtures):
             ),
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+
+    def test_add_image(self):
+        response = self.client_2.post(
+            reverse(
+                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
+            ),
+            data=self.image_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_anon_user_cant_add_image(self):
+        response = self.anon_client.post(
+            reverse(
+                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
+            ),
+            data=self.image_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_not_author_cant_add_image(self):
+        response = self.client_1.post(
+            reverse(
+                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
+            ),
+            data=self.image_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
