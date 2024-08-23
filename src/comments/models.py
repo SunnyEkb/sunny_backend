@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from core.choices import CommentStatus
 from core.db_utils import comment_image_path, validate_image
 from core.enums import Limits
 from core.models import TimeCreateUpdateModel
@@ -46,6 +47,11 @@ class Comment(TimeCreateUpdateModel):
     feedback = models.CharField(
         "отзыв", max_length=Limits.MAX_COMMENT_TEXT.value
     )
+    status = models.IntegerField(
+        "Статус комментария",
+        choices=CommentStatus.choices,
+        default=CommentStatus.DRAFT.value,
+    )
 
     cstm_mng = CommentManager()
     objects = models.Manager()
@@ -66,6 +72,16 @@ class Comment(TimeCreateUpdateModel):
             for image in images:
                 image.delete()
             delete_images_dir.delay(f"comments/{self.id}")
+
+    def to_mderation(self):
+        if self.status == CommentStatus.DRAFT.value:
+            self.status = CommentStatus.MODERATION.value
+            self.save()
+
+    def publish(self):
+        if self.status == CommentStatus.MODERATION.value:
+            self.status = CommentStatus.PUBLISHED.value
+            self.save()
 
 
 class CommentImage(models.Model):
