@@ -16,6 +16,11 @@ class ServicePlace(models.TextChoices):
     OPTIONS = "По выбору"
 
 
+class CommentStatus(models.IntegerChoices):
+    DRAFT = 0
+    PUBLISHED = 1
+
+
 class AdvertisementStatus(models.IntegerChoices):
     DRAFT = 0
     MODERATION = 1

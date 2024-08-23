@@ -1,9 +1,11 @@
 from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from core.choices import CommentStatus
 from core.db_utils import comment_image_path, validate_image
 from core.enums import Limits
 from core.models import TimeCreateUpdateModel
@@ -46,6 +48,11 @@ class Comment(TimeCreateUpdateModel):
     feedback = models.CharField(
         "отзыв", max_length=Limits.MAX_COMMENT_TEXT.value
     )
+    status = models.IntegerField(
+        "Статус комментария",
+        choices=CommentStatus.choices,
+        default=CommentStatus.DRAFT.value,
+    )
 
     cstm_mng = CommentManager()
     objects = models.Manager()
@@ -66,6 +73,21 @@ class Comment(TimeCreateUpdateModel):
             for image in images:
                 image.delete()
             delete_images_dir.delay(f"comments/{self.id}")
+
+    def publish(self):
+        if self.status == CommentStatus.DRAFT.value:
+            self.status = CommentStatus.PUBLISHED.value
+            self.save()
+
+    def get_admin_url(self, request) -> str:
+        """Возвращает ссылку на экземпляр модели в админке."""
+
+        domain = get_current_site(request).domain
+        app_name = self._meta.app_label
+        name: str = self.__class__.__name__.lower()
+        return "".join(
+            ["https://", domain, f"/admin/{app_name}/{name}/{self.id}/change/"]
+        )
 
 
 class CommentImage(models.Model):

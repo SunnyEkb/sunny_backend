@@ -1,3 +1,5 @@
+import sys
+
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import (
@@ -25,7 +27,8 @@ from comments.serializers import (
     CommentCreateSerializer,
     CommentReadSerializer,
 )
-from core.choices import APIResponses
+from core.choices import APIResponses, CommentStatus
+from core.utils import notify_about_moderation
 
 
 @extend_schema(
@@ -58,6 +61,7 @@ class CommentViewSet(
             return Comment.cstm_mng.filter(
                 content_type=cont_type_model,
                 object_id=obj.id,
+                status=CommentStatus.PUBLISHED.value,
             ).order_by("-created_at")
         return Comment.cstm_mng.none()
 
@@ -101,7 +105,9 @@ class CommentCreateDestroyViewSet(
         return [CommentAuthorOnly()]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        comment: Comment = serializer.save(author=self.request.user)
+        if "test" not in sys.argv:
+            notify_about_moderation(comment.get_admin_url(self.request))
 
     def destroy(self, request, *args, **kwargs):
         instance: Comment = self.get_object()

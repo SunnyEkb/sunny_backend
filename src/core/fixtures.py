@@ -8,7 +8,7 @@ from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
 from comments.tests.factories import CommentFactory
-from core.choices import AdvertisementStatus
+from core.choices import AdvertisementStatus, CommentStatus
 from services.tests.factories import ServiceFactory, TypeFactory
 from users.tests.factories import CustomUserFactory
 
@@ -137,10 +137,14 @@ class TestServiceFixtures(TestUserFixtures):
             "address": "Some Address",
         }
         cls.comment_1 = CommentFactory(
-            subject=cls.published_service, author=cls.user_1
+            subject=cls.published_service,
+            author=cls.user_1,
+            status=CommentStatus.PUBLISHED.value,
         )
         cls.comment_2 = CommentFactory(
-            subject=cls.published_service, author=cls.user_2
+            subject=cls.published_service,
+            author=cls.user_2,
+            status=CommentStatus.PUBLISHED.value,
         )
         cls.comment_data = {
             "content_type": ContentType.objects.get(
