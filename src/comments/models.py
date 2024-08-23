@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -73,15 +74,20 @@ class Comment(TimeCreateUpdateModel):
                 image.delete()
             delete_images_dir.delay(f"comments/{self.id}")
 
-    def to_mderation(self):
-        if self.status == CommentStatus.DRAFT.value:
-            self.status = CommentStatus.MODERATION.value
-            self.save()
-
     def publish(self):
-        if self.status == CommentStatus.MODERATION.value:
+        if self.status == CommentStatus.DRAFT.value:
             self.status = CommentStatus.PUBLISHED.value
             self.save()
+
+    def get_admin_url(self, request) -> str:
+        """Возвращает ссылку на экземпляр модели в админке."""
+
+        domain = get_current_site(request).domain
+        app_name = self._meta.app_label
+        name: str = self.__class__.__name__.lower()
+        return "".join(
+            ["https://", domain, f"/admin/{app_name}/{name}/{self.id}/change/"]
+        )
 
 
 class CommentImage(models.Model):

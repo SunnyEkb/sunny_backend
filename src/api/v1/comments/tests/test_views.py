@@ -3,6 +3,7 @@ from http import HTTPStatus
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
+from core.choices import CommentStatus
 from core.fixtures import TestServiceFixtures
 from comments.models import Comment
 
@@ -27,6 +28,7 @@ class TestCommentsView(TestServiceFixtures):
                         app_label="services", model="service"
                     ),
                     object_id=self.published_service.id,
+                    status=CommentStatus.PUBLISHED.value,
                 )
             ),
         )

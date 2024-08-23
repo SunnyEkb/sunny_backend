@@ -172,14 +172,12 @@ COMMENT_LIST_EXAMPLE = OpenApiExample(
 
 COMMENT_CREATE_EXAMPLE = OpenApiExample(
     name="Создать комментарий",
-    value=[
-        {
-            "content_type": 23,
-            "object_id": 2,
-            "rating": 5,
-            "feedback": "Супер",
-        },
-    ],
+    value={
+        "content_type": 23,
+        "object_id": 2,
+        "rating": 5,
+        "feedback": "Супер",
+    },
 )
 
 COMMENT_CREATED_201: OpenApiResponse = OpenApiResponse(
