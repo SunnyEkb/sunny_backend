@@ -263,3 +263,48 @@ class TestServivecesView(TestServiceFixtures):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_service_is_favorited(self):
+        response = self.client_2.get(
+            reverse(
+                "services-detail", kwargs={"pk": self.published_service.id}
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTrue(response.json()["is_favorited"])
+
+    def test_add_service_to_favorite(self):
+        response = self.client_4.post(
+            reverse(
+                "services-add_to_favorites",
+                kwargs={"pk": self.published_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_anon_user_cant_add_service_to_favorite(self):
+        response = self.anon_client.post(
+            reverse(
+                "services-add_to_favorites",
+                kwargs={"pk": self.published_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_cant_add_service_to_favorite_twice(self):
+        response = self.client_2.post(
+            reverse(
+                "services-add_to_favorites",
+                kwargs={"pk": self.published_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_provider_cant_add_service_to_favorite(self):
+        response = self.client_3.post(
+            reverse(
+                "services-add_to_favorites",
+                kwargs={"pk": self.published_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)

@@ -47,6 +47,12 @@ class APIResponses(models.TextChoices):
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     SERVICE_IS_CANCELLED = "Данная услуга отменена."
     SERVICE_IS_NOT_HIDDEN = "Данная услуга не скрыта."
+    SERVICE_IS_NOT_PUBLISHED = "Данная услуга не опубликована."
+    SERVICE_ALREADY_IN_FAVORITES = "Данная услуга уже в избраном."
+    SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE = (
+        "Автор не может добавить свою услугу в избранное."
+    )
+    SERVICE_ADDED_TO_FAVORITES = "Услуга добавлена в избранное."
     MAX_IMAGE_QUANTITY_EXEED = (
         f"Можно добавить только {Limits.MAX_FILE_QUANTITY} фотографий."
     )

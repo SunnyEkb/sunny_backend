@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -5,6 +6,7 @@ from rest_framework import serializers
 from api.v1.validators import validate_file_size
 from comments.serializers import CommentReadSerializer
 from services.models import Service, ServiceImage, Type
+from users.models import Favorites
 from users.serializers import UserReadSerializer
 
 
@@ -105,6 +107,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
     images = ServiceImageRetrieveSerializer(many=True, read_only=True)
     avg_rating = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
@@ -124,6 +127,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
             "avg_rating",
             "comments_quantity",
             "created_at",
+            "is_favorited",
         )
 
     def get_comments_quantity(self, obj):
@@ -135,6 +139,18 @@ class ServiceListSerializer(serializers.ModelSerializer):
         if rating is None:
             return None
         return round(rating, 1)
+
+    def get_is_favorited(self, obj):
+        user = self.context.get("request").user
+        if user.is_authenticated:
+            return Favorites.objects.filter(
+                user=user,
+                content_type=ContentType.objects.get(
+                    app_label="services", model="service"
+                ),
+                object_id=obj.id,
+            ).exists()
+        return False
 
 
 class ServiceRetrieveSerializer(ServiceListSerializer):
