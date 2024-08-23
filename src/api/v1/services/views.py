@@ -1,13 +1,14 @@
 import sys
 
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import mixins, viewsets, response, status
+from rest_framework import mixins, viewsets, permissions, response, status
 from rest_framework.decorators import action
 
 from core.choices import APIResponses, AdvertisementStatus
@@ -37,6 +38,7 @@ from api.v1.scheme import (
     UNAUTHORIZED_401,
 )
 from core.utils import notify_about_moderation
+from users.models import Favorites
 
 User = get_user_model()
 
@@ -149,6 +151,8 @@ class ServiceViewSet(
     def get_permissions(self):
         if self.action == "retrieve":
             return (ReadOnly(),)
+        if self.action == "add_to_favorites":
+            return (permissions.IsAuthenticated(),)
         return (OwnerOrReadOnly(),)
 
     def perform_create(self, serializer):
@@ -336,6 +340,58 @@ class ServiceViewSet(
             return response.Response(srvc_serializer.data)
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    @extend_schema(
+        summary="Добавить в избранное.",
+        methods=["POST"],
+        request=None,
+        responses={
+            status.HTTP_200_OK: SERVICE_LIST_OK_200,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="add-to-favorites",
+        url_name="add_to_favorites",
+        permission_classes=(permissions.IsAuthenticated),
+    )
+    def add_to_favorites(self, request, *args, **kwargs):
+        """Добавить в избранное."""
+
+        service: Service = self.get_object()
+        if service.status != AdvertisementStatus.PUBLISHED.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.SERVICE_IS_NOT_PUBLISHED.value,
+            )
+        if Favorites.objects.filter(
+            content_type=ContentType.objects.get(
+                app_label="services", model="service"
+            ),
+            object_id=service.id,
+            user=request.user,
+        ).exists():
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.SERVICE_ALREADY_IN_FAVORITES.value,
+            )
+        if service.provider == request.user:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE.value,
+            )
+        Favorites.objects.create(
+            content_type=ContentType.objects.get(
+                app_label="services", model="service"
+            ),
+            object_id=service.id,
+            user=request.user,
+        )
+        return response.Response(
+            status=status.HTTP_201_CREATED,
+            data=APIResponses.SERVICE_ADDED_TO_FAVORITES.value,
         )
 
 
