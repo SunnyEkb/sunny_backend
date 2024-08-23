@@ -172,14 +172,12 @@ COMMENT_LIST_EXAMPLE = OpenApiExample(
 
 COMMENT_CREATE_EXAMPLE = OpenApiExample(
     name="Создать комментарий",
-    value=[
-        {
-            "content_type": 23,
-            "object_id": 2,
-            "rating": 5,
-            "feedback": "Супер",
-        },
-    ],
+    value={
+        "content_type": 23,
+        "object_id": 2,
+        "rating": 5,
+        "feedback": "Супер",
+    },
 )
 
 COMMENT_CREATED_201: OpenApiResponse = OpenApiResponse(
@@ -284,6 +282,7 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "avg_rating": 4.1,
         "comments_quantity": 15,
         "created_at": "2024-06-20T06:25:52.449498Z",
+        "is_favorited": False,
     },
 )
 
@@ -390,6 +389,26 @@ CANT_CANCELL_SERVICE_EXAMPLE = OpenApiExample(
     value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE.value},
 )
 
+CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE = OpenApiExample(
+    name="Услуга не опубликована",
+    value={"detail": APIResponses.SERVICE_IS_NOT_PUBLISHED.value},
+)
+
+PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE = OpenApiExample(
+    name="Лицо, оказывающее услугу, не может добавить её в избранное",
+    value={"detail": APIResponses.SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE.value},
+)
+
+SERVICE_ALREADY_IN_FAVORITES_EXAMPLE = OpenApiExample(
+    name="Услуга уже в избранном",
+    value={"detail": APIResponses.SERVICE_ALREADY_IN_FAVORITES.value},
+)
+
+SERVICE_ADDED_TO_FAVORITES_EXAMPLE = OpenApiExample(
+    name="Услуга добавлена в избранное",
+    value={"detail": APIResponses.SERVICE_ADDED_TO_FAVORITES.value},
+)
+
 CANT_CANCELL_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга не может быть отменена",
@@ -444,4 +463,22 @@ COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     response=CommentReadSerializer,
     description="Список комментариев",
     examples=[COMMENT_LIST_EXAMPLE],
+)
+
+CANT_ADD_SERVICE_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга не может быть добавлена в Избранное",
+    examples=[
+        CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE,
+        PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE,
+        SERVICE_ALREADY_IN_FAVORITES_EXAMPLE,
+    ],
+)
+
+SERVICE_ADDED_TO_FAVORITES_201: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга добавлена в Избранное",
+    examples=[
+        SERVICE_ADDED_TO_FAVORITES_EXAMPLE,
+    ],
 )

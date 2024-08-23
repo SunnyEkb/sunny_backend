@@ -2,7 +2,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib import admin
 
 from users.forms import UserChangeForm, UserCreationForm
-from users.models import CustomUser
+from users.models import CustomUser, Favorites
 
 
 @admin.register(CustomUser)
@@ -39,3 +39,18 @@ class UserAdmin(UserAdmin):
     list_filter = ["role", "is_active"]
     search_fields = ["email"]
     ordering = ["email"]
+
+
+@admin.register(Favorites)
+class FavoritesAdmin(admin.ModelAdmin):
+    """
+    Отображение модели избранное в админке.
+    """
+
+    list_display = [
+        "user",
+        "content_type",
+        "object_id",
+    ]
+    list_filter = ["content_type"]
+    search_fields = ["user", "object_id"]

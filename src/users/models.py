@@ -1,4 +1,9 @@
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey,
+    GenericRelation,
+)
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -41,6 +46,7 @@ class CustomUser(AbstractUser):
         default=Role.USER,
         max_length=Limits.MAX_LENGTH_USER_ROLE.value,
     )
+    favorites = GenericRelation("Favorites")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ()
@@ -68,3 +74,34 @@ class CustomUser(AbstractUser):
 
     def get_group_id(self):
         return "user_{0}_notifications".format(self.id)
+
+
+class Favorites(models.Model):
+    """Избранное."""
+
+    limit = models.Q(app_label="services", model="service") | models.Q(
+        app_label="ads", model="ad"
+    )
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        verbose_name="Пользователь",
+        related_name="favorites",
+    )
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        verbose_name="Что в избранном",
+        limit_choices_to=limit,
+    )
+    object_id = models.PositiveIntegerField("ID объекта")
+    subject = GenericForeignKey("content_type", "object_id")
+
+    class Meta:
+        verbose_name = "Избранное"
+        verbose_name_plural = "Избранное"
+        unique_together = ("user", "content_type", "object_id")
+        ordering = ["user", "content_type"]
+
+    def __str__(self) -> str:
+        return f"Избранное {self.user}"

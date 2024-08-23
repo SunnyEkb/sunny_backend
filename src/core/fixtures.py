@@ -8,8 +8,9 @@ from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
 from comments.tests.factories import CommentFactory
-from core.choices import AdvertisementStatus
+from core.choices import AdvertisementStatus, CommentStatus
 from services.tests.factories import ServiceFactory, TypeFactory
+from users.models import Favorites
 from users.tests.factories import CustomUserFactory
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -137,10 +138,14 @@ class TestServiceFixtures(TestUserFixtures):
             "address": "Some Address",
         }
         cls.comment_1 = CommentFactory(
-            subject=cls.published_service, author=cls.user_1
+            subject=cls.published_service,
+            author=cls.user_1,
+            status=CommentStatus.PUBLISHED.value,
         )
         cls.comment_2 = CommentFactory(
-            subject=cls.published_service, author=cls.user_2
+            subject=cls.published_service,
+            author=cls.user_2,
+            status=CommentStatus.PUBLISHED.value,
         )
         cls.comment_data = {
             "content_type": ContentType.objects.get(
@@ -151,3 +156,10 @@ class TestServiceFixtures(TestUserFixtures):
             "feedback": "Some feadback",
         }
         cls.image_data = {"image": cls.uploaded}
+        Favorites.objects.create(
+            user=cls.user_2,
+            object_id=cls.published_service.id,
+            content_type=ContentType.objects.get(
+                app_label="services", model="service"
+            ),
+        )
