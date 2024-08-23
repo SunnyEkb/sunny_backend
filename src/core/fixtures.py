@@ -10,6 +10,7 @@ from rest_framework.test import APIClient, APITestCase
 from comments.tests.factories import CommentFactory
 from core.choices import AdvertisementStatus, CommentStatus
 from services.tests.factories import ServiceFactory, TypeFactory
+from users.models import Favorites
 from users.tests.factories import CustomUserFactory
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
@@ -155,3 +156,10 @@ class TestServiceFixtures(TestUserFixtures):
             "feedback": "Some feadback",
         }
         cls.image_data = {"image": cls.uploaded}
+        Favorites.objects.create(
+            user=cls.user_2,
+            object_id=cls.published_service.id,
+            content_type=ContentType.objects.get(
+                app_label="services", model="service"
+            ),
+        )

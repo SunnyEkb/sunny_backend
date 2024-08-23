@@ -282,6 +282,7 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "avg_rating": 4.1,
         "comments_quantity": 15,
         "created_at": "2024-06-20T06:25:52.449498Z",
+        "is_favorited": False,
     },
 )
 

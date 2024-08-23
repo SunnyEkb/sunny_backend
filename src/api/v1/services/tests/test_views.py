@@ -263,3 +263,12 @@ class TestServivecesView(TestServiceFixtures):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_service_is_favorited(self):
+        response = self.client_2.get(
+            reverse(
+                "services-detail", kwargs={"pk": self.published_service.id}
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTrue(response.json()["is_favorited"])
