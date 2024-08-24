@@ -26,6 +26,7 @@ from api.v1.scheme import (
     CANT_ADD_PHOTO_400,
     CANT_ADD_PHOTO_406,
     CANT_ADD_SERVICE_TO_FAVORITES_406,
+    CANT_DELETE_SERVICE_FROM_FAVORITES_406,
     CANT_CANCELL_SERVICE_406,
     CANT_DELETE_SERVICE_406,
     CANT_HIDE_SERVICE_406,
@@ -35,6 +36,7 @@ from api.v1.scheme import (
     SERVICE_LIST_OK_200,
     SERVICE_FORBIDDEN_403,
     SERVICE_ADDED_TO_FAVORITES_201,
+    SERVICE_DELETED_FROM_FAVORITES_204,
     TYPES_GET_OK_200,
     TYPE_LIST_EXAMPLE,
     UNAUTHORIZED_401,
@@ -154,7 +156,7 @@ class ServiceViewSet(
     def get_permissions(self):
         if self.action == "retrieve":
             return (ReadOnly(),)
-        if self.action == "add_to_favorites":
+        if self.action in ["add_to_favorites", "delete_from_favorites"]:
             return (permissions.IsAuthenticated(),)
         return (OwnerOrReadOnly(),)
 
@@ -402,6 +404,52 @@ class ServiceViewSet(
         return response.Response(
             status=status.HTTP_201_CREATED,
             data=APIResponses.SERVICE_ADDED_TO_FAVORITES.value,
+        )
+
+    @extend_schema(
+        summary="Удалить из избранного.",
+        methods=["POST"],
+        request=None,
+        responses={
+            status.HTTP_204_NO_CONTENT: SERVICE_DELETED_FROM_FAVORITES_204,
+            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                CANT_DELETE_SERVICE_FROM_FAVORITES_406
+            ),
+        },
+    )
+    @action(
+        detail=True,
+        methods=("delete",),
+        url_path="delete-from-favorites",
+        url_name="delete_from_favorites",
+        permission_classes=(permissions.IsAuthenticated),
+    )
+    def delete_from_favorites(self, request, *args, **kwargs):
+        """Удалить из избранного."""
+
+        service: Service = self.get_object()
+        if not Favorites.objects.filter(
+            content_type=ContentType.objects.get(
+                app_label="services", model="service"
+            ),
+            object_id=service.id,
+            user=request.user,
+        ).exists():
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.SERVICE_NOT_IN_FAVORITES.value,
+            )
+        Favorites.objects.get(
+            content_type=ContentType.objects.get(
+                app_label="services", model="service"
+            ),
+            object_id=service.id,
+            user=request.user,
+        ).delete()
+        return response.Response(
+            status=status.HTTP_204_NO_CONTENT,
+            data=APIResponses.SERVICE_DELETED_FROM_FAVORITES.value,
         )
 
 
