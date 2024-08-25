@@ -404,9 +404,19 @@ SERVICE_ALREADY_IN_FAVORITES_EXAMPLE = OpenApiExample(
     value={"detail": APIResponses.SERVICE_ALREADY_IN_FAVORITES.value},
 )
 
+SERVICE_NOT_IN_FAVORITES_EXAMPLE = OpenApiExample(
+    name="Услуга не в избранном",
+    value={"detail": APIResponses.SERVICE_NOT_IN_FAVORITES.value},
+)
+
 SERVICE_ADDED_TO_FAVORITES_EXAMPLE = OpenApiExample(
     name="Услуга добавлена в избранное",
     value={"detail": APIResponses.SERVICE_ADDED_TO_FAVORITES.value},
+)
+
+SERVICE_DELETED_FROM_FAVORITES_EXAMPLE = OpenApiExample(
+    name="Услуга удалена из избранного",
+    value={"detail": APIResponses.SERVICE_DELETED_FROM_FAVORITES.value},
 )
 
 CANT_CANCELL_SERVICE_406: OpenApiResponse = OpenApiResponse(
@@ -475,10 +485,22 @@ CANT_ADD_SERVICE_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     ],
 )
 
+CANT_DELETE_SERVICE_FROM_FAVORITES_406: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга не в Избранном",
+    examples=[SERVICE_NOT_IN_FAVORITES_EXAMPLE],
+)
+
 SERVICE_ADDED_TO_FAVORITES_201: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга добавлена в Избранное",
+    examples=[SERVICE_ADDED_TO_FAVORITES_EXAMPLE],
+)
+
+SERVICE_DELETED_FROM_FAVORITES_204: OpenApiResponse = OpenApiResponse(
+    response=NonErrorFieldSerializer,
+    description="Услуга удалена из в Избранного",
     examples=[
-        SERVICE_ADDED_TO_FAVORITES_EXAMPLE,
+        SERVICE_DELETED_FROM_FAVORITES_EXAMPLE,
     ],
 )
