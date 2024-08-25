@@ -308,3 +308,30 @@ class TestServivecesView(TestServiceFixtures):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_delete_service_from_favorite(self):
+        response = self.client_2.delete(
+            reverse(
+                "services-delete_from_favorites",
+                kwargs={"pk": self.published_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+
+    def test_anon_client_cant_delete_service_from_favorite(self):
+        response = self.anon_client.delete(
+            reverse(
+                "services-delete_from_favorites",
+                kwargs={"pk": self.published_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_cant_delete_not_favorite_service_from_favorite(self):
+        response = self.client_1.delete(
+            reverse(
+                "services-delete_from_favorites",
+                kwargs={"pk": self.published_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
