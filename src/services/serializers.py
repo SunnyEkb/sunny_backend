@@ -141,15 +141,18 @@ class ServiceListSerializer(serializers.ModelSerializer):
         return round(rating, 1)
 
     def get_is_favorited(self, obj):
-        user = self.context.get("request").user
-        if user.is_authenticated:
-            return Favorites.objects.filter(
-                user=user,
-                content_type=ContentType.objects.get(
-                    app_label="services", model="service"
-                ),
-                object_id=obj.id,
-            ).exists()
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+            if user.is_authenticated:
+                return Favorites.objects.filter(
+                    user=user,
+                    content_type=ContentType.objects.get(
+                        app_label="services", model="service"
+                    ),
+                    object_id=obj.id,
+                ).exists()
         return False
 
 

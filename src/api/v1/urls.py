@@ -1,5 +1,11 @@
 from django.urls import include, path, re_path
+from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+from api.v1.views.favorite_views import FavoritesViewSet
+
+api_v1_router = DefaultRouter()
+api_v1_router.register("favorite", FavoritesViewSet, "favorite")
 
 urlpatterns = [
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -13,4 +19,5 @@ urlpatterns = [
     path("", include("api.v1.services.urls")),
     path("", include("api.v1.ads.urls")),
     path("", include("api.v1.comments.urls")),
+    path("", include(api_v1_router.urls)),
 ]

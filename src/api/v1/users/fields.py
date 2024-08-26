@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from comments.models import Comment
-from comments.serializers import CommentImageRetrieveSerializer
+from services.models import Service
+from services.serializers import ServiceListSerializer
 from core.choices import SystemMessages
 
 
@@ -11,8 +11,8 @@ class FavoriteObjectRelatedField(serializers.RelatedField):
     """
 
     def to_representation(self, value):
-        if isinstance(value, Comment):
-            serializer = CommentImageRetrieveSerializer(value)
+        if isinstance(value, Service):
+            serializer = ServiceListSerializer(value, context=self.context)
         else:
             raise Exception(SystemMessages.SERIALIZER_NOT_FOUND_ERROR.value)
         return serializer.data
