@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from services.models import Service
-from services.serializers import ServiceListSerializer
+from api.v1.serializers.services_serializers import ServiceListSerializer
 from core.choices import SystemMessages
 
 

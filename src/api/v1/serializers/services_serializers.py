@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.v1.validators import validate_file_size
-from comments.serializers import CommentReadSerializer
+from api.v1.serializers import comments_serializers
 from services.models import Service, ServiceImage, Type
 from users.models import Favorites
 from users.serializers import UserReadSerializer
@@ -159,7 +159,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
 class ServiceRetrieveSerializer(ServiceListSerializer):
     """Сериализатор для получения данных о конкретной услуге."""
 
-    comments = CommentReadSerializer(many=True)
+    comments = comments_serializers.CommentReadSerializer(many=True)
 
     class Meta(ServiceListSerializer.Meta):
         fields = ServiceListSerializer.Meta.fields + ("comments",)

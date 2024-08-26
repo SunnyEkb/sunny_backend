@@ -11,7 +11,7 @@ from rest_framework.decorators import action
 
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import CommentAuthorOnly
-from api.v1.scheme import (
+from api.v1.schemes import (
     CANT_ADD_PHOTO_400,
     CANT_ADD_PHOTO_406,
     COMMENT_CREATE_EXAMPLE,
@@ -21,12 +21,12 @@ from api.v1.scheme import (
     COMMENT_FORBIDDEN_403,
     UNAUTHORIZED_401,
 )
-from comments.models import Comment
-from comments.serializers import (
+from api.v1.serializers.comments_serializers import (
     CommentImageCreateSerializer,
     CommentCreateSerializer,
     CommentReadSerializer,
 )
+from comments.models import Comment
 from core.choices import APIResponses, CommentStatus
 from core.utils import notify_about_moderation
 

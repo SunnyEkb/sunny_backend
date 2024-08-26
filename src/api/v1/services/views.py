@@ -13,7 +13,7 @@ from rest_framework.decorators import action
 
 from core.choices import APIResponses, AdvertisementStatus
 from services.models import Service, ServiceImage, Type
-from services.serializers import (
+from api.v1.serializers.services_serializers import (
     ServiceImageCreateSerializer,
     ServiceCreateUpdateSerializer,
     ServiceListSerializer,
@@ -22,7 +22,7 @@ from services.serializers import (
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1.services.filters import ServiceFilter, TypeFilter
-from api.v1.scheme import (
+from api.v1.schemes import (
     CANT_ADD_PHOTO_400,
     CANT_ADD_PHOTO_406,
     CANT_ADD_SERVICE_TO_FAVORITES_406,

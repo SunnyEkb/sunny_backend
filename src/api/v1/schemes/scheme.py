@@ -1,7 +1,7 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 from drf_spectacular.utils import OpenApiExample, OpenApiResponse
 
-from comments.serializers import CommentCreateSerializer, CommentReadSerializer
+from api.v1.serializers import comments_serializers
 from core.choices import (
     APIResponses,
     ServicePlace,
@@ -13,7 +13,7 @@ from users.serializers import (
     UserReadSerializer,
     UserUpdateSerializer,
 )
-from services.serializers import (
+from api.v1.serializers.services_serializers import (
     ServiceCreateUpdateSerializer,
     ServiceListSerializer,
     TypeGetSerializer,
@@ -181,7 +181,7 @@ COMMENT_CREATE_EXAMPLE = OpenApiExample(
 )
 
 COMMENT_CREATED_201: OpenApiResponse = OpenApiResponse(
-    response=CommentCreateSerializer,
+    response=comments_serializers.CommentCreateSerializer,
     description="Комментарий создан",
     examples=[COMMENT_CREATE_EXAMPLE],
 )
@@ -470,7 +470,7 @@ CANT_ADD_PHOTO_400: OpenApiResponse = OpenApiResponse(
 )
 
 COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
-    response=CommentReadSerializer,
+    response=comments_serializers.CommentReadSerializer,
     description="Список комментариев",
     examples=[COMMENT_LIST_EXAMPLE],
 )
