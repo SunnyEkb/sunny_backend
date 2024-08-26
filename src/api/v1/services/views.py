@@ -11,6 +11,7 @@ from drf_spectacular.utils import (
 from rest_framework import mixins, viewsets, permissions, response, status
 from rest_framework.decorators import action
 
+from api.v1.filters import ServiceFilter, TypeFilter
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1.schemes import (
@@ -38,7 +39,6 @@ from api.v1.serializers import (
     ServiceListSerializer,
     TypeGetSerializer,
 )
-from api.v1.services.filters import ServiceFilter, TypeFilter
 from core.choices import APIResponses, AdvertisementStatus
 from core.utils import notify_about_moderation
 from services.models import Service, ServiceImage, Type
