@@ -71,11 +71,12 @@ class APIResponses(models.TextChoices):
 
 class SystemMessages(models.TextChoices):
     TELEGRAM_ERROR = "Сообщение об ошибке не отпралено в телеграм."
+    SERIALIZER_NOT_FOUND_ERROR = "Не найден тип объекта Избранного."
 
 
 class Notifications(models.TextChoices):
     WELCOME = (
-        "{0}, Приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
+        "{0}, приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
     )
 
 
