@@ -11,17 +11,8 @@ from drf_spectacular.utils import (
 from rest_framework import mixins, viewsets, permissions, response, status
 from rest_framework.decorators import action
 
-from core.choices import APIResponses, AdvertisementStatus
-from services.models import Service, ServiceImage, Type
-from api.v1.serializers.services_serializers import (
-    ServiceImageCreateSerializer,
-    ServiceCreateUpdateSerializer,
-    ServiceListSerializer,
-    TypeGetSerializer,
-)
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
-from api.v1.services.filters import ServiceFilter, TypeFilter
 from api.v1.schemes import (
     CANT_ADD_PHOTO_400,
     CANT_ADD_PHOTO_406,
@@ -41,7 +32,16 @@ from api.v1.schemes import (
     TYPE_LIST_EXAMPLE,
     UNAUTHORIZED_401,
 )
+from api.v1.serializers import (
+    ServiceImageCreateSerializer,
+    ServiceCreateUpdateSerializer,
+    ServiceListSerializer,
+    TypeGetSerializer,
+)
+from api.v1.services.filters import ServiceFilter, TypeFilter
+from core.choices import APIResponses, AdvertisementStatus
 from core.utils import notify_about_moderation
+from services.models import Service, ServiceImage, Type
 from users.models import Favorites
 
 User = get_user_model()

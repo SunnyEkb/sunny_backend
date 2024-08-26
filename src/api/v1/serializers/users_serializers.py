@@ -10,6 +10,7 @@ from rest_framework.serializers import (
 )
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+
 from core.choices import APIResponses
 
 User = get_user_model()

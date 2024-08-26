@@ -21,7 +21,7 @@ from api.v1.schemes import (
     COMMENT_FORBIDDEN_403,
     UNAUTHORIZED_401,
 )
-from api.v1.serializers.comments_serializers import (
+from api.v1.serializers import (
     CommentImageCreateSerializer,
     CommentCreateSerializer,
     CommentReadSerializer,

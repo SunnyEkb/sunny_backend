@@ -32,13 +32,7 @@ from api.v1.schemes import (
     USER_BAD_REQUEST_400,
     UNAUTHORIZED_401,
 )
-from api.v1.users.utils import (
-    get_tokens_for_user,
-    set_access_cookie,
-    set_refresh_cookie,
-)
-from core.choices import APIResponses
-from users.serializers import (
+from api.v1.serializers import (
     CookieTokenRefreshSerializer,
     LoginSerializer,
     UserCreateSerializer,
@@ -46,6 +40,12 @@ from users.serializers import (
     UserUpdateSerializer,
     PasswordChangeSerializer,
 )
+from api.v1.users.utils import (
+    get_tokens_for_user,
+    set_access_cookie,
+    set_refresh_cookie,
+)
+from core.choices import APIResponses
 
 User = get_user_model()
 

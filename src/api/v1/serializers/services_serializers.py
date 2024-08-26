@@ -3,11 +3,10 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
+from api.v1.serializers import CommentReadSerializer, UserReadSerializer
 from api.v1.validators import validate_file_size
-from api.v1.serializers import comments_serializers
 from services.models import Service, ServiceImage, Type
 from users.models import Favorites
-from users.serializers import UserReadSerializer
 
 
 class TypeGetSerializer(serializers.ModelSerializer):
@@ -159,7 +158,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
 class ServiceRetrieveSerializer(ServiceListSerializer):
     """Сериализатор для получения данных о конкретной услуге."""
 
-    comments = comments_serializers.CommentReadSerializer(many=True)
+    comments = CommentReadSerializer(many=True)
 
     class Meta(ServiceListSerializer.Meta):
         fields = ServiceListSerializer.Meta.fields + ("comments",)

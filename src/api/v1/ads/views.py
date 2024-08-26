@@ -11,7 +11,7 @@ from rest_framework import mixins, response, viewsets
 from ads.models import Ad, Category
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
-from api.v1.serializers.ads_serializers import (
+from api.v1.serializers import (
     AdRetrieveSerializer,
     AdCreateUpdateSerializer,
     CategorySerializer,
