@@ -8,6 +8,9 @@ from api.v1.views import (
     CommentCreateDestroyViewSet,
     CommentViewSet,
     FavoritesViewSet,
+    ServiceImageViewSet,
+    ServiceViewSet,
+    TypeViewSet,
 )
 
 api_v1_router = DefaultRouter()
@@ -24,6 +27,11 @@ api_v1_router.register(
     basename="comments",
 )
 api_v1_router.register("favorite", FavoritesViewSet, "favorite")
+api_v1_router.register("types", TypeViewSet, basename="types")
+api_v1_router.register("services", ServiceViewSet, basename="services")
+api_v1_router.register(
+    "serviceimage", ServiceImageViewSet, basename="serviceimage"
+)
 
 urlpatterns = [
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -34,6 +42,5 @@ urlpatterns = [
         r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
     ),
     path("", include("api.v1.users.urls")),
-    path("", include("api.v1.services.urls")),
     path("", include(api_v1_router.urls)),
 ]
