@@ -40,7 +40,7 @@ from api.v1.serializers import (
     UserUpdateSerializer,
     PasswordChangeSerializer,
 )
-from api.v1.users.utils import (
+from api.v1.utils import (
     get_tokens_for_user,
     set_access_cookie,
     set_refresh_cookie,

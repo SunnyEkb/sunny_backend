@@ -20,7 +20,7 @@ from core.choices import (
 
 
 class CookieTokenScheme(OpenApiAuthenticationExtension):
-    target_class = "api.v1.users.auth.CustomAuthentication"
+    target_class = "api.v1.auth.CustomAuthentication"
     name = "CookieTokenAuth"
 
     def get_security_definition(self, auto_schema):

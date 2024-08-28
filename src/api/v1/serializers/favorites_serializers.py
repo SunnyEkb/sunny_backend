@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.v1.users.fields import FavoriteObjectRelatedField
+from api.v1.serializers.fields import FavoriteObjectRelatedField
 from users.models import Favorites
 
 
