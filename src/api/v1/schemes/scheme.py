@@ -1,6 +1,7 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
-from drf_spectacular.utils import OpenApiExample, OpenApiResponse
+from drf_spectacular.utils import OpenApiResponse
 
+from api.v1.schemes import examples
 from api.v1.serializers import (
     CommentReadSerializer,
     CommentCreateSerializer,
@@ -11,11 +12,6 @@ from api.v1.serializers import (
     UserCreateSerializer,
     UserReadSerializer,
     UserUpdateSerializer,
-)
-from core.choices import (
-    AdvertisementStatus,
-    APIResponses,
-    ServicePlace,
 )
 
 
@@ -32,474 +28,200 @@ class CookieTokenScheme(OpenApiAuthenticationExtension):
         }
 
 
-USER_CREATE_EXAMPLE = OpenApiExample(
-    name="Данные для регистрации",
-    value={
-        "username": "some_user",
-        "email": "example@example.com",
-        "phone": "+79000000000",
-        "password": "your-password",
-        "confirmation": "your-password",
-    },
-)
-
-USER_CREATED_EXAMPLE = OpenApiExample(
-    name="Пользователь зарегистрирован",
-    value={"email": "example@example.com"},
-)
-
-USER_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Изменение данных о пользователе",
-    value={
-        "username": "Some_username",
-        "first_name": "Some_name",
-        "last_name": "Some_name",
-        "phone": "+79000000000",
-    },
-)
-
-USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Частичное изменение данных о пользователе",
-    value={"last_name": "Some_name"},
-)
-
-
-USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Изменение данных о пользователе",
-    value={
-        "username": "Some_username",
-        "email": "example@example.com",
-        "phone": "+79000000000",
-        "first_name": "Some_name",
-        "last_name": "Some_name",
-        "role": "user",
-    },
-)
-
-LOGIN_EXAMPLE = OpenApiExample(
-    name="Данные для входа в систему.",
-    value={"email": "foo@bar.bar", "password": "password"},
-)
-
-LOGIN_SUCCESS_EXAMPLE = OpenApiExample(
-    name="Пользователь вошел в систему",
-    value={"Success": APIResponses.SUCCESS_LOGIN.value},
-)
-
-LOGOUT_SUCCESS_EXAMPLE = OpenApiExample(
-    name="Пользователь вышел из системы",
-    value={"Success": APIResponses.SUCCESS_LOGOUT.value},
-)
-
-LOGIN_INVALID_CREDENTIALS_EXAMPLE = OpenApiExample(
-    name="Неверные данные для входа",
-    value={"detail": APIResponses.INVALID_CREDENTIALS.value},
-)
-
-LOGIN_INACTIVE_EXAMPLE = OpenApiExample(
-    name="Неактивный аккаунт",
-    value={"No active": APIResponses.ACCOUNT_IS_INACTIVE.value},
-)
-
-UNAUTHORIZED_EXAMPLE = OpenApiExample(
-    name="Пользователь не авторизован",
-    value={"detail": APIResponses.UNAUTHORIZED.value},
-)
-
-PASSWORD_DO_NOT_MATCH_EXAMPLE = OpenApiExample(
-    name="Пароль не соответствует подтверждению",
-    value={"non_field_errors": [APIResponses.PASSWORD_DO_NOT_MATCH.value]},
-)
-
-PASSWORD_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Пример изменения пароля пользователя.",
-    value={
-        "current_password": "superPuper",
-        "new_password": "superPuper2",
-        "confirmation": "superPuper2",
-    },
-)
-
-PASSWORD_CHANGED_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Пароль обновлен",
-    value={"Success": APIResponses.PASSWORD_CHANGED.value},
-)
-
-REFRESH_SUCCESS_EXAMPLE = OpenApiExample(
-    name="Токен успешно обновлен",
-    value={"Success": APIResponses.SUCCESS_TOKEN_REFRESH.value},
-)
-
-WRONG_EMAIL_EXAMPLE = OpenApiExample(
-    name="Неверная электронаая почта",
-    value={"email": ["Введите правильный адрес электронной почты."]},
-)
-
-TYPE_LIST_EXAMPLE = OpenApiExample(
-    name="Список типов услуг",
-    value=[
-        {
-            "id": 1,
-            "title": "Красота и здоровье",
-            "subcategories": {
-                "id": 3,
-                "title": "Массаж",
-                "subcategories": {
-                    "id": 4,
-                    "title": "Массаж воротниковой зоны",
-                },
-            },
-        },
-        {"id": 2, "title": "Ремонт"},
-    ],
-)
-
-COMMENT_LIST_EXAMPLE = OpenApiExample(
-    name="Список комментариев",
-    value=[
-        {
-            "content_type": 23,
-            "object_id": 2,
-            "rating": 5,
-            "feedback": "Супер",
-            "id": 1,
-            "author": USER_INFO_EXAMPLE.value,
-            "images": [{"id": 1, "image": "string"}],
-        },
-    ],
-)
-
-COMMENT_CREATE_EXAMPLE = OpenApiExample(
-    name="Создать комментарий",
-    value={
-        "content_type": 23,
-        "object_id": 2,
-        "rating": 5,
-        "feedback": "Супер",
-    },
-)
-
 COMMENT_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=CommentCreateSerializer,
     description="Комментарий создан",
-    examples=[COMMENT_CREATE_EXAMPLE],
+    examples=[examples.COMMENT_CREATE_EXAMPLE],
 )
 
 USER_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=UserCreateSerializer,
     description="Пользователь зарегистрирован",
-    examples=[USER_CREATED_EXAMPLE],
+    examples=[examples.USER_CREATED_EXAMPLE],
 )
 
 USER_BAD_REQUEST_400: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Bad request",
-    examples=[PASSWORD_DO_NOT_MATCH_EXAMPLE, WRONG_EMAIL_EXAMPLE],
+    examples=[
+        examples.PASSWORD_DO_NOT_MATCH_EXAMPLE,
+        examples.WRONG_EMAIL_EXAMPLE,
+    ],
 )
 
 LOGIN_OK_200: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Пользователь вошел в систему",
-    examples=[LOGIN_SUCCESS_EXAMPLE],
+    examples=[examples.LOGIN_SUCCESS_EXAMPLE],
 )
 
 LOGIN_BADREQUEST_400: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Неверные учетные данные",
-    examples=[LOGIN_INVALID_CREDENTIALS_EXAMPLE],
+    examples=[examples.LOGIN_INVALID_CREDENTIALS_EXAMPLE],
 )
 
 LOGIN_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Пользователь неактивен",
-    examples=[LOGIN_INACTIVE_EXAMPLE, LOGIN_INVALID_CREDENTIALS_EXAMPLE],
+    examples=[
+        examples.LOGIN_INACTIVE_EXAMPLE,
+        examples.LOGIN_INVALID_CREDENTIALS_EXAMPLE,
+    ],
 )
 
 LOGOUT_OK_200: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Пользователь вышел из системы",
-    examples=[LOGOUT_SUCCESS_EXAMPLE],
+    examples=[examples.LOGOUT_SUCCESS_EXAMPLE],
 )
 
 UNAUTHORIZED_401: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Пользователь не авторизован",
-    examples=[UNAUTHORIZED_EXAMPLE],
+    examples=[examples.UNAUTHORIZED_EXAMPLE],
 )
 
 REFRESH_OK_200: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Токен обновлен",
-    examples=[REFRESH_SUCCESS_EXAMPLE],
+    examples=[examples.REFRESH_SUCCESS_EXAMPLE],
 )
 
 PASSWORD_CHANGED_OK_200: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Пароль обновлен",
-    examples=[PASSWORD_CHANGED_SUCCESS_EXAMPLE],
+    examples=[examples.PASSWORD_CHANGED_SUCCESS_EXAMPLE],
 )
 
 USER_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=UserReadSerializer,
     description="Данные пользователя",
-    examples=[USER_INFO_EXAMPLE],
+    examples=[examples.USER_INFO_EXAMPLE],
 )
 
 USER_PUT_OK_200: OpenApiResponse = OpenApiResponse(
     response=UserUpdateSerializer,
     description="Изменение данных пользователя",
-    examples=[USER_CHANGE_EXAMPLE],
+    examples=[examples.USER_CHANGE_EXAMPLE],
 )
 
 USER_PATCH_OK_200: OpenApiResponse = OpenApiResponse(
     response=UserUpdateSerializer,
     description="Частичное изменение данных пользователя",
-    examples=[USER_PART_CHANGE_EXAMPLE],
+    examples=[examples.USER_PART_CHANGE_EXAMPLE],
 )
 
 TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=TypeGetSerializer,
     description="Получение списка типов услуг",
-    examples=[TYPE_LIST_EXAMPLE],
-)
-
-SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Список услуг",
-    value={
-        "id": 1,
-        "provider": USER_INFO_EXAMPLE.value,
-        "title": "string",
-        "description": "string",
-        "experience": 50,
-        "place_of_provision": ServicePlace.OPTIONS.value,
-        "type": [1, 2, 3],
-        "price": {"маникюр": 500},
-        "status": AdvertisementStatus.DRAFT,
-        "images": [{"id": 1, "image": "string"}],
-        "address": "Lenina st, 8/13",
-        "salon_name": "Salon",
-        "avg_rating": 4.1,
-        "comments_quantity": 15,
-        "created_at": "2024-06-20T06:25:52.449498Z",
-        "is_favorited": False,
-    },
-)
-
-SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Информация об услуге",
-    value={
-        "id": 1,
-        "provider": USER_INFO_EXAMPLE.value,
-        "title": "string",
-        "description": "string",
-        "experience": 50,
-        "place_of_provision": ServicePlace.OPTIONS.value,
-        "type": [1, 2, 3],
-        "price": {"маникюр": 500},
-        "status": AdvertisementStatus.DRAFT,
-        "images": [{"id": 1, "image": "string"}],
-        "address": "Lenina st, 8/13",
-        "salon_name": "Salon",
-        "avg_rating": 4.1,
-        "comments_quantity": 15,
-        "created_at": "2024-06-20T06:25:52.449498Z",
-        "comments": COMMENT_LIST_EXAMPLE.value,
-    },
-)
-
-SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Создание услуге",
-    value={
-        "title": "string",
-        "description": "string",
-        "experience": 50,
-        "place_of_provision": ServicePlace.OPTIONS.value,
-        "type_id": 2,
-        "price": {"маникюр": 500},
-        "address": "Lenina st, 8/13",
-        "salon_name": "Salon",
-    },
+    examples=[examples.TYPE_LIST_EXAMPLE],
 )
 
 SERVICE_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     response=ServiceListSerializer,
     description="Получение списка услуг",
-    examples=[SERVICE_LIST_EXAMPLE],
+    examples=[examples.SERVICE_LIST_EXAMPLE],
 )
 
 SERVICE_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
     response=ServiceListSerializer,
     description="Получение информации об услуге",
-    examples=[SERVICE_RETRIEVE_EXAMPLE],
+    examples=[examples.SERVICE_RETRIEVE_EXAMPLE],
 )
 
 SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=ServiceCreateUpdateSerializer,
     description="Услуга содана",
-    examples=[SERVICE_CREATE_EXAMPLE],
-)
-
-SERVICE_NOT_PROVIDER_EXAMPLE = OpenApiExample(
-    name="Услугу пытается изменить не исполнитель",
-    value={"detail": APIResponses.NO_PERMISSION.value},
-)
-
-COMMENT_NOT_AUTHOR_EXAMPLE = OpenApiExample(
-    name="Комментарий пытается удалить не его автор",
-    value={"detail": APIResponses.NO_PERMISSION.value},
+    examples=[examples.SERVICE_CREATE_EXAMPLE],
 )
 
 SERVICE_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Только испольнитель может изменить информацию об услуге",
-    examples=[SERVICE_NOT_PROVIDER_EXAMPLE],
+    examples=[examples.SERVICE_NOT_PROVIDER_EXAMPLE],
 )
 
 COMMENT_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Только автор может удалить комментарий",
-    examples=[COMMENT_NOT_AUTHOR_EXAMPLE],
-)
-
-CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не может быть скрыта",
-    value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE.value},
+    examples=[examples.COMMENT_NOT_AUTHOR_EXAMPLE],
 )
 
 CANT_HIDE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Нельзя скрыть услугу",
-    examples=[CANT_HIDE_SERVICE_EXAMPLE],
-)
-
-CANT_DELETE_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не может быть удалена",
-    value={"detail": APIResponses.CAN_NOT_DELETE_SEVICE.value},
+    examples=[examples.CANT_HIDE_SERVICE_EXAMPLE],
 )
 
 CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга не может быть удалена",
-    examples=[CANT_DELETE_SERVICE_EXAMPLE],
-)
-
-CANT_CANCELL_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не может быть отменена",
-    value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE.value},
-)
-
-CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE = OpenApiExample(
-    name="Услуга не опубликована",
-    value={"detail": APIResponses.SERVICE_IS_NOT_PUBLISHED.value},
-)
-
-PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE = OpenApiExample(
-    name="Лицо, оказывающее услугу, не может добавить её в избранное",
-    value={"detail": APIResponses.SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE.value},
-)
-
-SERVICE_ALREADY_IN_FAVORITES_EXAMPLE = OpenApiExample(
-    name="Услуга уже в избранном",
-    value={"detail": APIResponses.SERVICE_ALREADY_IN_FAVORITES.value},
-)
-
-SERVICE_NOT_IN_FAVORITES_EXAMPLE = OpenApiExample(
-    name="Услуга не в избранном",
-    value={"detail": APIResponses.SERVICE_NOT_IN_FAVORITES.value},
-)
-
-SERVICE_ADDED_TO_FAVORITES_EXAMPLE = OpenApiExample(
-    name="Услуга добавлена в избранное",
-    value={"detail": APIResponses.SERVICE_ADDED_TO_FAVORITES.value},
-)
-
-SERVICE_DELETED_FROM_FAVORITES_EXAMPLE = OpenApiExample(
-    name="Услуга удалена из избранного",
-    value={"detail": APIResponses.SERVICE_DELETED_FROM_FAVORITES.value},
+    examples=[examples.CANT_DELETE_SERVICE_EXAMPLE],
 )
 
 CANT_CANCELL_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга не может быть отменена",
-    examples=[CANT_CANCELL_SERVICE_EXAMPLE],
-)
-
-CANT_MODERATE_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не может быть отправлена на модерацию",
-    value={"detail": APIResponses.SERVICE_IS_CANCELLED.value},
+    examples=[examples.CANT_CANCELL_SERVICE_EXAMPLE],
 )
 
 CANT_MODERATE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга не может быть отправлена на модерацию",
-    examples=[CANT_MODERATE_SERVICE_EXAMPLE],
-)
-
-CANT_PUBLISH_SERVICE_EXAMPLE = OpenApiExample(
-    name="Услуга не скрыта",
-    value={"detail": APIResponses.SERVICE_IS_NOT_HIDDEN.value},
+    examples=[examples.CANT_MODERATE_SERVICE_EXAMPLE],
 )
 
 CANT_PUBLISH_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга не скрыта",
-    examples=[CANT_PUBLISH_SERVICE_EXAMPLE],
-)
-
-CANT_ADD_PHOTO_EXAMPLE = OpenApiExample(
-    name="Превышено максимальное количество фотографий",
-    value={"detail": APIResponses.MAX_IMAGE_QUANTITY_EXEED.value},
+    examples=[examples.CANT_PUBLISH_SERVICE_EXAMPLE],
 )
 
 CANT_ADD_PHOTO_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Превышено максимальное количество фотографий",
-    examples=[CANT_ADD_PHOTO_EXAMPLE],
-)
-
-MAX_FILE_SIZE_EXAMPLE = OpenApiExample(
-    name="Превышен допустимый размер файла",
-    value={"detail": APIResponses.MAX_FILE_SIZE_EXEED.value},
+    examples=[examples.CANT_ADD_PHOTO_EXAMPLE],
 )
 
 CANT_ADD_PHOTO_400: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Превышен допустимый размер файла",
-    examples=[MAX_FILE_SIZE_EXAMPLE],
+    examples=[examples.MAX_FILE_SIZE_EXAMPLE],
 )
 
 COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     response=CommentReadSerializer,
     description="Список комментариев",
-    examples=[COMMENT_LIST_EXAMPLE],
+    examples=[examples.COMMENT_LIST_EXAMPLE],
 )
 
 CANT_ADD_SERVICE_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга не может быть добавлена в Избранное",
     examples=[
-        CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE,
-        PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE,
-        SERVICE_ALREADY_IN_FAVORITES_EXAMPLE,
+        examples.CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE,
+        examples.PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE,
+        examples.SERVICE_ALREADY_IN_FAVORITES_EXAMPLE,
     ],
 )
 
 CANT_DELETE_SERVICE_FROM_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга не в Избранном",
-    examples=[SERVICE_NOT_IN_FAVORITES_EXAMPLE],
+    examples=[examples.SERVICE_NOT_IN_FAVORITES_EXAMPLE],
 )
 
 SERVICE_ADDED_TO_FAVORITES_201: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга добавлена в Избранное",
-    examples=[SERVICE_ADDED_TO_FAVORITES_EXAMPLE],
+    examples=[examples.SERVICE_ADDED_TO_FAVORITES_EXAMPLE],
 )
 
 SERVICE_DELETED_FROM_FAVORITES_204: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
     description="Услуга удалена из в Избранного",
     examples=[
-        SERVICE_DELETED_FROM_FAVORITES_EXAMPLE,
+        examples.SERVICE_DELETED_FROM_FAVORITES_EXAMPLE,
     ],
 )

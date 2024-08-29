@@ -15,23 +15,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from api.v1.permissions import SelfOnly
-from api.v1.schemes import (
-    LOGIN_EXAMPLE,
-    USER_CREATE_EXAMPLE,
-    USER_PART_CHANGE_EXAMPLE,
-    USER_PUT_OK_200,
-    USER_PATCH_OK_200,
-    LOGIN_OK_200,
-    LOGIN_FORBIDDEN_403,
-    LOGOUT_OK_200,
-    PASSWORD_CHANGE_EXAMPLE,
-    PASSWORD_CHANGED_OK_200,
-    REFRESH_OK_200,
-    USER_CREATED_201,
-    USER_GET_OK_200,
-    USER_BAD_REQUEST_400,
-    UNAUTHORIZED_401,
-)
+from api.v1 import schemes
 from api.v1.serializers import (
     CookieTokenRefreshSerializer,
     LoginSerializer,
@@ -54,10 +38,10 @@ User = get_user_model()
     request=UserCreateSerializer,
     summary="Регистрация пользователя.",
     tags=["Users"],
-    examples=[USER_CREATE_EXAMPLE],
+    examples=[schemes.USER_CREATE_EXAMPLE],
     responses={
-        status.HTTP_201_CREATED: USER_CREATED_201,
-        status.HTTP_400_BAD_REQUEST: USER_BAD_REQUEST_400,
+        status.HTTP_201_CREATED: schemes.USER_CREATED_201,
+        status.HTTP_400_BAD_REQUEST: schemes.USER_BAD_REQUEST_400,
     },
 )
 class RegisrtyView(APIView):
@@ -77,10 +61,10 @@ class RegisrtyView(APIView):
     tags=["Users"],
     request=LoginSerializer,
     summary="Login.",
-    examples=[LOGIN_EXAMPLE],
+    examples=[schemes.LOGIN_EXAMPLE],
     responses={
-        status.HTTP_200_OK: LOGIN_OK_200,
-        status.HTTP_403_FORBIDDEN: LOGIN_FORBIDDEN_403,
+        status.HTTP_200_OK: schemes.LOGIN_OK_200,
+        status.HTTP_403_FORBIDDEN: schemes.LOGIN_FORBIDDEN_403,
     },
 )
 class LoginView(APIView):
@@ -123,8 +107,8 @@ class LoginView(APIView):
     tags=["Users"],
     summary="Logout.",
     responses={
-        status.HTTP_200_OK: LOGOUT_OK_200,
-        status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+        status.HTTP_200_OK: schemes.LOGOUT_OK_200,
+        status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
 )
 class LogoutView(APIView):
@@ -160,8 +144,8 @@ class LogoutView(APIView):
     request=None,
     summary="Обновление refresh токена.",
     responses={
-        status.HTTP_200_OK: REFRESH_OK_200,
-        status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+        status.HTTP_200_OK: schemes.REFRESH_OK_200,
+        status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
 )
 class CookieTokenRefreshView(TokenRefreshView):
@@ -192,11 +176,11 @@ class CookieTokenRefreshView(TokenRefreshView):
     tags=["Users"],
     summary="Изменение пароля пользователя.",
     request=PasswordChangeSerializer,
-    examples=[PASSWORD_CHANGE_EXAMPLE],
+    examples=[schemes.PASSWORD_CHANGE_EXAMPLE],
     responses={
-        status.HTTP_200_OK: PASSWORD_CHANGED_OK_200,
-        status.HTTP_400_BAD_REQUEST: USER_BAD_REQUEST_400,
-        status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+        status.HTTP_200_OK: schemes.PASSWORD_CHANGED_OK_200,
+        status.HTTP_400_BAD_REQUEST: schemes.USER_BAD_REQUEST_400,
+        status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
 )
 class ChangePassowrdView(GenericAPIView):
@@ -227,23 +211,23 @@ class ChangePassowrdView(GenericAPIView):
     update=extend_schema(
         summary="Изменение сведений о пользователе.",
         responses={
-            status.HTTP_200_OK: USER_PUT_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_200_OK: schemes.USER_PUT_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
     ),
     partial_update=extend_schema(
         summary="Изменение сведений о пользователе.",
         responses={
-            status.HTTP_200_OK: USER_PATCH_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_200_OK: schemes.USER_PATCH_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
-        examples=[USER_PART_CHANGE_EXAMPLE],
+        examples=[schemes.USER_PART_CHANGE_EXAMPLE],
     ),
     retrieve=extend_schema(
         summary="Просмотр сведений о пользователе.",
         responses={
-            status.HTTP_200_OK: USER_GET_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_200_OK: schemes.USER_GET_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
     ),
 )

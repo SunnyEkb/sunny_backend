@@ -14,25 +14,7 @@ from rest_framework.decorators import action
 from api.v1.filters import ServiceFilter, TypeFilter
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
-from api.v1.schemes import (
-    CANT_ADD_PHOTO_400,
-    CANT_ADD_PHOTO_406,
-    CANT_ADD_SERVICE_TO_FAVORITES_406,
-    CANT_DELETE_SERVICE_FROM_FAVORITES_406,
-    CANT_CANCELL_SERVICE_406,
-    CANT_DELETE_SERVICE_406,
-    CANT_HIDE_SERVICE_406,
-    CANT_MODERATE_SERVICE_406,
-    CANT_PUBLISH_SERVICE_406,
-    SERVICE_CREATED_201,
-    SERVICE_LIST_OK_200,
-    SERVICE_FORBIDDEN_403,
-    SERVICE_ADDED_TO_FAVORITES_201,
-    SERVICE_DELETED_FROM_FAVORITES_204,
-    TYPES_GET_OK_200,
-    TYPE_LIST_EXAMPLE,
-    UNAUTHORIZED_401,
-)
+from api.v1 import schemes
 from api.v1.serializers import (
     ServiceImageCreateSerializer,
     ServiceCreateUpdateSerializer,
@@ -49,9 +31,9 @@ User = get_user_model()
 
 @extend_schema(
     tags=["Services types"],
-    examples=[TYPE_LIST_EXAMPLE],
+    examples=[schemes.TYPE_LIST_EXAMPLE],
     responses={
-        status.HTTP_200_OK: TYPES_GET_OK_200,
+        status.HTTP_200_OK: schemes.TYPES_GET_OK_200,
     },
 )
 @extend_schema_view(
@@ -77,49 +59,49 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         ),
         parameters=[OpenApiParameter("type_id", int)],
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
         },
     ),
     retrieve=extend_schema(
         summary="Информация о конкретной услуге.",
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
         },
     ),
     create=extend_schema(
         request=ServiceCreateUpdateSerializer,
         summary="Создание услуги.",
         responses={
-            status.HTTP_201_CREATED: SERVICE_CREATED_201,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_201_CREATED: schemes.SERVICE_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
     ),
     update=extend_schema(
         request=ServiceCreateUpdateSerializer,
         summary="Изменение данных услуги.",
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
         },
     ),
     partial_update=extend_schema(
         request=ServiceCreateUpdateSerializer,
         summary="Изменение данных услуги.",
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
         },
     ),
     destroy=extend_schema(
         summary="Удалить услугу.",
         responses={
             status.HTTP_204_NO_CONTENT: None,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: CANT_DELETE_SERVICE_406,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_DELETE_SERVICE_406,
         },
     ),
 )
@@ -193,10 +175,10 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: CANT_CANCELL_SERVICE_406,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_CANCELL_SERVICE_406,
         },
     )
     @action(
@@ -224,10 +206,10 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: CANT_HIDE_SERVICE_406,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_HIDE_SERVICE_406,
         },
     )
     @action(
@@ -254,10 +236,10 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: CANT_MODERATE_SERVICE_406,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_MODERATE_SERVICE_406,
         },
     )
     @action(
@@ -287,10 +269,10 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: CANT_PUBLISH_SERVICE_406,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_PUBLISH_SERVICE_406,
         },
     )
     @action(
@@ -318,11 +300,11 @@ class ServiceViewSet(
         methods=["POST"],
         request=ServiceImageCreateSerializer,
         responses={
-            status.HTTP_200_OK: SERVICE_LIST_OK_200,
-            status.HTTP_400_BAD_REQUEST: CANT_ADD_PHOTO_400,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: CANT_ADD_PHOTO_406,
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
         },
     )
     @action(
@@ -357,9 +339,11 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_201_CREATED: SERVICE_ADDED_TO_FAVORITES_201,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
-            status.HTTP_406_NOT_ACCEPTABLE: CANT_ADD_SERVICE_TO_FAVORITES_406,
+            status.HTTP_201_CREATED: schemes.SERVICE_ADDED_TO_FAVORITES_201,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                schemes.CANT_ADD_SERVICE_TO_FAVORITES_406
+            ),
         },
     )
     @action(
@@ -411,10 +395,12 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_204_NO_CONTENT: SERVICE_DELETED_FROM_FAVORITES_204,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_204_NO_CONTENT: (
+                schemes.SERVICE_DELETED_FROM_FAVORITES_204
+            ),
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_406_NOT_ACCEPTABLE: (
-                CANT_DELETE_SERVICE_FROM_FAVORITES_406
+                schemes.CANT_DELETE_SERVICE_FROM_FAVORITES_406
             ),
         },
     )
@@ -463,7 +449,7 @@ class ServiceViewSet(
     destroy=extend_schema(summary="Удаление фото."),
     responses={
         status.HTTP_204_NO_CONTENT: None,
-        status.HTTP_403_FORBIDDEN: SERVICE_FORBIDDEN_403,
+        status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
     },
 )
 class ServiceImageViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):

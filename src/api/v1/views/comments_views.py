@@ -11,16 +11,7 @@ from rest_framework.decorators import action
 
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import CommentAuthorOnly
-from api.v1.schemes import (
-    CANT_ADD_PHOTO_400,
-    CANT_ADD_PHOTO_406,
-    COMMENT_CREATE_EXAMPLE,
-    COMMENT_LIST_EXAMPLE,
-    COMMENT_LIST_200_OK,
-    COMMENT_CREATED_201,
-    COMMENT_FORBIDDEN_403,
-    UNAUTHORIZED_401,
-)
+from api.v1 import schemes
 from api.v1.serializers import (
     CommentImageCreateSerializer,
     CommentCreateSerializer,
@@ -33,9 +24,9 @@ from core.utils import notify_about_moderation
 
 @extend_schema(
     tags=["Comments"],
-    examples=[COMMENT_LIST_EXAMPLE],
+    examples=[schemes.COMMENT_LIST_EXAMPLE],
     responses={
-        status.HTTP_200_OK: COMMENT_LIST_200_OK,
+        status.HTTP_200_OK: schemes.COMMENT_LIST_200_OK,
     },
 )
 @extend_schema_view(
@@ -72,18 +63,18 @@ class CommentViewSet(
 @extend_schema_view(
     create=extend_schema(
         summary="Создать комментарий.",
-        examples=[COMMENT_CREATE_EXAMPLE],
+        examples=[schemes.COMMENT_CREATE_EXAMPLE],
         responses={
-            status.HTTP_201_CREATED: COMMENT_CREATED_201,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_201_CREATED: schemes.COMMENT_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
     ),
     destroy=extend_schema(
         summary="Удалить комментарий.",
         responses={
             status.HTTP_204_NO_CONTENT: None,
-            status.HTTP_403_FORBIDDEN: COMMENT_FORBIDDEN_403,
-            status.HTTP_401_UNAUTHORIZED: UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
     ),
 )
@@ -119,10 +110,10 @@ class CommentCreateDestroyViewSet(
         methods=["POST"],
         request=CommentImageCreateSerializer,
         responses={
-            status.HTTP_200_OK: COMMENT_LIST_200_OK,
-            status.HTTP_400_BAD_REQUEST: CANT_ADD_PHOTO_400,
-            status.HTTP_403_FORBIDDEN: COMMENT_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: CANT_ADD_PHOTO_406,
+            status.HTTP_200_OK: schemes.COMMENT_LIST_200_OK,
+            status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
+            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
         },
     )
     @action(
