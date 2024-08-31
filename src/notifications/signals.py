@@ -4,7 +4,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 from notifications.models import Notification
-from notifications.serializers import NotificationSerializer
+from api.v1.serializers.notifications_serializers import NotificationSerializer
 
 
 @receiver(post_save, sender=Notification)
