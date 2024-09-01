@@ -2,10 +2,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
+from api.v1.serializers.users_serializers import UserReadSerializer
 from api.v1.validators import validate_file_size
 from comments.models import Comment, CommentImage
 from core.choices import APIResponses
-from users.serializers import UserReadSerializer
 
 
 class CommentImageCreateSerializer(serializers.ModelSerializer):

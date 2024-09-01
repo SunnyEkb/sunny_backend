@@ -3,11 +3,10 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
+from api.v1.serializers import CommentReadSerializer, UserReadSerializer
 from api.v1.validators import validate_file_size
-from comments.serializers import CommentReadSerializer
 from services.models import Service, ServiceImage, Type
 from users.models import Favorites
-from users.serializers import UserReadSerializer
 
 
 class TypeGetSerializer(serializers.ModelSerializer):
@@ -141,15 +140,18 @@ class ServiceListSerializer(serializers.ModelSerializer):
         return round(rating, 1)
 
     def get_is_favorited(self, obj):
-        user = self.context.get("request").user
-        if user.is_authenticated:
-            return Favorites.objects.filter(
-                user=user,
-                content_type=ContentType.objects.get(
-                    app_label="services", model="service"
-                ),
-                object_id=obj.id,
-            ).exists()
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+            if user.is_authenticated:
+                return Favorites.objects.filter(
+                    user=user,
+                    content_type=ContentType.objects.get(
+                        app_label="services", model="service"
+                    ),
+                    object_id=obj.id,
+                ).exists()
         return False
 
 
