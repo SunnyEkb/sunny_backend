@@ -2,6 +2,8 @@ import sys
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -46,6 +48,10 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = TypeGetSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TypeFilter
+
+    @method_decorator(cache_page(60 * 2))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 @extend_schema(

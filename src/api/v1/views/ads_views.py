@@ -19,9 +19,7 @@ from api.v1.serializers import (
 from core.choices import AdvertisementStatus
 
 
-@extend_schema(
-    tags=["Ads categories"],
-)
+@extend_schema(tags=["Ads categories"])
 @extend_schema_view(
     list=extend_schema(summary="Список категорий объявлений."),
 )
