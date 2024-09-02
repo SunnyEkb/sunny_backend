@@ -17,9 +17,9 @@ from api.v1.serializers import (
     CommentCreateSerializer,
     CommentReadSerializer,
 )
+from bad_word_filter.tasks import moderate_comment
 from comments.models import Comment
 from core.choices import APIResponses, CommentStatus
-from core.utils import notify_about_moderation
 
 
 @extend_schema(
@@ -97,8 +97,9 @@ class CommentCreateDestroyViewSet(
 
     def perform_create(self, serializer):
         comment: Comment = serializer.save(author=self.request.user)
+        admin_url = comment.get_admin_url(self.request)
         if "test" not in sys.argv:
-            notify_about_moderation(comment.get_admin_url(self.request))
+            moderate_comment.delay_on_commit(comment.id, admin_url)
 
     def destroy(self, request, *args, **kwargs):
         instance: Comment = self.get_object()
