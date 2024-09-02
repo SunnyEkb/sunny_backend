@@ -7,7 +7,7 @@ from core.choices import (
 )
 
 
-USER_CREATE_EXAMPLE = OpenApiExample(
+USER_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Данные для регистрации",
     value={
         "username": "some_user",
@@ -51,42 +51,42 @@ USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
-LOGIN_EXAMPLE = OpenApiExample(
+LOGIN_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Данные для входа в систему.",
     value={"email": "foo@bar.bar", "password": "password"},
 )
 
-LOGIN_SUCCESS_EXAMPLE = OpenApiExample(
+LOGIN_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Пользователь вошел в систему",
     value={"Success": APIResponses.SUCCESS_LOGIN.value},
 )
 
-LOGOUT_SUCCESS_EXAMPLE = OpenApiExample(
+LOGOUT_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Пользователь вышел из системы",
     value={"Success": APIResponses.SUCCESS_LOGOUT.value},
 )
 
-LOGIN_INVALID_CREDENTIALS_EXAMPLE = OpenApiExample(
+LOGIN_INVALID_CREDENTIALS_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Неверные данные для входа",
     value={"detail": APIResponses.INVALID_CREDENTIALS.value},
 )
 
-LOGIN_INACTIVE_EXAMPLE = OpenApiExample(
+LOGIN_INACTIVE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Неактивный аккаунт",
     value={"No active": APIResponses.ACCOUNT_IS_INACTIVE.value},
 )
 
-UNAUTHORIZED_EXAMPLE = OpenApiExample(
+UNAUTHORIZED_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Пользователь не авторизован",
     value={"detail": APIResponses.UNAUTHORIZED.value},
 )
 
-PASSWORD_DO_NOT_MATCH_EXAMPLE = OpenApiExample(
+PASSWORD_DO_NOT_MATCH_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Пароль не соответствует подтверждению",
     value={"non_field_errors": [APIResponses.PASSWORD_DO_NOT_MATCH.value]},
 )
 
-WRONG_EMAIL_EXAMPLE = OpenApiExample(
+WRONG_EMAIL_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Неверная электронаая почта",
     value={"email": ["Введите правильный адрес электронной почты."]},
 )
@@ -105,12 +105,12 @@ PASSWORD_CHANGED_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"Success": APIResponses.PASSWORD_CHANGED.value},
 )
 
-REFRESH_SUCCESS_EXAMPLE = OpenApiExample(
+REFRESH_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Токен успешно обновлен",
     value={"Success": APIResponses.SUCCESS_TOKEN_REFRESH.value},
 )
 
-TYPE_LIST_EXAMPLE = OpenApiExample(
+TYPE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список типов услуг",
     value=[
         {
@@ -129,7 +129,7 @@ TYPE_LIST_EXAMPLE = OpenApiExample(
     ],
 )
 
-COMMENT_LIST_EXAMPLE = OpenApiExample(
+COMMENT_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список комментариев",
     value=[
         {
@@ -144,7 +144,7 @@ COMMENT_LIST_EXAMPLE = OpenApiExample(
     ],
 )
 
-COMMENT_CREATE_EXAMPLE = OpenApiExample(
+COMMENT_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Создать комментарий",
     value={
         "content_type": 23,
@@ -154,7 +154,7 @@ COMMENT_CREATE_EXAMPLE = OpenApiExample(
     },
 )
 
-COMMENT_NOT_AUTHOR_EXAMPLE = OpenApiExample(
+COMMENT_NOT_AUTHOR_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Комментарий пытается удалить не его автор",
     value={"detail": APIResponses.NO_PERMISSION.value},
 )
@@ -217,72 +217,94 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
-SERVICE_NOT_PROVIDER_EXAMPLE = OpenApiExample(
+SERVICE_NOT_PROVIDER_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услугу пытается изменить не исполнитель",
     value={"detail": APIResponses.NO_PERMISSION.value},
 )
 
-CANT_HIDE_SERVICE_EXAMPLE = OpenApiExample(
+CANT_HIDE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга не может быть скрыта",
     value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE.value},
 )
 
-CANT_DELETE_SERVICE_EXAMPLE = OpenApiExample(
+CANT_DELETE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга не может быть удалена",
     value={"detail": APIResponses.CAN_NOT_DELETE_SEVICE.value},
 )
 
-CANT_CANCELL_SERVICE_EXAMPLE = OpenApiExample(
+CANT_CANCELL_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга не может быть отменена",
     value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE.value},
 )
 
-CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE = OpenApiExample(
+CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга не опубликована",
     value={"detail": APIResponses.SERVICE_IS_NOT_PUBLISHED.value},
 )
 
-PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE = OpenApiExample(
+PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Лицо, оказывающее услугу, не может добавить её в избранное",
     value={"detail": APIResponses.SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE.value},
 )
 
-SERVICE_ALREADY_IN_FAVORITES_EXAMPLE = OpenApiExample(
+SERVICE_ALREADY_IN_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга уже в избранном",
     value={"detail": APIResponses.SERVICE_ALREADY_IN_FAVORITES.value},
 )
 
-SERVICE_NOT_IN_FAVORITES_EXAMPLE = OpenApiExample(
+SERVICE_NOT_IN_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга не в избранном",
     value={"detail": APIResponses.SERVICE_NOT_IN_FAVORITES.value},
 )
 
-SERVICE_ADDED_TO_FAVORITES_EXAMPLE = OpenApiExample(
+SERVICE_ADDED_TO_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга добавлена в избранное",
     value={"detail": APIResponses.SERVICE_ADDED_TO_FAVORITES.value},
 )
 
-SERVICE_DELETED_FROM_FAVORITES_EXAMPLE = OpenApiExample(
+SERVICE_DELETED_FROM_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга удалена из избранного",
     value={"detail": APIResponses.SERVICE_DELETED_FROM_FAVORITES.value},
 )
 
-CANT_MODERATE_SERVICE_EXAMPLE = OpenApiExample(
+CANT_MODERATE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга не может быть отправлена на модерацию",
     value={"detail": APIResponses.SERVICE_IS_CANCELLED.value},
 )
 
-CANT_PUBLISH_SERVICE_EXAMPLE = OpenApiExample(
+CANT_PUBLISH_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга не скрыта",
     value={"detail": APIResponses.SERVICE_IS_NOT_HIDDEN.value},
 )
 
-CANT_ADD_PHOTO_EXAMPLE = OpenApiExample(
+CANT_ADD_PHOTO_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Превышено максимальное количество фотографий",
     value={"detail": APIResponses.MAX_IMAGE_QUANTITY_EXEED.value},
 )
 
-MAX_FILE_SIZE_EXAMPLE = OpenApiExample(
+MAX_FILE_SIZE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Превышен допустимый размер файла",
     value={"detail": APIResponses.MAX_FILE_SIZE_EXEED.value},
+)
+
+ADD_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Создание объявления",
+    value={
+        "title": "Ботинки",
+        "description": "Зимние ботинки",
+        "price": "1000.00",
+        "condition": "Б/у",
+        "category_id": 4,
+    },
+)
+
+ADD_CREATED_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Объявления создано",
+    value={
+        "title": "Ботинки",
+        "description": "Зимние ботинки",
+        "price": "1000.00",
+        "condition": "Б/у",
+        "category_id": [1, 4],
+    },
 )
