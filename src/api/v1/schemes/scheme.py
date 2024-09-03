@@ -136,10 +136,10 @@ SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
     examples=[examples.SERVICE_CREATE_EXAMPLE],
 )
 
-SERVICE_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
+SERVICE_AD_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=NonErrorFieldSerializer,
-    description="Только испольнитель может изменить информацию об услуге",
-    examples=[examples.SERVICE_NOT_PROVIDER_EXAMPLE],
+    description="Нет прав для выполнения действия",
+    examples=[examples.SERVICE_AD_NO_PERMISSION_EXAMPLE],
 )
 
 COMMENT_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
@@ -224,4 +224,22 @@ SERVICE_DELETED_FROM_FAVORITES_204: OpenApiResponse = OpenApiResponse(
     examples=[
         examples.SERVICE_DELETED_FROM_FAVORITES_EXAMPLE,
     ],
+)
+
+AD_LIST_OK_200: OpenApiResponse = OpenApiResponse(
+    response=ServiceListSerializer,
+    description="Получение списка объявлений",
+    examples=[examples.AD_LIST_EXAMPLE],
+)
+
+AD_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
+    response=ServiceListSerializer,
+    description="Получение информации об объявлении",
+    examples=[examples.AD_LIST_EXAMPLE],
+)
+
+AD_CREATED_201: OpenApiResponse = OpenApiResponse(
+    response=ServiceCreateUpdateSerializer,
+    description="Объявление содано",
+    examples=[examples.ADD_CREATED_EXAMPLE],
 )

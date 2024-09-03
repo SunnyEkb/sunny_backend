@@ -1,6 +1,7 @@
 from drf_spectacular.utils import OpenApiExample
 
 from core.choices import (
+    AdState,
     AdvertisementStatus,
     APIResponses,
     ServicePlace,
@@ -217,8 +218,8 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
-SERVICE_NOT_PROVIDER_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услугу пытается изменить не исполнитель",
+SERVICE_AD_NO_PERMISSION_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Нет прав для выполнения действия",
     value={"detail": APIResponses.NO_PERMISSION.value},
 )
 
@@ -307,4 +308,40 @@ ADD_CREATED_EXAMPLE: OpenApiExample = OpenApiExample(
         "condition": "Б/у",
         "category_id": [1, 4],
     },
+)
+
+AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Информация об объвлении",
+    value={
+        "id": 1,
+        "provider": USER_INFO_EXAMPLE.value,
+        "title": "string",
+        "description": "string",
+        "category": [1, 2, 3],
+        "condition": AdState.USED.value,
+        "price": "500.00",
+        "status": AdvertisementStatus.DRAFT.value,
+        "images": [{"id": 1, "image": "string"}],
+        "created_at": "2024-06-20T06:25:52.449498Z",
+        "is_favorited": False,
+    },
+)
+
+AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список объявлений",
+    value=[
+        {
+            "id": 1,
+            "provider": USER_INFO_EXAMPLE.value,
+            "title": "string",
+            "description": "string",
+            "category": [1, 2, 3],
+            "condition": AdState.USED.value,
+            "price": "500.00",
+            "status": AdvertisementStatus.DRAFT.value,
+            "images": [{"id": 1, "image": "string"}],
+            "created_at": "2024-06-20T06:25:52.449498Z",
+            "is_favorited": False,
+        }
+    ],
 )

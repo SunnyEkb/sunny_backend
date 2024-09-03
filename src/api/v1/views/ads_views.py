@@ -6,11 +6,12 @@ from drf_spectacular.utils import (
     extend_schema_view,
     OpenApiParameter,
 )
-from rest_framework import mixins, response, viewsets
+from rest_framework import mixins, response, status, viewsets
 
 from ads.models import Ad, Category
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
+from api.v1 import schemes
 from api.v1.serializers import (
     AdRetrieveSerializer,
     AdCreateUpdateSerializer,
@@ -22,6 +23,7 @@ from core.choices import AdvertisementStatus
 @extend_schema(tags=["Ads categories"])
 @extend_schema_view(
     list=extend_schema(summary="Список категорий объявлений."),
+    response=schemes.AD_LIST_EXAMPLE,
 )
 class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Вьюсет для категорий объявлений."""
@@ -51,6 +53,12 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     create=extend_schema(
         request=AdCreateUpdateSerializer,
         summary="Создание объявления.",
+        examples=[schemes.ADD_CREATE_EXAMPLE],
+        responses={
+            status.HTTP_201_CREATED: schemes.AD_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
     ),
     update=extend_schema(
         request=AdCreateUpdateSerializer,

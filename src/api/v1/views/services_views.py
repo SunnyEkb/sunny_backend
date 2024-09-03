@@ -72,7 +72,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         summary="Информация о конкретной услуге.",
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
     ),
     create=extend_schema(
@@ -89,7 +89,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
     ),
     partial_update=extend_schema(
@@ -98,7 +98,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
     ),
     destroy=extend_schema(
@@ -106,7 +106,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         responses={
             status.HTTP_204_NO_CONTENT: None,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_DELETE_SERVICE_406,
         },
     ),
@@ -183,7 +183,7 @@ class ServiceViewSet(
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_CANCELL_SERVICE_406,
         },
     )
@@ -214,7 +214,7 @@ class ServiceViewSet(
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_HIDE_SERVICE_406,
         },
     )
@@ -244,7 +244,7 @@ class ServiceViewSet(
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_MODERATE_SERVICE_406,
         },
     )
@@ -277,7 +277,7 @@ class ServiceViewSet(
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_PUBLISH_SERVICE_406,
         },
     )
@@ -309,7 +309,7 @@ class ServiceViewSet(
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
         },
     )
@@ -455,7 +455,7 @@ class ServiceViewSet(
     destroy=extend_schema(summary="Удаление фото."),
     responses={
         status.HTTP_204_NO_CONTENT: None,
-        status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+        status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
     },
 )
 class ServiceImageViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
