@@ -22,8 +22,10 @@ from core.choices import AdvertisementStatus
 
 @extend_schema(tags=["Ads categories"])
 @extend_schema_view(
-    list=extend_schema(summary="Список категорий объявлений."),
-    response=schemes.AD_LIST_EXAMPLE,
+    list=extend_schema(
+        summary="Список категорий объявлений.",
+        responses={status.HTTP_200_OK: schemes.AD_CATEGORIES_GET_OK_200},
+    ),
 )
 class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Вьюсет для категорий объявлений."""

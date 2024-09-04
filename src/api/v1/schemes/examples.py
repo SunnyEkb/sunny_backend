@@ -117,16 +117,21 @@ TYPE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         {
             "id": 1,
             "title": "Красота и здоровье",
-            "subcategories": {
-                "id": 3,
-                "title": "Массаж",
-                "subcategories": {
-                    "id": 4,
-                    "title": "Массаж воротниковой зоны",
+            "subcategories": [
+                {
+                    "id": 3,
+                    "title": "Массаж",
+                    "subcategories": [
+                        {
+                            "id": 4,
+                            "title": "Массаж спины",
+                            "subcategories": None,
+                        },
+                    ],
                 },
-            },
+            ],
         },
-        {"id": 2, "title": "Ремонт"},
+        {"id": 2, "title": "Ремонт", "subcategories": None},
     ],
 )
 
@@ -343,5 +348,36 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
             "created_at": "2024-06-20T06:25:52.449498Z",
             "is_favorited": False,
         }
+    ],
+)
+
+AD_CATEGORIES_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список категорий объявлений",
+    value=[
+        [
+            {
+                "id": 1,
+                "title": "Личные вещи",
+                "subcategories": [
+                    {
+                        "id": 3,
+                        "title": "Одежа",
+                        "subcategories": [
+                            {
+                                "id": 4,
+                                "title": "Одежда мужская",
+                                "subcategories": None,
+                            },
+                            {
+                                "id": 5,
+                                "title": "Одежда женская",
+                                "subcategories": None,
+                            },
+                        ],
+                    }
+                ],
+            },
+            {"id": 2, "title": "Электроника", "subcategories": None},
+        ]
     ],
 )
