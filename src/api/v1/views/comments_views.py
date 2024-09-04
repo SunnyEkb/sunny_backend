@@ -73,8 +73,8 @@ class CommentViewSet(
         summary="Удалить комментарий.",
         responses={
             status.HTTP_204_NO_CONTENT: None,
-            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
         },
     ),
 )
@@ -113,6 +113,7 @@ class CommentCreateDestroyViewSet(
         responses={
             status.HTTP_200_OK: schemes.COMMENT_LIST_200_OK,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
         },
