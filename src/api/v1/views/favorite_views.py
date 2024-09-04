@@ -2,7 +2,7 @@ from rest_framework import mixins, permissions, viewsets
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from api.v1.paginators import CustomPaginator
-from api.v1.serializers import favorites_serializers
+from api.v1 import serializers as api_serializers
 from users.models import Favorites
 
 
@@ -15,7 +15,7 @@ from users.models import Favorites
 class FavoritesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Избранное."""
 
-    serializer_class = favorites_serializers.FavoritesSerialiser
+    serializer_class = api_serializers.FavoritesSerialiser
     permission_classes = [
         permissions.IsAuthenticated,
     ]

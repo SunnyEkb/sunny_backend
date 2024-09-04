@@ -16,14 +16,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from api.v1.permissions import SelfOnly
 from api.v1 import schemes
-from api.v1.serializers import (
-    CookieTokenRefreshSerializer,
-    LoginSerializer,
-    UserCreateSerializer,
-    UserReadSerializer,
-    UserUpdateSerializer,
-    PasswordChangeSerializer,
-)
+from api.v1 import serializers as api_serializers
 from api.v1.utils import (
     get_tokens_for_user,
     set_access_cookie,
@@ -35,7 +28,7 @@ User = get_user_model()
 
 
 @extend_schema(
-    request=UserCreateSerializer,
+    request=api_serializers.UserCreateSerializer,
     summary="Регистрация пользователя.",
     tags=["Users"],
     examples=[schemes.USER_CREATE_EXAMPLE],
@@ -50,7 +43,7 @@ class RegisrtyView(APIView):
     """
 
     def post(self, request):
-        serializer = UserCreateSerializer(data=request.data)
+        serializer = api_serializers.UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -59,7 +52,7 @@ class RegisrtyView(APIView):
 
 @extend_schema(
     tags=["Users"],
-    request=LoginSerializer,
+    request=api_serializers.LoginSerializer,
     summary="Login.",
     examples=[schemes.LOGIN_EXAMPLE],
     responses={
@@ -75,7 +68,7 @@ class LoginView(APIView):
     authentication_classes = ()
 
     def post(self, request, format=None):
-        serializer = LoginSerializer(data=request.data)
+        serializer = api_serializers.LoginSerializer(data=request.data)
         if serializer.is_valid():
             response = Response()
             email = serializer.validated_data.get("email", None)
@@ -153,7 +146,7 @@ class CookieTokenRefreshView(TokenRefreshView):
     Обновление refresh токена.
     """
 
-    serializer_class = CookieTokenRefreshSerializer
+    serializer_class = api_serializers.CookieTokenRefreshSerializer
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == status.HTTP_401_UNAUTHORIZED:
@@ -175,7 +168,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 @extend_schema(
     tags=["Users"],
     summary="Изменение пароля пользователя.",
-    request=PasswordChangeSerializer,
+    request=api_serializers.PasswordChangeSerializer,
     examples=[schemes.PASSWORD_CHANGE_EXAMPLE],
     responses={
         status.HTTP_200_OK: schemes.PASSWORD_CHANGED_OK_200,
@@ -189,12 +182,12 @@ class ChangePassowrdView(GenericAPIView):
     """
 
     permission_classes = [IsAuthenticated]
-    serializer_class = PasswordChangeSerializer
+    serializer_class = api_serializers.PasswordChangeSerializer
 
     def post(self, request):
         data = request.data
         data["user"] = request.user
-        serializer = PasswordChangeSerializer(data=data)
+        serializer = api_serializers.PasswordChangeSerializer(data=data)
         if serializer.is_valid():
             user = request.user
             user.set_password(request.data["new_password"])
@@ -248,5 +241,5 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
 
     def get_serializer_class(self):
         if self.action in ["update", "partial_update"]:
-            return UserUpdateSerializer
-        return UserReadSerializer
+            return api_serializers.UserUpdateSerializer
+        return api_serializers.UserReadSerializer

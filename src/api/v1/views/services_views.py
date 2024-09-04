@@ -17,12 +17,7 @@ from api.v1.filters import ServiceFilter, TypeFilter
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
-from api.v1.serializers import (
-    ServiceImageCreateSerializer,
-    ServiceCreateUpdateSerializer,
-    ServiceListSerializer,
-    TypeGetSerializer,
-)
+from api.v1 import serializers as api_serializers
 from core.choices import APIResponses, AdvertisementStatus
 from core.utils import notify_about_moderation
 from services.models import Service, ServiceImage, Type
@@ -45,7 +40,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список типов услуг."""
 
     queryset = Type.objects.filter(parent=None)
-    serializer_class = TypeGetSerializer
+    serializer_class = api_serializers.TypeGetSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TypeFilter
 
@@ -76,7 +71,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         },
     ),
     create=extend_schema(
-        request=ServiceCreateUpdateSerializer,
+        request=api_serializers.ServiceCreateUpdateSerializer,
         summary="Создание услуги.",
         responses={
             status.HTTP_201_CREATED: schemes.SERVICE_CREATED_201,
@@ -84,7 +79,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         },
     ),
     update=extend_schema(
-        request=ServiceCreateUpdateSerializer,
+        request=api_serializers.ServiceCreateUpdateSerializer,
         summary="Изменение данных услуги.",
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
@@ -93,7 +88,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         },
     ),
     partial_update=extend_schema(
-        request=ServiceCreateUpdateSerializer,
+        request=api_serializers.ServiceCreateUpdateSerializer,
         summary="Изменение данных услуги.",
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
@@ -138,8 +133,8 @@ class ServiceViewSet(
 
     def get_serializer_class(self):
         if self.action in ["list", "retrieve"]:
-            return ServiceListSerializer
-        return ServiceCreateUpdateSerializer
+            return api_serializers.ServiceListSerializer
+        return api_serializers.ServiceCreateUpdateSerializer
 
     def get_permissions(self):
         if self.action == "retrieve":
@@ -304,7 +299,7 @@ class ServiceViewSet(
     @extend_schema(
         summary="Добавить фото к услуге.",
         methods=["POST"],
-        request=ServiceImageCreateSerializer,
+        request=api_serializers.ServiceImageCreateSerializer,
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
@@ -325,7 +320,9 @@ class ServiceViewSet(
 
         service: Service = self.get_object()
         data = request.data
-        img_serializer = ServiceImageCreateSerializer(data=data)
+        img_serializer = api_serializers.ServiceImageCreateSerializer(
+            data=data
+        )
         images = service.images.all()
         if len(images) >= 5:
             return response.Response(
@@ -334,7 +331,7 @@ class ServiceViewSet(
             )
         if img_serializer.is_valid():
             img_serializer.save(service=service)
-            srvc_serializer = ServiceListSerializer(service)
+            srvc_serializer = api_serializers.ServiceListSerializer(service)
             return response.Response(srvc_serializer.data)
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST

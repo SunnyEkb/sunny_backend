@@ -12,11 +12,7 @@ from rest_framework.decorators import action
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import CommentAuthorOnly
 from api.v1 import schemes
-from api.v1.serializers import (
-    CommentImageCreateSerializer,
-    CommentCreateSerializer,
-    CommentReadSerializer,
-)
+from api.v1 import serializers as api_serializers
 from bad_word_filter.tasks import moderate_comment
 from comments.models import Comment
 from core.choices import APIResponses, CommentStatus
@@ -39,7 +35,7 @@ class CommentViewSet(
     """Список комментариев."""
 
     pagination_class = CustomPaginator
-    serializer_class = CommentReadSerializer
+    serializer_class = api_serializers.CommentReadSerializer
 
     def get_queryset(self):
         obj_id = self.kwargs.get("obj_id", None)
@@ -85,7 +81,7 @@ class CommentCreateDestroyViewSet(
 ):
     """Создать или удалить комментарий."""
 
-    serializer_class = CommentCreateSerializer
+    serializer_class = api_serializers.CommentCreateSerializer
 
     def get_queryset(self):
         return Comment.objects.all()
@@ -109,7 +105,7 @@ class CommentCreateDestroyViewSet(
     @extend_schema(
         summary="Добавить фото к комментарию.",
         methods=["POST"],
-        request=CommentImageCreateSerializer,
+        request=api_serializers.CommentImageCreateSerializer,
         responses={
             status.HTTP_200_OK: schemes.COMMENT_LIST_200_OK,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
@@ -130,7 +126,9 @@ class CommentCreateDestroyViewSet(
 
         comment: Comment = self.get_object()
         data = request.data
-        img_serializer = CommentImageCreateSerializer(data=data)
+        img_serializer = api_serializers.CommentImageCreateSerializer(
+            data=data
+        )
         images = comment.images.all()
         if len(images) >= 5:
             return response.Response(
@@ -139,7 +137,7 @@ class CommentCreateDestroyViewSet(
             )
         if img_serializer.is_valid():
             img_serializer.save(comment=comment)
-            cmnt_serializer = CommentReadSerializer(comment)
+            cmnt_serializer = api_serializers.CommentReadSerializer(comment)
             return response.Response(cmnt_serializer.data)
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
