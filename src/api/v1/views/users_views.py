@@ -143,7 +143,7 @@ class LogoutView(APIView):
 )
 class CookieTokenRefreshView(TokenRefreshView):
     """
-    Обновление refresh токена.
+    Обновление refresh и access токена.
     """
 
     serializer_class = api_serializers.CookieTokenRefreshSerializer
