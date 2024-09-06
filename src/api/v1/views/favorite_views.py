@@ -1,8 +1,9 @@
-from rest_framework import mixins, permissions, viewsets
+from rest_framework import mixins, permissions, status, viewsets
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from api.v1.paginators import CustomPaginator
+from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from api.v1.paginators import CustomPaginator
 from users.models import Favorites
 
 
@@ -10,7 +11,13 @@ from users.models import Favorites
     tags=["Favorites"],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список объектов избранного."),
+    list=extend_schema(
+        summary="Список объектов избранного.",
+        responses={
+            status.HTTP_200_OK: schemes.FAVORITES_LIST_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+        },
+    ),
 )
 class FavoritesViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Избранное."""

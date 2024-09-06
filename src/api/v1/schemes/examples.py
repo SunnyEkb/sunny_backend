@@ -381,3 +381,16 @@ AD_CATEGORIES_EXAMPLE: OpenApiExample = OpenApiExample(
         ]
     ],
 )
+
+FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список избранного",
+    value={
+        "count": 123,
+        "next": "http://api.example.org/accounts/?page=4",
+        "previous": "http://api.example.org/accounts/?page=2",
+        "results": [
+            {"subject": AD_RETRIEVE_EXAMPLE.value},
+            {"subject": SERVICE_LIST_EXAMPLE.value},
+        ],
+    },
+)
