@@ -72,6 +72,10 @@ class APIResponses(models.TextChoices):
 class SystemMessages(models.TextChoices):
     TELEGRAM_ERROR = "Сообщение об ошибке не отпралено в телеграм."
     SERIALIZER_NOT_FOUND_ERROR = "Не найден тип объекта Избранного."
+    AUTOMATIC_COMMENT_MODERATION_FAILED = (
+        "К сожалению, Ваш комментарий не прошел автоматическую"
+        " модерацию и не может быть опубликован."
+    )
 
 
 class Notifications(models.TextChoices):

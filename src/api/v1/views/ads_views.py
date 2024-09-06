@@ -6,30 +6,28 @@ from drf_spectacular.utils import (
     extend_schema_view,
     OpenApiParameter,
 )
-from rest_framework import mixins, response, viewsets
+from rest_framework import mixins, response, status, viewsets
 
 from ads.models import Ad, Category
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
-from api.v1.serializers import (
-    AdRetrieveSerializer,
-    AdCreateUpdateSerializer,
-    CategorySerializer,
-)
+from api.v1 import schemes
+from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus
 
 
-@extend_schema(
-    tags=["Ads categories"],
-)
+@extend_schema(tags=["Ads categories"])
 @extend_schema_view(
-    list=extend_schema(summary="Список категорий объявлений."),
+    list=extend_schema(
+        summary="Список категорий объявлений.",
+        responses={status.HTTP_200_OK: schemes.AD_CATEGORIES_GET_OK_200},
+    ),
 )
 class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Вьюсет для категорий объявлений."""
 
     queryset = Category.objects.filter(parent=None)
-    serializer_class = CategorySerializer
+    serializer_class = api_serializers.CategorySerializer
 
     @method_decorator(cache_page(60 * 2))
     def list(self, request, *args, **kwargs):
@@ -51,15 +49,21 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         summary="Информация о конкретном объявлении.",
     ),
     create=extend_schema(
-        request=AdCreateUpdateSerializer,
+        request=api_serializers.AdCreateUpdateSerializer,
         summary="Создание объявления.",
+        examples=[schemes.ADD_CREATE_EXAMPLE],
+        responses={
+            status.HTTP_201_CREATED: schemes.AD_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
     ),
     update=extend_schema(
-        request=AdCreateUpdateSerializer,
+        request=api_serializers.AdCreateUpdateSerializer,
         summary="Изменение данных объявления.",
     ),
     partial_update=extend_schema(
-        request=AdCreateUpdateSerializer,
+        request=api_serializers.AdCreateUpdateSerializer,
         summary="Изменение данных объявления.",
     ),
 )
@@ -76,8 +80,8 @@ class AdViewSet(
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
-            return AdRetrieveSerializer
-        return AdCreateUpdateSerializer
+            return api_serializers.AdRetrieveSerializer
+        return api_serializers.AdCreateUpdateSerializer
 
     def get_queryset(self):
         queryset = Ad.objects.filter(

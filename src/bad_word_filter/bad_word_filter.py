@@ -33,8 +33,6 @@ def bad_words_filter(text: str) -> List[str]:
         if item in text:
             text = text.replace(item, "")
 
-    print(text)
-
     multiple_letter_subst = {
         "ж": ["zh"],
         "к": ["i{", "|{"],

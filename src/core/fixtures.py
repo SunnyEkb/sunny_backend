@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
+from ads.tests.factories import AdFactory, CategoryFactory
 from comments.tests.factories import CommentFactory
 from core.choices import AdvertisementStatus, CommentStatus
 from services.tests.factories import ServiceFactory, TypeFactory
@@ -162,4 +163,18 @@ class TestServiceFixtures(TestUserFixtures):
             content_type=ContentType.objects.get(
                 app_label="services", model="service"
             ),
+        )
+
+
+class TestAdsFixtures(TestUserFixtures):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.category_1 = CategoryFactory()
+        cls.category_2 = CategoryFactory(parent=cls.category_1)
+        cls.ad_1 = AdFactory(provider=cls.user_1)
+        cls.ad_1.category.set([cls.category_1])
+        cls.ad_2 = AdFactory(
+            provider=cls.user_2,
+            status=AdvertisementStatus.PUBLISHED.value,
         )

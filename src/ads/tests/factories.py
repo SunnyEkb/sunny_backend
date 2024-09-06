@@ -1,13 +1,23 @@
 from factory import (
+    Faker,
     fuzzy,
     Sequence,
     SubFactory,
 )
 from factory.django import DjangoModelFactory
 
-from ads.models import Ad
+from ads.models import Ad, Category
 from core.enums import Limits
 from users.tests.factories import CustomUserFactory
+
+
+class CategoryFactory(DjangoModelFactory):
+    """Фабрика для создания экзмпляров модели тип услуги."""
+
+    class Meta:
+        model = Category
+
+    title = Faker("name")
 
 
 class AdFactory(DjangoModelFactory):
