@@ -2,6 +2,8 @@ import sys
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -15,12 +17,7 @@ from api.v1.filters import ServiceFilter, TypeFilter
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
-from api.v1.serializers import (
-    ServiceImageCreateSerializer,
-    ServiceCreateUpdateSerializer,
-    ServiceListSerializer,
-    TypeGetSerializer,
-)
+from api.v1 import serializers as api_serializers
 from core.choices import APIResponses, AdvertisementStatus
 from core.utils import notify_about_moderation
 from services.models import Service, ServiceImage, Type
@@ -43,9 +40,13 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список типов услуг."""
 
     queryset = Type.objects.filter(parent=None)
-    serializer_class = TypeGetSerializer
+    serializer_class = api_serializers.TypeGetSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TypeFilter
+
+    @method_decorator(cache_page(60 * 2))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 @extend_schema(
@@ -66,11 +67,11 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         summary="Информация о конкретной услуге.",
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
     ),
     create=extend_schema(
-        request=ServiceCreateUpdateSerializer,
+        request=api_serializers.ServiceCreateUpdateSerializer,
         summary="Создание услуги.",
         responses={
             status.HTTP_201_CREATED: schemes.SERVICE_CREATED_201,
@@ -78,21 +79,21 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         },
     ),
     update=extend_schema(
-        request=ServiceCreateUpdateSerializer,
+        request=api_serializers.ServiceCreateUpdateSerializer,
         summary="Изменение данных услуги.",
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
     ),
     partial_update=extend_schema(
-        request=ServiceCreateUpdateSerializer,
+        request=api_serializers.ServiceCreateUpdateSerializer,
         summary="Изменение данных услуги.",
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
     ),
     destroy=extend_schema(
@@ -100,7 +101,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         responses={
             status.HTTP_204_NO_CONTENT: None,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_DELETE_SERVICE_406,
         },
     ),
@@ -132,8 +133,8 @@ class ServiceViewSet(
 
     def get_serializer_class(self):
         if self.action in ["list", "retrieve"]:
-            return ServiceListSerializer
-        return ServiceCreateUpdateSerializer
+            return api_serializers.ServiceListSerializer
+        return api_serializers.ServiceCreateUpdateSerializer
 
     def get_permissions(self):
         if self.action == "retrieve":
@@ -177,7 +178,7 @@ class ServiceViewSet(
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_CANCELL_SERVICE_406,
         },
     )
@@ -208,7 +209,7 @@ class ServiceViewSet(
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_HIDE_SERVICE_406,
         },
     )
@@ -238,7 +239,7 @@ class ServiceViewSet(
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_MODERATE_SERVICE_406,
         },
     )
@@ -271,7 +272,7 @@ class ServiceViewSet(
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_PUBLISH_SERVICE_406,
         },
     )
@@ -298,12 +299,12 @@ class ServiceViewSet(
     @extend_schema(
         summary="Добавить фото к услуге.",
         methods=["POST"],
-        request=ServiceImageCreateSerializer,
+        request=api_serializers.ServiceImageCreateSerializer,
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
         },
     )
@@ -319,7 +320,9 @@ class ServiceViewSet(
 
         service: Service = self.get_object()
         data = request.data
-        img_serializer = ServiceImageCreateSerializer(data=data)
+        img_serializer = api_serializers.ServiceImageCreateSerializer(
+            data=data
+        )
         images = service.images.all()
         if len(images) >= 5:
             return response.Response(
@@ -328,7 +331,7 @@ class ServiceViewSet(
             )
         if img_serializer.is_valid():
             img_serializer.save(service=service)
-            srvc_serializer = ServiceListSerializer(service)
+            srvc_serializer = api_serializers.ServiceListSerializer(service)
             return response.Response(srvc_serializer.data)
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
@@ -449,7 +452,7 @@ class ServiceViewSet(
     destroy=extend_schema(summary="Удаление фото."),
     responses={
         status.HTTP_204_NO_CONTENT: None,
-        status.HTTP_403_FORBIDDEN: schemes.SERVICE_FORBIDDEN_403,
+        status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
     },
 )
 class ServiceImageViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
