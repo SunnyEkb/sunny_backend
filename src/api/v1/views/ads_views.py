@@ -47,6 +47,10 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     ),
     retrieve=extend_schema(
         summary="Информация о конкретном объявлении.",
+        responses={
+            status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
     ),
     create=extend_schema(
         request=api_serializers.AdCreateUpdateSerializer,
@@ -61,10 +65,20 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     update=extend_schema(
         request=api_serializers.AdCreateUpdateSerializer,
         summary="Изменение данных объявления.",
+        responses={
+            status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
     ),
     partial_update=extend_schema(
         request=api_serializers.AdCreateUpdateSerializer,
         summary="Изменение данных объявления.",
+        responses={
+            status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
     ),
 )
 class AdViewSet(
