@@ -209,8 +209,8 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
-SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Создание услуге",
+SERVICE_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Создание и изменение услуги",
     value={
         "title": "string",
         "description": "string",
@@ -220,6 +220,16 @@ SERVICE_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "price": {"маникюр": 500},
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
+    },
+)
+
+SERVICE_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Частичное изменение услуги",
+    value={
+        "description": "string",
+        "place_of_provision": ServicePlace.OPTIONS.value,
+        "price": {"маникюр": 500},
+        "address": "Lenina st, 8/13",
     },
 )
 
@@ -293,8 +303,8 @@ MAX_FILE_SIZE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.MAX_FILE_SIZE_EXEED.value},
 )
 
-ADD_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Создание объявления",
+AD_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Создание и изменение объявления",
     value={
         "title": "Ботинки",
         "description": "Зимние ботинки",
@@ -304,8 +314,8 @@ ADD_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
-ADD_CREATED_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Объявления создано",
+AD_CREATED_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Объявление создано",
     value={
         "title": "Ботинки",
         "description": "Зимние ботинки",
@@ -380,6 +390,14 @@ AD_CATEGORIES_EXAMPLE: OpenApiExample = OpenApiExample(
             {"id": 2, "title": "Электроника", "subcategories": None},
         ]
     ],
+)
+
+AD_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Частичное изменение объявления",
+    value={
+        "description": "string",
+        "price": "100.00",
+    },
 )
 
 FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
