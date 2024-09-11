@@ -77,6 +77,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             status.HTTP_201_CREATED: schemes.SERVICE_CREATED_201,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
+        examples=[schemes.SERVICE_CREATE_UPDATE_EXAMPLE],
     ),
     update=extend_schema(
         request=api_serializers.ServiceCreateUpdateSerializer,
@@ -86,6 +87,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
+        examples=[schemes.SERVICE_CREATE_UPDATE_EXAMPLE],
     ),
     partial_update=extend_schema(
         request=api_serializers.ServiceCreateUpdateSerializer,
@@ -95,6 +97,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
+        examples=[schemes.SERVICE_PARTIAL_UPDATE_EXAMPLE],
     ),
     destroy=extend_schema(
         summary="Удалить услугу.",
@@ -148,7 +151,7 @@ class ServiceViewSet(
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
-        instance = self.get_object()
+        instance: Service = self.get_object()
         serializer = self.get_serializer(
             instance, data=request.data, partial=partial
         )
