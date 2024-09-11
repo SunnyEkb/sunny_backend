@@ -123,7 +123,7 @@ SERVICE_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
 SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceCreateUpdateSerializer,
     description="Услуга содана",
-    examples=[examples.SERVICE_CREATE_EXAMPLE],
+    examples=[examples.SERVICE_CREATE_UPDATE_EXAMPLE],
 )
 
 SERVICE_AD_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
@@ -231,7 +231,7 @@ AD_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
 AD_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceCreateUpdateSerializer,
     description="Объявление содано",
-    examples=[examples.ADD_CREATED_EXAMPLE],
+    examples=[examples.AD_CREATED_EXAMPLE],
 )
 
 AD_CATEGORIES_GET_OK_200: OpenApiResponse = OpenApiResponse(
