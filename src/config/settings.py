@@ -175,7 +175,7 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_SECURE": False,
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": None,  # "Lax" заменить на проде
+    "AUTH_COOKIE_SAMESITE": "None",  # "Lax" заменить на проде
 }
 
 DRFSO2_PROPRIETARY_BACKEND_NAME = "VK.com"
@@ -190,8 +190,8 @@ CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = True
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SAMESITE = None  # "Lax" заменить на проде
-SESSION_COOKIE_SAMESITE = None  # "Lax" заменить на проде
+CSRF_COOKIE_SAMESITE = "None"  # "Lax" заменить на проде
+SESSION_COOKIE_SAMESITE = "None"  # "Lax" заменить на проде
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS", "http://127.0.0.1"
 ).split(", ")
