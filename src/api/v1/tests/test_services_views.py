@@ -108,6 +108,22 @@ class TestServivecesView(TestServiceFixtures):
                 True,
                 Service.objects.filter(provider=self.user_1),
             ],
+            "address": [
+                self.service_1.title,
+                (
+                    Service.objects.filter(
+                        status=AdvertisementStatus.PUBLISHED.value
+                    ).filter(address__icontains=self.service_1.address)
+                ),
+            ],
+            "salon_name": [
+                self.service_1.title,
+                (
+                    Service.objects.filter(
+                        status=AdvertisementStatus.PUBLISHED.value
+                    ).filter(salon_name__icontains=self.service_1.salon_name)
+                ),
+            ],
         }
         for k, v in templates.items():
             with self.subTest(filter=k):

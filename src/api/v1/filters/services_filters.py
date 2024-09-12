@@ -50,6 +50,16 @@ class ServiceFilter(FilterSet):
         label="Список всех услуг авторизованного пользователя.",
         method="get_my_services",
     )
+    address = CharFilter(
+        field_name="address",
+        lookup_expr="icontains",
+        label="Адрес",
+    )
+    salon_name = CharFilter(
+        field_name="salon_name",
+        lookup_expr="icontains",
+        label="Название салона",
+    )
 
     class Meta:
         model = Service
@@ -58,6 +68,8 @@ class ServiceFilter(FilterSet):
             "place_of_provision",
             "experience",
             "my_services",
+            "address",
+            "salon_name",
         )
 
     def get_my_services(self, queryset, name, value):
