@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from django.db.models import Avg
 from django.urls import reverse
 
 from core.choices import ServicePlace, AdvertisementStatus
@@ -109,7 +110,7 @@ class TestServivecesView(TestServiceFixtures):
                 Service.objects.filter(provider=self.user_1),
             ],
             "address": [
-                self.service_1.title,
+                self.service_1.address,
                 (
                     Service.objects.filter(
                         status=AdvertisementStatus.PUBLISHED.value
@@ -117,11 +118,22 @@ class TestServivecesView(TestServiceFixtures):
                 ),
             ],
             "salon_name": [
-                self.service_1.title,
+                self.service_1.salon_name,
                 (
                     Service.objects.filter(
                         status=AdvertisementStatus.PUBLISHED.value
                     ).filter(salon_name__icontains=self.service_1.salon_name)
+                ),
+            ],
+            "rating": [
+                3,
+                (
+                    Service.cstm_mng.annotate(rating=Avg("comments__rating"))
+                    .filter(
+                        rating__gte=3,
+                        status=AdvertisementStatus.PUBLISHED.value,
+                    )
+                    .order_by("-created_at")
                 ),
             ],
         }
