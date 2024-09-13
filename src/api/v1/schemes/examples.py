@@ -283,9 +283,9 @@ SERVICE_DELETED_FROM_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.SERVICE_DELETED_FROM_FAVORITES.value},
 )
 
-CANT_MODERATE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга не может быть отправлена на модерацию",
-    value={"detail": APIResponses.SERVICE_IS_CANCELLED.value},
+CANT_MODERATE_AD_OR_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Услуга (объявление) не может быть отправлена на модерацию",
+    value={"detail": APIResponses.AD_OR_SERVICE_IS_CANCELLED.value},
 )
 
 CANT_PUBLISH_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(

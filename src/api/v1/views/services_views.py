@@ -18,7 +18,7 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from core.choices import APIResponses, AdvertisementStatus
+from core.choices import AdvertisementStatus, APIResponses
 from core.utils import notify_about_moderation
 from services.models import Service, ServiceImage, Type
 from users.models import Favorites
@@ -260,7 +260,7 @@ class ServiceViewSet(
         if service.status == AdvertisementStatus.CANCELLED.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_IS_CANCELLED.value,
+                data=APIResponses.AD_OR_SERVICE_IS_CANCELLED.value,
             )
         service.send_to_moderation()
         if "test" not in sys.argv:
