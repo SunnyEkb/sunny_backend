@@ -3,8 +3,9 @@ from django_filters import (
     BooleanFilter,
     CharFilter,
     ChoiceFilter,
-    NumberFilter,
     FilterSet,
+    NumberFilter,
+    OrderingFilter,
     RangeFilter,
 )
 
@@ -67,6 +68,21 @@ class ServiceFilter(FilterSet):
         label="Рейтинг от",
         method="get_rating",
     )
+    ordering = OrderingFilter(
+        fields=(
+            ("created_at", "created_at"),
+            ("updated_at", "updated_at"),
+            ("experience", "experience"),
+        ),
+        field_labels={
+            "created_at": "Дата создания",
+            "-created_at": "Дата создания (по убыванию)",
+            "updated_at": "Дата последнего обновления",
+            "-updated_at": "Дата последнего обновления (по убыванию)",
+            "experience": "Опыт работы",
+            "-experience": "Опыт работы (по убыванию)",
+        },
+    )
 
     class Meta:
         model = Service
@@ -77,6 +93,8 @@ class ServiceFilter(FilterSet):
             "my_services",
             "address",
             "salon_name",
+            "created_at",
+            "updated_at",
         )
 
     def get_my_services(self, queryset, name, value):

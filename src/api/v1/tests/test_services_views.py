@@ -144,6 +144,52 @@ class TestServivecesView(TestServiceFixtures):
                 )
                 self.assertEqual(len(response.data["results"]), len(v[1]))
 
+    def test_service_ordering(self):
+        templates = {
+            "experience": (
+                Service.objects.filter(
+                    status=AdvertisementStatus.PUBLISHED.value
+                ).order_by("experience")
+            ),
+            "-experience": (
+                Service.objects.filter(
+                    status=AdvertisementStatus.PUBLISHED.value
+                ).order_by("-experience")
+            ),
+            "created_at": (
+                Service.objects.filter(
+                    status=AdvertisementStatus.PUBLISHED.value
+                ).order_by("created_at")
+            ),
+            "-created_at": (
+                Service.objects.filter(
+                    status=AdvertisementStatus.PUBLISHED.value
+                ).order_by("-created_at")
+            ),
+            "updated_at": (
+                Service.objects.filter(
+                    status=AdvertisementStatus.PUBLISHED.value
+                ).order_by("updated_at")
+            ),
+            "-updated_at": (
+                Service.objects.filter(
+                    status=AdvertisementStatus.PUBLISHED.value
+                ).order_by("-updated_at")
+            ),
+        }
+        for k, v in templates.items():
+            with self.subTest(order=k):
+                response = self.client_1.get(
+                    reverse("services-list") + f"?ordering={k}"
+                )
+                self.assertEqual(len(response.data["results"]), len(v))
+                self.assertEqual(
+                    response.data["results"][0]["id"], v.first().id
+                )
+                self.assertEqual(
+                    response.data["results"][-1]["id"], v.last().id
+                )
+
     def test_services_create(self):
         response = self.client_1.post(
             reverse("services-list"), data=self.service_data
