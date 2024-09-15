@@ -79,3 +79,25 @@ class TestAdView(TestAdsFixtures):
                 )
             ),
         )
+
+    def test_send_ad_to_moderation_by_owner(self):
+        response = self.client_2.post(
+            reverse("ads-moderate", kwargs={"pk": self.ad_draft.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_draft.pk).status,
+            AdvertisementStatus.MODERATION.value,
+        )
+
+    def test_not_owner_cant_send_ad_to_moderation(self):
+        response = self.client_1.post(
+            reverse("ads-moderate", kwargs={"pk": self.ad_draft.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_anon_user_cant_send_ad_to_moderation(self):
+        response = self.anon_client.post(
+            reverse("ads-moderate", kwargs={"pk": self.ad_draft.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)

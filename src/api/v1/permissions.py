@@ -17,7 +17,7 @@ class SelfOnly(BasePermission):
 
 class OwnerOrReadOnly(BasePermission):
     """
-    Редактирование только своих услуг.
+    Редактирование только своих услуг и объявлений.
     """
 
     def has_permission(self, request, view):
@@ -41,7 +41,8 @@ class PhotoOwnerOrReadOnly(BasePermission):
 
 class ReadOnly(BasePermission):
     """
-    Разрешения на просмотр услуги незарегистрированному пользователю.
+    Разрешение на просмотр услуги или объявления
+    незарегистрированному пользователю.
     """
 
     def has_permission(self, request, view):

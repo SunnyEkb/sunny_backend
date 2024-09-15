@@ -27,7 +27,7 @@ class AdFactory(DjangoModelFactory):
         model = Ad
 
     provider = SubFactory(CustomUserFactory)
-    title = Sequence(lambda o: "service_{0}".format(o))
+    title = Sequence(lambda o: "ad_{0}".format(o))
     description = fuzzy.FuzzyText(
         length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION.value
     )
