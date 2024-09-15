@@ -178,3 +178,8 @@ class TestAdsFixtures(TestUserFixtures):
             provider=cls.user_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
+        cls.ad_2.category.set([cls.category_2])
+        cls.ad_draft = AdFactory(
+            provider=cls.user_2,
+        )
+        cls.ad_draft.category.set([cls.category_1])

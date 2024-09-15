@@ -1,3 +1,5 @@
+import sys
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 
@@ -6,14 +8,16 @@ from drf_spectacular.utils import (
     extend_schema_view,
     OpenApiParameter,
 )
-from rest_framework import mixins, response, status, viewsets
+from rest_framework import mixins, permissions, response, status, viewsets
+from rest_framework.decorators import action
 
 from ads.models import Ad, Category
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from core.choices import AdvertisementStatus
+from core.choices import AdvertisementStatus, APIResponses
+from core.utils import notify_about_moderation
 
 
 @extend_schema(tags=["Ads categories"])
@@ -100,14 +104,13 @@ class AdViewSet(
         return api_serializers.AdCreateUpdateSerializer
 
     def get_queryset(self):
-        queryset = Ad.objects.filter(
-            status=AdvertisementStatus.PUBLISHED.value
-        )
+        queryset = Ad.cstm_mng.all()
         if self.action == "list":
             params = self.request.query_params
             if "category_id" in params:
                 queryset = queryset.filter(
-                    category__id=params.get("category_id")
+                    category__id=params.get("category_id"),
+                    status=AdvertisementStatus.PUBLISHED.value,
                 )
             else:
                 queryset = Ad.objects.none()
@@ -116,6 +119,8 @@ class AdViewSet(
     def get_permissions(self):
         if self.action == "retrieve":
             return (ReadOnly(),)
+        if self.action in ["add_to_favorites", "delete_from_favorites"]:
+            return (permissions.IsAuthenticated(),)
         return (OwnerOrReadOnly(),)
 
     def perform_create(self, serializer):
@@ -134,4 +139,37 @@ class AdViewSet(
 
         # смена статуса на CHANGED для повторной модерации
         instance.set_changed()
+        return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Отправить на модерацию.",
+        methods=["POST"],
+        request=None,
+        responses={
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_MODERATE_SERVICE_406,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="moderate",
+        url_name="moderate",
+        permission_classes=(OwnerOrReadOnly(),),
+    )
+    def moderate(self, request, *args, **kwargs):
+        """Отправить на модерацию."""
+
+        ad: Ad = self.get_object()
+        if ad.status == AdvertisementStatus.CANCELLED.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.AD_OR_SERVICE_IS_CANCELLED.value,
+            )
+        ad.send_to_moderation()
+        if "test" not in sys.argv:
+            notify_about_moderation(ad.get_admin_url(request))
+        serializer = self.get_serializer(ad)
         return response.Response(serializer.data)

@@ -159,7 +159,7 @@ CANT_CANCELL_SERVICE_406: OpenApiResponse = OpenApiResponse(
 CANT_MODERATE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Услуга не может быть отправлена на модерацию",
-    examples=[examples.CANT_MODERATE_SERVICE_EXAMPLE],
+    examples=[examples.CANT_MODERATE_AD_OR_SERVICE_EXAMPLE],
 )
 
 CANT_PUBLISH_SERVICE_406: OpenApiResponse = OpenApiResponse(
