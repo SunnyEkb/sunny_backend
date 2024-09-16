@@ -172,7 +172,7 @@ SIMPLE_JWT = {
     "AUTH_COOKIE": os.getenv("AUTH_COOKIE", "access"),
     "AUTH_REFRESH": os.getenv("AUTH_REFRESH", "refresh"),
     "AUTH_COOKIE_DOMAIN": None,
-    "AUTH_COOKIE_SECURE": False,
+    "AUTH_COOKIE_SECURE": True,
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "None",  # "Lax" заменить на проде
