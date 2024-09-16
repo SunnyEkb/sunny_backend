@@ -138,10 +138,10 @@ COMMENT_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     examples=[examples.COMMENT_NOT_AUTHOR_EXAMPLE],
 )
 
-CANT_HIDE_SERVICE_406: OpenApiResponse = OpenApiResponse(
+CANT_HIDE_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Нельзя скрыть услугу",
-    examples=[examples.CANT_HIDE_SERVICE_EXAMPLE],
+    description="Нельзя скрыть услугу/объявление",
+    examples=[examples.CANT_HIDE_SERVICE_OR_AD_EXAMPLE],
 )
 
 CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(

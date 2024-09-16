@@ -42,7 +42,9 @@ class APIResponses(models.TextChoices):
     WRONG_PASSWORD = "Wrong password"
     UNAUTHORIZED = "Учетные данные не были предоставлены."
     CAN_NOT_DELETE_SEVICE = "Невозможно удалить опубликованную заявку."
-    CAN_NOT_HIDE_SERVICE = "Скрыть можно опубликованную только услугу."
+    CAN_NOT_HIDE_SERVICE_OR_AD = (
+        "Скрыть можно опубликованную только услугу (объявление)."
+    )
     CAN_NOT_CANCELL_SERVICE = "Услуга не была опубликована. Удалите её."
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     AD_OR_SERVICE_IS_CANCELLED = "Данная услуга (объявление) отменена."
