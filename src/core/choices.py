@@ -50,7 +50,7 @@ class APIResponses(models.TextChoices):
     )
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     AD_OR_SERVICE_IS_CANCELLED = "Данная услуга (объявление) отменена."
-    SERVICE_IS_NOT_HIDDEN = "Данная услуга не скрыта."
+    SERVICE_OR_AD_IS_NOT_HIDDEN = "Данная услуга(объявление) не скрыта."
     SERVICE_IS_NOT_PUBLISHED = "Данная услуга не опубликована."
     SERVICE_ALREADY_IN_FAVORITES = "Данная услуга уже в избраном."
     SERVICE_NOT_IN_FAVORITES = "Данная услуга не в избраном."

@@ -183,3 +183,8 @@ class TestAdsFixtures(TestUserFixtures):
             provider=cls.user_2,
         )
         cls.ad_draft.category.set([cls.category_1])
+        cls.ad_hidden = AdFactory(
+            provider=cls.user_2,
+            status=AdvertisementStatus.HIDDEN.value,
+        )
+        cls.ad_hidden.category.set([cls.category_1])

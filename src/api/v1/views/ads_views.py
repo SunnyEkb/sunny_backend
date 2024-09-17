@@ -227,7 +227,7 @@ class AdViewSet(
         permission_classes=(OwnerOrReadOnly,),
     )
     def cancell(self, request, *args, **kwargs):
-        """Отменить услугу."""
+        """Отменить объявление."""
 
         ad: Ad = self.get_object()
         if ad.status == AdvertisementStatus.DRAFT.value:
@@ -236,5 +236,38 @@ class AdViewSet(
                 data=APIResponses.CAN_NOT_CANCELL_SERVICE_OR_AD.value,
             )
         ad.cancell()
+        serializer = self.get_serializer(ad)
+        return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Опубликовать скрытое объявление.",
+        methods=["POST"],
+        request=None,
+        responses={
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                schemes.CANT_PUBLISH_SERVICE_OR_AD_406
+            ),
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="publish",
+        url_name="publish",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def publish_hidden_ad(self, request, *args, **kwargs):
+        """Опубликовать скрытое объявление."""
+
+        ad: Ad = self.get_object()
+        if not ad.status == AdvertisementStatus.HIDDEN.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.SERVICE_OR_AD_IS_NOT_HIDDEN.value,
+            )
+        ad.publish()
         serializer = self.get_serializer(ad)
         return response.Response(serializer.data)

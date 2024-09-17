@@ -288,9 +288,9 @@ CANT_MODERATE_AD_OR_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.AD_OR_SERVICE_IS_CANCELLED.value},
 )
 
-CANT_PUBLISH_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга не скрыта",
-    value={"detail": APIResponses.SERVICE_IS_NOT_HIDDEN.value},
+CANT_PUBLISH_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Услуга(объявление) не скрыта",
+    value={"detail": APIResponses.SERVICE_OR_AD_IS_NOT_HIDDEN.value},
 )
 
 CANT_ADD_PHOTO_EXAMPLE: OpenApiExample = OpenApiExample(

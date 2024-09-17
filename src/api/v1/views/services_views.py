@@ -280,7 +280,9 @@ class ServiceViewSet(
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_PUBLISH_SERVICE_406,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                schemes.CANT_PUBLISH_SERVICE_OR_AD_406
+            ),
         },
     )
     @action(
@@ -297,7 +299,7 @@ class ServiceViewSet(
         if not service.status == AdvertisementStatus.HIDDEN.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_IS_NOT_HIDDEN.value,
+                data=APIResponses.SERVICE_OR_AD_IS_NOT_HIDDEN.value,
             )
         service.publish()
         serializer = self.get_serializer(service)

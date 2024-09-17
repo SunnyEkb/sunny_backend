@@ -145,3 +145,25 @@ class TestAdView(TestAdsFixtures):
             reverse("ads-cancell", kwargs={"pk": self.ad_2.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_owner_publishes_ad(self):
+        response = self.client_2.post(
+            reverse("ads-publish", kwargs={"pk": self.ad_hidden.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_2.pk).status,
+            AdvertisementStatus.PUBLISHED.value,
+        )
+
+    def test_not_owner_cant_publish_an_ad(self):
+        response = self.client_1.post(
+            reverse("ads-publish", kwargs={"pk": self.ad_hidden.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_anon_user_cant_publish_an_ad(self):
+        response = self.anon_client.post(
+            reverse("ads-publish", kwargs={"pk": self.ad_hidden.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
