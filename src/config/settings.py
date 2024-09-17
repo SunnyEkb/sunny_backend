@@ -172,7 +172,7 @@ SIMPLE_JWT = {
     "AUTH_COOKIE": os.getenv("AUTH_COOKIE", "access"),
     "AUTH_REFRESH": os.getenv("AUTH_REFRESH", "refresh"),
     "AUTH_COOKIE_DOMAIN": None,
-    "AUTH_COOKIE_SECURE": False,
+    "AUTH_COOKIE_SECURE": True,
     "AUTH_COOKIE_HTTP_ONLY": True,
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "None",  # "Lax" заменить на проде
@@ -186,10 +186,10 @@ SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv("SOCIAL_AUTH_VK_OAUTH2_KEY")
 SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv("SOCIAL_AUTH_VK_OAUTH2_SECRET")
 
 CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"  # "Lax" заменить на проде
 SESSION_COOKIE_SAMESITE = "None"  # "Lax" заменить на проде
 CSRF_TRUSTED_ORIGINS = os.getenv(
