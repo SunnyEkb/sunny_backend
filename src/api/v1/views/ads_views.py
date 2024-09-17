@@ -205,3 +205,36 @@ class AdViewSet(
         ad.hide()
         serializer = self.get_serializer(ad)
         return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Отменить объявление.",
+        methods=["POST"],
+        request=None,
+        responses={
+            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                schemes.CANT_CANCELL_SERVICE_OR_AD_406
+            ),
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="cancell",
+        url_name="cancell",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def cancell(self, request, *args, **kwargs):
+        """Отменить услугу."""
+
+        ad: Ad = self.get_object()
+        if ad.status == AdvertisementStatus.DRAFT.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.CAN_NOT_CANCELL_SERVICE_OR_AD.value,
+            )
+        ad.cancell()
+        serializer = self.get_serializer(ad)
+        return response.Response(serializer.data)

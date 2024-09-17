@@ -45,7 +45,9 @@ class APIResponses(models.TextChoices):
     CAN_NOT_HIDE_SERVICE_OR_AD = (
         "Скрыть можно опубликованную только услугу (объявление)."
     )
-    CAN_NOT_CANCELL_SERVICE = "Услуга не была опубликована. Удалите её."
+    CAN_NOT_CANCELL_SERVICE_OR_AD = (
+        "Услуга(объявление) не была опубликована. Удалите её."
+    )
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     AD_OR_SERVICE_IS_CANCELLED = "Данная услуга (объявление) отменена."
     SERVICE_IS_NOT_HIDDEN = "Данная услуга не скрыта."

@@ -248,9 +248,9 @@ CANT_DELETE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.CAN_NOT_DELETE_SEVICE.value},
 )
 
-CANT_CANCELL_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга не может быть отменена",
-    value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE.value},
+CANT_CANCELL_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Услуга(объявление) не может быть отменена",
+    value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE_OR_AD.value},
 )
 
 CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE: OpenApiExample = OpenApiExample(
