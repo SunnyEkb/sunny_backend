@@ -177,3 +177,30 @@ class TestAdView(TestAdsFixtures):
                 status=AdvertisementStatus.DRAFT.value,
             ).exists()
         )
+
+    def test_ad_update(self):
+        # put method test
+        response = self.client_1.put(
+            reverse("ads-detail", kwargs={"pk": self.ad_1.pk}),
+            data=self.new_ad_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_1.pk).title, self.new_ad_data["title"]
+        )
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_1.pk).condition,
+            self.new_ad_data["condition"],
+        )
+
+        # patch method test
+        new_data = {"title": self.new_ad_title}
+        response = self.client_1.patch(
+            reverse("ads-detail", kwargs={"pk": self.ad_1.pk}),
+            data=new_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_1.pk).title,
+            self.new_ad_title,
+        )

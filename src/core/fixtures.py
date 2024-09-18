@@ -197,3 +197,10 @@ class TestAdsFixtures(TestUserFixtures):
             "category_id": cls.category_1.id,
             "condition": AdState.USED.value,
         }
+        cls.new_ad_data = {
+            "title": cls.ad_title,
+            "description": "New_description",
+            "price": "500.00",
+            "category_id": cls.category_1.id,
+            "condition": AdState.NEW.value,
+        }
