@@ -167,3 +167,13 @@ class TestAdView(TestAdsFixtures):
             reverse("ads-publish", kwargs={"pk": self.ad_hidden.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_ad_create(self):
+        response = self.client_1.post(reverse("ads-list"), data=self.ad_data)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        self.assertTrue(
+            Ad.objects.filter(
+                title=self.ad_title,
+                status=AdvertisementStatus.DRAFT.value,
+            ).exists()
+        )

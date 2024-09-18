@@ -9,7 +9,7 @@ from rest_framework.test import APIClient, APITestCase
 
 from ads.tests.factories import AdFactory, CategoryFactory
 from comments.tests.factories import CommentFactory
-from core.choices import AdvertisementStatus, CommentStatus
+from core.choices import AdvertisementStatus, AdState, CommentStatus
 from services.tests.factories import ServiceFactory, TypeFactory
 from users.models import Favorites
 from users.tests.factories import CustomUserFactory
@@ -128,7 +128,7 @@ class TestServiceFixtures(TestUserFixtures):
             provider=cls.user_3, status=AdvertisementStatus.MODERATION.value
         )
         cls.service_title = "Super_service"
-        cls.new_service_title = "Super_service"
+        cls.new_service_title = "New_super_service"
         cls.service_data = {
             "title": cls.service_title,
             "description": "Some_service",
@@ -188,3 +188,12 @@ class TestAdsFixtures(TestUserFixtures):
             status=AdvertisementStatus.HIDDEN.value,
         )
         cls.ad_hidden.category.set([cls.category_1])
+        cls.ad_title = "Super_ad"
+        cls.new_ad_title = "New_Super_ad"
+        cls.ad_data = {
+            "title": cls.ad_title,
+            "description": "Some_ad",
+            "price": "100.00",
+            "category_id": cls.category_1.id,
+            "condition": AdState.USED.value,
+        }
