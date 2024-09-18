@@ -47,6 +47,9 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             "параметр 'category_id'. При отсутствии параметра"
             " будет выведен пустой список."
         ),
+        responses={
+            status.HTTP_200_OK: schemes.AD_LIST_OK_200,
+        },
         parameters=[OpenApiParameter("category_id", int)],
     ),
     retrieve=extend_schema(
@@ -146,7 +149,7 @@ class AdViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_MODERATE_SERVICE_406,
@@ -179,7 +182,7 @@ class AdViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: (
@@ -211,7 +214,7 @@ class AdViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: (
@@ -244,7 +247,7 @@ class AdViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: (
