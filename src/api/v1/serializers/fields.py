@@ -1,8 +1,9 @@
 from rest_framework import serializers
 
-from services.models import Service
-from api.v1.serializers.services_serializers import ServiceListSerializer
+from ads.models import Ad
+from api.v1.serializers import AdRetrieveSerializer, ServiceListSerializer
 from core.choices import SystemMessages
+from services.models import Service
 
 
 class FavoriteObjectRelatedField(serializers.RelatedField):
@@ -13,6 +14,8 @@ class FavoriteObjectRelatedField(serializers.RelatedField):
     def to_representation(self, value):
         if isinstance(value, Service):
             serializer = ServiceListSerializer(value, context=self.context)
+        elif isinstance(value, Ad):
+            serializer = AdRetrieveSerializer(value, context=self.context)
         else:
             raise Exception(SystemMessages.SERIALIZER_NOT_FOUND_ERROR.value)
         return serializer.data
