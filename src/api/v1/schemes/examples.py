@@ -253,34 +253,34 @@ CANT_CANCELL_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE_OR_AD.value},
 )
 
-CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга не опубликована",
-    value={"detail": APIResponses.SERVICE_IS_NOT_PUBLISHED.value},
+CANT_ADD_NOT_PUBLISHED_OBJECT_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Услуга(объявление) не опубликована",
+    value={"detail": APIResponses.OBJECT_IS_NOT_PUBLISHED.value},
 )
 
-PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Лицо, оказывающее услугу, не может добавить её в избранное",
-    value={"detail": APIResponses.SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE.value},
+PORVIDER_CANT_FAVORITE_OBJECT_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Владелец объекта, не может добавить его в избранное",
+    value={"detail": APIResponses.OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE.value},
 )
 
-SERVICE_ALREADY_IN_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга уже в избранном",
-    value={"detail": APIResponses.SERVICE_ALREADY_IN_FAVORITES.value},
+OBJECT_ALREADY_IN_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Объект уже в избранном",
+    value={"detail": APIResponses.OBJECT_ALREADY_IN_FAVORITES.value},
 )
 
-SERVICE_NOT_IN_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
+NOT_IN_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга не в избранном",
-    value={"detail": APIResponses.SERVICE_NOT_IN_FAVORITES.value},
+    value={"detail": APIResponses.OBJECT_NOT_IN_FAVORITES.value},
 )
 
-SERVICE_ADDED_TO_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга добавлена в избранное",
-    value={"detail": APIResponses.SERVICE_ADDED_TO_FAVORITES.value},
+ADDED_TO_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Добавлено в избранное",
+    value={"detail": APIResponses.ADDED_TO_FAVORITES.value},
 )
 
-SERVICE_DELETED_FROM_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга удалена из избранного",
-    value={"detail": APIResponses.SERVICE_DELETED_FROM_FAVORITES.value},
+DELETED_FROM_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Удалено из избранного",
+    value={"detail": APIResponses.DELETED_FROM_FAVORITES.value},
 )
 
 CANT_MODERATE_AD_OR_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(

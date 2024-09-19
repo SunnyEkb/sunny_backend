@@ -186,33 +186,33 @@ COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     examples=[examples.COMMENT_LIST_EXAMPLE],
 )
 
-CANT_ADD_SERVICE_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
+CANT_ADD_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга не может быть добавлена в Избранное",
+    description="Объект не может быть добавлен в Избранное",
     examples=[
-        examples.CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE,
-        examples.PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE,
-        examples.SERVICE_ALREADY_IN_FAVORITES_EXAMPLE,
+        examples.CANT_ADD_NOT_PUBLISHED_OBJECT_EXAMPLE,
+        examples.PORVIDER_CANT_FAVORITE_OBJECT_EXAMPLE,
+        examples.OBJECT_ALREADY_IN_FAVORITES_EXAMPLE,
     ],
 )
 
-CANT_DELETE_SERVICE_FROM_FAVORITES_406: OpenApiResponse = OpenApiResponse(
+CANT_DELETE_FROM_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга не в Избранном",
-    examples=[examples.SERVICE_NOT_IN_FAVORITES_EXAMPLE],
+    description="Объект не в Избранном",
+    examples=[examples.NOT_IN_FAVORITES_EXAMPLE],
 )
 
-SERVICE_ADDED_TO_FAVORITES_201: OpenApiResponse = OpenApiResponse(
+ADDED_TO_FAVORITES_201: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга добавлена в Избранное",
-    examples=[examples.SERVICE_ADDED_TO_FAVORITES_EXAMPLE],
+    description="Добавлено в Избранное",
+    examples=[examples.ADDED_TO_FAVORITES_EXAMPLE],
 )
 
-SERVICE_DELETED_FROM_FAVORITES_204: OpenApiResponse = OpenApiResponse(
+DELETED_FROM_FAVORITES_204: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга удалена из в Избранного",
+    description="Удалено из избранного",
     examples=[
-        examples.SERVICE_DELETED_FROM_FAVORITES_EXAMPLE,
+        examples.DELETED_FROM_FAVORITES_EXAMPLE,
     ],
 )
 

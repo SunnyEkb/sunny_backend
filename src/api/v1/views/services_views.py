@@ -351,10 +351,10 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_201_CREATED: schemes.SERVICE_ADDED_TO_FAVORITES_201,
+            status.HTTP_201_CREATED: schemes.ADDED_TO_FAVORITES_201,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_ADD_SERVICE_TO_FAVORITES_406
+                schemes.CANT_ADD_TO_FAVORITES_406
             ),
         },
     )
@@ -372,7 +372,7 @@ class ServiceViewSet(
         if service.status != AdvertisementStatus.PUBLISHED.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_IS_NOT_PUBLISHED.value,
+                data=APIResponses.OBJECT_IS_NOT_PUBLISHED.value,
             )
         if Favorites.objects.filter(
             content_type=ContentType.objects.get(
@@ -383,12 +383,12 @@ class ServiceViewSet(
         ).exists():
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_ALREADY_IN_FAVORITES.value,
+                data=APIResponses.OBJECT_ALREADY_IN_FAVORITES.value,
             )
         if service.provider == request.user:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE.value,
+                data=APIResponses.OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE.value,
             )
         Favorites.objects.create(
             content_type=ContentType.objects.get(
@@ -399,7 +399,7 @@ class ServiceViewSet(
         )
         return response.Response(
             status=status.HTTP_201_CREATED,
-            data=APIResponses.SERVICE_ADDED_TO_FAVORITES.value,
+            data=APIResponses.ADDED_TO_FAVORITES.value,
         )
 
     @extend_schema(
@@ -407,12 +407,10 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_204_NO_CONTENT: (
-                schemes.SERVICE_DELETED_FROM_FAVORITES_204
-            ),
+            status.HTTP_204_NO_CONTENT: (schemes.DELETED_FROM_FAVORITES_204),
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_DELETE_SERVICE_FROM_FAVORITES_406
+                schemes.CANT_DELETE_FROM_FAVORITES_406
             ),
         },
     )
@@ -436,7 +434,7 @@ class ServiceViewSet(
         ).exists():
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_NOT_IN_FAVORITES.value,
+                data=APIResponses.OBJECT_NOT_IN_FAVORITES.value,
             )
         Favorites.objects.get(
             content_type=ContentType.objects.get(
@@ -447,7 +445,7 @@ class ServiceViewSet(
         ).delete()
         return response.Response(
             status=status.HTTP_204_NO_CONTENT,
-            data=APIResponses.SERVICE_DELETED_FROM_FAVORITES.value,
+            data=APIResponses.DELETED_FROM_FAVORITES.value,
         )
 
 

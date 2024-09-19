@@ -1,8 +1,8 @@
 import sys
 
+from django.contrib.contenttypes.models import ContentType
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
@@ -18,6 +18,7 @@ from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus, APIResponses
 from core.utils import notify_about_moderation
+from users.models import Favorites
 
 
 @extend_schema(tags=["Ads categories"])
@@ -274,3 +275,95 @@ class AdViewSet(
         ad.publish()
         serializer = self.get_serializer(ad)
         return response.Response(serializer.data)
+
+    @extend_schema(
+        summary="Добавить в избранное.",
+        methods=["POST"],
+        request=None,
+        responses={
+            status.HTTP_201_CREATED: schemes.ADDED_TO_FAVORITES_201,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_TO_FAVORITES_406,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="add-to-favorites",
+        url_name="add_to_favorites",
+        permission_classes=(permissions.IsAuthenticated),
+    )
+    def add_to_favorites(self, request, *args, **kwargs):
+        """Добавить в избранное."""
+
+        ad: Ad = self.get_object()
+        if ad.status != AdvertisementStatus.PUBLISHED.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.OBJECT_IS_NOT_PUBLISHED.value,
+            )
+        if Favorites.objects.filter(
+            content_type=ContentType.objects.get(app_label="ads", model="ad"),
+            object_id=ad.id,
+            user=request.user,
+        ).exists():
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.OBJECT_ALREADY_IN_FAVORITES.value,
+            )
+        if ad.provider == request.user:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE.value,
+            )
+        Favorites.objects.create(
+            content_type=ContentType.objects.get(app_label="ads", model="ad"),
+            object_id=ad.id,
+            user=request.user,
+        )
+        return response.Response(
+            status=status.HTTP_201_CREATED,
+            data=APIResponses.ADDED_TO_FAVORITES.value,
+        )
+
+    @extend_schema(
+        summary="Удалить из избранного.",
+        methods=["POST"],
+        request=None,
+        responses={
+            status.HTTP_204_NO_CONTENT: schemes.DELETED_FROM_FAVORITES_204,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                schemes.CANT_DELETE_FROM_FAVORITES_406
+            ),
+        },
+    )
+    @action(
+        detail=True,
+        methods=("delete",),
+        url_path="delete-from-favorites",
+        url_name="delete_from_favorites",
+        permission_classes=(permissions.IsAuthenticated),
+    )
+    def delete_from_favorites(self, request, *args, **kwargs):
+        """Удалить из избранного."""
+
+        service: Ad = self.get_object()
+        if not Favorites.objects.filter(
+            content_type=ContentType.objects.get(app_label="ads", model="ad"),
+            object_id=service.id,
+            user=request.user,
+        ).exists():
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.OBJECT_NOT_IN_FAVORITES.value,
+            )
+        Favorites.objects.get(
+            content_type=ContentType.objects.get(app_label="ads", model="ad"),
+            object_id=service.id,
+            user=request.user,
+        ).delete()
+        return response.Response(
+            status=status.HTTP_204_NO_CONTENT,
+            data=APIResponses.DELETED_FROM_FAVORITES.value,
+        )
