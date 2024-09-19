@@ -204,3 +204,8 @@ class TestAdsFixtures(TestUserFixtures):
             "category_id": cls.category_1.id,
             "condition": AdState.NEW.value,
         }
+        Favorites.objects.create(
+            user=cls.user_3,
+            object_id=cls.ad_2.id,
+            content_type=ContentType.objects.get(app_label="ads", model="ad"),
+        )

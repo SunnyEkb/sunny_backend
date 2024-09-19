@@ -204,3 +204,45 @@ class TestAdView(TestAdsFixtures):
             Ad.objects.get(pk=self.ad_1.pk).title,
             self.new_ad_title,
         )
+
+    def test_add_an_ad_to_favorite(self):
+        response = self.client_4.post(
+            reverse("ads-add_to_favorites", kwargs={"pk": self.ad_2.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_anon_user_cant_add_an_ad_to_favorite(self):
+        response = self.anon_client.post(
+            reverse("ads-add_to_favorites", kwargs={"pk": self.ad_1.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_cant_add_an_ad_to_favorite_twice(self):
+        response = self.client_3.post(
+            reverse("ads-add_to_favorites", kwargs={"pk": self.ad_2.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_provider_cant_add_an_ad_to_favorite(self):
+        response = self.client_3.post(
+            reverse("ads-add_to_favorites", kwargs={"pk": self.ad_2.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_delete_an_ad_from_favorite(self):
+        response = self.client_3.delete(
+            reverse("ads-delete_from_favorites", kwargs={"pk": self.ad_2.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+
+    def test_anon_client_cant_delete_an_ad_from_favorite(self):
+        response = self.anon_client.delete(
+            reverse("ads-delete_from_favorites", kwargs={"pk": self.ad_2.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_cant_delete_not_favorited_ad_from_favorite(self):
+        response = self.client_1.delete(
+            reverse("ads-delete_from_favorites", kwargs={"pk": self.ad_1.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)

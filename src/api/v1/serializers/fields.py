@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
 from ads.models import Ad
-from api.v1.serializers import AdRetrieveSerializer, ServiceListSerializer
+from api.v1.serializers.ads_serializers import AdRetrieveSerializer
+from api.v1.serializers.services_serializers import ServiceListSerializer
 from core.choices import SystemMessages
 from services.models import Service
 
