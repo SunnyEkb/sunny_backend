@@ -32,6 +32,7 @@ class AdvertisementStatus(models.IntegerChoices):
 
 class APIResponses(models.TextChoices):
     ACCOUNT_IS_INACTIVE = "This account is not active"
+    ADDED_TO_FAVORITES = "Добавлено в избранное."
     INVALID_TOKEN = "No valid token found in cookie 'refresh_token'"
     INVALID_CREDENTIALS = "Invalid email or password"
     PASSWORD_DO_NOT_MATCH = "Password and confirmation do not match"
@@ -42,19 +43,22 @@ class APIResponses(models.TextChoices):
     WRONG_PASSWORD = "Wrong password"
     UNAUTHORIZED = "Учетные данные не были предоставлены."
     CAN_NOT_DELETE_SEVICE = "Невозможно удалить опубликованную заявку."
-    CAN_NOT_HIDE_SERVICE = "Скрыть можно опубликованную только услугу."
-    CAN_NOT_CANCELL_SERVICE = "Услуга не была опубликована. Удалите её."
+    CAN_NOT_HIDE_SERVICE_OR_AD = (
+        "Скрыть можно опубликованную только услугу (объявление)."
+    )
+    CAN_NOT_CANCELL_SERVICE_OR_AD = (
+        "Услуга(объявление) не была опубликована. Удалите её."
+    )
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     AD_OR_SERVICE_IS_CANCELLED = "Данная услуга (объявление) отменена."
-    SERVICE_IS_NOT_HIDDEN = "Данная услуга не скрыта."
-    SERVICE_IS_NOT_PUBLISHED = "Данная услуга не опубликована."
-    SERVICE_ALREADY_IN_FAVORITES = "Данная услуга уже в избраном."
-    SERVICE_NOT_IN_FAVORITES = "Данная услуга не в избраном."
-    SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE = (
-        "Автор не может добавить свою услугу в избранное."
+    SERVICE_OR_AD_IS_NOT_HIDDEN = "Данная услуга (объявление) не скрыта."
+    OBJECT_IS_NOT_PUBLISHED = "Данная услуга (объявление) не опубликована."
+    OBJECT_ALREADY_IN_FAVORITES = "Данная услуга (объявление) уже в избраном."
+    OBJECT_NOT_IN_FAVORITES = "Данная услуга (объявление) не в избраном."
+    OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE = (
+        "Вледелец не может добавить свой объект в избранное."
     )
-    SERVICE_ADDED_TO_FAVORITES = "Услуга добавлена в избранное."
-    SERVICE_DELETED_FROM_FAVORITES = "Услуга удалена из в избранного."
+    DELETED_FROM_FAVORITES = "Удалено из избранного."
     MAX_IMAGE_QUANTITY_EXEED = (
         f"Можно добавить только {Limits.MAX_FILE_QUANTITY} фотографий."
     )

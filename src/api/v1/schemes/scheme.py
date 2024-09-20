@@ -138,10 +138,10 @@ COMMENT_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     examples=[examples.COMMENT_NOT_AUTHOR_EXAMPLE],
 )
 
-CANT_HIDE_SERVICE_406: OpenApiResponse = OpenApiResponse(
+CANT_HIDE_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Нельзя скрыть услугу",
-    examples=[examples.CANT_HIDE_SERVICE_EXAMPLE],
+    description="Нельзя скрыть услугу/объявление",
+    examples=[examples.CANT_HIDE_SERVICE_OR_AD_EXAMPLE],
 )
 
 CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
@@ -150,10 +150,10 @@ CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     examples=[examples.CANT_DELETE_SERVICE_EXAMPLE],
 )
 
-CANT_CANCELL_SERVICE_406: OpenApiResponse = OpenApiResponse(
+CANT_CANCELL_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга не может быть отменена",
-    examples=[examples.CANT_CANCELL_SERVICE_EXAMPLE],
+    description="Услуга (объявление) не может быть отменена",
+    examples=[examples.CANT_CANCELL_SERVICE_OR_AD_EXAMPLE],
 )
 
 CANT_MODERATE_SERVICE_406: OpenApiResponse = OpenApiResponse(
@@ -162,10 +162,10 @@ CANT_MODERATE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     examples=[examples.CANT_MODERATE_AD_OR_SERVICE_EXAMPLE],
 )
 
-CANT_PUBLISH_SERVICE_406: OpenApiResponse = OpenApiResponse(
+CANT_PUBLISH_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга не скрыта",
-    examples=[examples.CANT_PUBLISH_SERVICE_EXAMPLE],
+    description="Услуга(объявление) не скрыта",
+    examples=[examples.CANT_PUBLISH_SERVICE_OR_AD_EXAMPLE],
 )
 
 CANT_ADD_PHOTO_406: OpenApiResponse = OpenApiResponse(
@@ -186,33 +186,33 @@ COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     examples=[examples.COMMENT_LIST_EXAMPLE],
 )
 
-CANT_ADD_SERVICE_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
+CANT_ADD_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга не может быть добавлена в Избранное",
+    description="Объект не может быть добавлен в Избранное",
     examples=[
-        examples.CANT_FAVORITE_SERVICE_NOT_PUBLISHED_EXAMPLE,
-        examples.PORVIDER_CANT_FAVORITE_SERVICE_EXAMPLE,
-        examples.SERVICE_ALREADY_IN_FAVORITES_EXAMPLE,
+        examples.CANT_ADD_NOT_PUBLISHED_OBJECT_EXAMPLE,
+        examples.PORVIDER_CANT_FAVORITE_OBJECT_EXAMPLE,
+        examples.OBJECT_ALREADY_IN_FAVORITES_EXAMPLE,
     ],
 )
 
-CANT_DELETE_SERVICE_FROM_FAVORITES_406: OpenApiResponse = OpenApiResponse(
+CANT_DELETE_FROM_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга не в Избранном",
-    examples=[examples.SERVICE_NOT_IN_FAVORITES_EXAMPLE],
+    description="Объект не в Избранном",
+    examples=[examples.NOT_IN_FAVORITES_EXAMPLE],
 )
 
-SERVICE_ADDED_TO_FAVORITES_201: OpenApiResponse = OpenApiResponse(
+ADDED_TO_FAVORITES_201: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга добавлена в Избранное",
-    examples=[examples.SERVICE_ADDED_TO_FAVORITES_EXAMPLE],
+    description="Добавлено в Избранное",
+    examples=[examples.ADDED_TO_FAVORITES_EXAMPLE],
 )
 
-SERVICE_DELETED_FROM_FAVORITES_204: OpenApiResponse = OpenApiResponse(
+DELETED_FROM_FAVORITES_204: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Услуга удалена из в Избранного",
+    description="Удалено из избранного",
     examples=[
-        examples.SERVICE_DELETED_FROM_FAVORITES_EXAMPLE,
+        examples.DELETED_FROM_FAVORITES_EXAMPLE,
     ],
 )
 
