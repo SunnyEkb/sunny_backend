@@ -367,3 +367,42 @@ class AdViewSet(
             status=status.HTTP_204_NO_CONTENT,
             data=APIResponses.DELETED_FROM_FAVORITES.value,
         )
+
+    @extend_schema(
+        summary="Добавить фото к объявлению.",
+        methods=["POST"],
+        request=api_serializers.AdImageCreateSerializer,
+        responses={
+            status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
+            status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="add_photo",
+        url_name="add_photo",
+        permission_classes=(OwnerOrReadOnly,),
+    )
+    def add_photo(self, request, *args, **kwargs):
+        """Добавить фото к объявлению."""
+
+        ad: Ad = self.get_object()
+        data = request.data
+        img_serializer = api_serializers.AdImageCreateSerializer(data=data)
+        images = ad.images.all()
+        if len(images) >= 5:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.MAX_IMAGE_QUANTITY_EXEED.value,
+            )
+        if img_serializer.is_valid():
+            img_serializer.save(ad=ad)
+            ad_serializer = api_serializers.AdRetrieveSerializer(ad)
+            return response.Response(ad_serializer.data)
+        return response.Response(
+            img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
