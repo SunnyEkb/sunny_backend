@@ -4,6 +4,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from api.v1.views import (
     AdViewSet,
+    AdImageViewSet,
     CategoryViewSet,
     ChangePassowrdView,
     CommentCreateDestroyViewSet,
@@ -38,6 +39,7 @@ api_v1_router.register("services", ServiceViewSet, basename="services")
 api_v1_router.register(
     "serviceimage", ServiceImageViewSet, basename="serviceimage"
 )
+api_v1_router.register("adimage", AdImageViewSet, basename="adimage")
 
 urlpatterns = [
     path("registry/", RegisrtyView.as_view(), name="registry"),
