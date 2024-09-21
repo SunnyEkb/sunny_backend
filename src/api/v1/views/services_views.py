@@ -457,6 +457,7 @@ class ServiceViewSet(
 )
 @extend_schema_view(
     destroy=extend_schema(summary="Удаление фото."),
+    retrieve=extend_schema(summary="Получение фото."),
     responses={
         status.HTTP_204_NO_CONTENT: None,
         status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
@@ -465,7 +466,7 @@ class ServiceViewSet(
 class ServiceImageViewSet(
     mixins.DestroyModelMixin,
     mixins.RetrieveModelMixin,
-    viewsets.GenericViewSet
+    viewsets.GenericViewSet,
 ):
     """Фото к услугам."""
 
