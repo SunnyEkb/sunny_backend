@@ -409,7 +409,7 @@ class AdViewSet(
 
 
 @extend_schema(
-    tags=["Services"],
+    tags=["Ads"],
     responses={
         status.HTTP_204_NO_CONTENT: None,
     },
@@ -422,7 +422,7 @@ class AdViewSet(
         status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
     },
 )
-class ServiceImageViewSet(
+class AdImageViewSet(
     mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
