@@ -462,7 +462,11 @@ class ServiceViewSet(
         status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
     },
 )
-class ServiceImageViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class ServiceImageViewSet(
+    mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
     """Фото к услугам."""
 
     queryset = ServiceImage.objects.all()

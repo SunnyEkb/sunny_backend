@@ -11,9 +11,9 @@ from drf_spectacular.utils import (
 from rest_framework import mixins, permissions, response, status, viewsets
 from rest_framework.decorators import action
 
-from ads.models import Ad, Category
+from ads.models import Ad, AdImage, Category
 from api.v1.paginators import CustomPaginator
-from api.v1.permissions import OwnerOrReadOnly, ReadOnly
+from api.v1.permissions import OwnerOrReadOnly, ReadOnly, PhotoOwnerOrReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus, APIResponses
@@ -406,3 +406,40 @@ class AdViewSet(
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+@extend_schema(
+    tags=["Services"],
+    responses={
+        status.HTTP_204_NO_CONTENT: None,
+    },
+)
+@extend_schema_view(
+    destroy=extend_schema(summary="Удаление фото."),
+    responses={
+        status.HTTP_204_NO_CONTENT: None,
+        status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+    },
+)
+class ServiceImageViewSet(
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet
+):
+    """Фото к объявлениям."""
+
+    queryset = AdImage.objects.all()
+    serializer_class = None
+
+    def get_permissions(self):
+        if self.action == "retrieve":
+            return (ReadOnly(),)
+        return (PhotoOwnerOrReadOnly(),)
+
+    def destroy(self, request, *args, **kwargs):
+        instance: AdImage = self.get_object()
+
+        # удаляем файл
+        instance.delete_image_files()
+
+        return super().destroy(request, *args, **kwargs)
