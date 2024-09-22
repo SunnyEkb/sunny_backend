@@ -182,7 +182,9 @@ class ServiceViewSet(
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_CANCELL_SERVICE_406,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                schemes.CANT_CANCELL_SERVICE_OR_AD_406
+            ),
         },
     )
     @action(
@@ -199,7 +201,7 @@ class ServiceViewSet(
         if service.status == AdvertisementStatus.DRAFT.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.CAN_NOT_CANCELL_SERVICE.value,
+                data=APIResponses.CAN_NOT_CANCELL_SERVICE_OR_AD.value,
             )
         service.cancell()
         serializer = self.get_serializer(service)
@@ -213,7 +215,9 @@ class ServiceViewSet(
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_HIDE_SERVICE_406,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                schemes.CANT_HIDE_SERVICE_OR_AD_406
+            ),
         },
     )
     @action(
@@ -229,7 +233,7 @@ class ServiceViewSet(
         if not service.status == AdvertisementStatus.PUBLISHED.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.CAN_NOT_HIDE_SERVICE.value,
+                data=APIResponses.CAN_NOT_HIDE_SERVICE_OR_AD.value,
             )
         service.hide()
         serializer = self.get_serializer(service)
@@ -276,7 +280,9 @@ class ServiceViewSet(
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_PUBLISH_SERVICE_406,
+            status.HTTP_406_NOT_ACCEPTABLE: (
+                schemes.CANT_PUBLISH_SERVICE_OR_AD_406
+            ),
         },
     )
     @action(
@@ -293,7 +299,7 @@ class ServiceViewSet(
         if not service.status == AdvertisementStatus.HIDDEN.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_IS_NOT_HIDDEN.value,
+                data=APIResponses.SERVICE_OR_AD_IS_NOT_HIDDEN.value,
             )
         service.publish()
         serializer = self.get_serializer(service)
@@ -345,10 +351,10 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_201_CREATED: schemes.SERVICE_ADDED_TO_FAVORITES_201,
+            status.HTTP_201_CREATED: schemes.ADDED_TO_FAVORITES_201,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_ADD_SERVICE_TO_FAVORITES_406
+                schemes.CANT_ADD_TO_FAVORITES_406
             ),
         },
     )
@@ -366,7 +372,7 @@ class ServiceViewSet(
         if service.status != AdvertisementStatus.PUBLISHED.value:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_IS_NOT_PUBLISHED.value,
+                data=APIResponses.OBJECT_IS_NOT_PUBLISHED.value,
             )
         if Favorites.objects.filter(
             content_type=ContentType.objects.get(
@@ -377,12 +383,12 @@ class ServiceViewSet(
         ).exists():
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_ALREADY_IN_FAVORITES.value,
+                data=APIResponses.OBJECT_ALREADY_IN_FAVORITES.value,
             )
         if service.provider == request.user:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_PROVIDER_CANT_ADD_TO_FAVORITE.value,
+                data=APIResponses.OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE.value,
             )
         Favorites.objects.create(
             content_type=ContentType.objects.get(
@@ -393,7 +399,7 @@ class ServiceViewSet(
         )
         return response.Response(
             status=status.HTTP_201_CREATED,
-            data=APIResponses.SERVICE_ADDED_TO_FAVORITES.value,
+            data=APIResponses.ADDED_TO_FAVORITES.value,
         )
 
     @extend_schema(
@@ -401,12 +407,10 @@ class ServiceViewSet(
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_204_NO_CONTENT: (
-                schemes.SERVICE_DELETED_FROM_FAVORITES_204
-            ),
+            status.HTTP_204_NO_CONTENT: (schemes.DELETED_FROM_FAVORITES_204),
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_DELETE_SERVICE_FROM_FAVORITES_406
+                schemes.CANT_DELETE_FROM_FAVORITES_406
             ),
         },
     )
@@ -430,7 +434,7 @@ class ServiceViewSet(
         ).exists():
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_NOT_IN_FAVORITES.value,
+                data=APIResponses.OBJECT_NOT_IN_FAVORITES.value,
             )
         Favorites.objects.get(
             content_type=ContentType.objects.get(
@@ -441,7 +445,7 @@ class ServiceViewSet(
         ).delete()
         return response.Response(
             status=status.HTTP_204_NO_CONTENT,
-            data=APIResponses.SERVICE_DELETED_FROM_FAVORITES.value,
+            data=APIResponses.DELETED_FROM_FAVORITES.value,
         )
 
 
@@ -453,12 +457,17 @@ class ServiceViewSet(
 )
 @extend_schema_view(
     destroy=extend_schema(summary="Удаление фото."),
+    retrieve=extend_schema(summary="Получение фото."),
     responses={
         status.HTTP_204_NO_CONTENT: None,
         status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
     },
 )
-class ServiceImageViewSet(mixins.DestroyModelMixin, viewsets.GenericViewSet):
+class ServiceImageViewSet(
+    mixins.DestroyModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet,
+):
     """Фото к услугам."""
 
     queryset = ServiceImage.objects.all()
