@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
-from ads.tests.factories import AdFactory, CategoryFactory
+from tests.factories import AdFactory, CategoryFactory
 from comments.tests.factories import CommentFactory
 from core.choices import AdvertisementStatus, AdState, CommentStatus
 from services.tests.factories import ServiceFactory, TypeFactory

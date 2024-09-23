@@ -7,7 +7,7 @@ from django.core import mail
 from django.urls import reverse
 
 from core.choices import APIResponses
-from core.fixtures import TestUserFixtures
+from tests.fixtures import TestUserFixtures
 
 User = get_user_model()
 

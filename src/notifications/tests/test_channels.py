@@ -1,7 +1,7 @@
 from channels.testing import WebsocketCommunicator
 
-from core.fixtures import TestUserFixtures
 from notifications.consumers import NotificationConsumer
+from tests.fixtures import TestUserFixtures
 
 
 class NotificationConsumerTest(TestUserFixtures):

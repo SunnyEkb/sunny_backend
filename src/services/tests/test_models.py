@@ -1,6 +1,6 @@
-from core.fixtures import BaseTestCase
 from services.models import Service, ServiceImage
 from services.tests.factories import ServiceFactory, TypeFactory
+from tests.fixtures import BaseTestCase
 
 from core.choices import AdvertisementStatus
 

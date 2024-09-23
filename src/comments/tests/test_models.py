@@ -1,8 +1,8 @@
 from django.db import IntegrityError
 
-from core.fixtures import BaseTestCase
 from comments.models import CommentImage
 from comments.tests.factories import CommentFactory
+from tests.fixtures import BaseTestCase
 from services.tests.factories import ServiceFactory
 from users.tests.factories import CustomUserFactory
 

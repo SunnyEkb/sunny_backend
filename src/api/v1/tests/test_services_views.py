@@ -4,8 +4,8 @@ from django.db.models import Avg
 from django.urls import reverse
 
 from core.choices import ServicePlace, AdvertisementStatus
-from core.fixtures import TestServiceFixtures
 from services.models import Service, Type
+from tests.fixtures import TestServiceFixtures
 
 
 class TestTypeView(TestServiceFixtures):

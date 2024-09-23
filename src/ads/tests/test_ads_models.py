@@ -1,6 +1,6 @@
-from core.fixtures import BaseTestCase
+from tests.fixtures import BaseTestCase
 from ads.models import Ad, AdImage
-from ads.tests.factories import AdFactory
+from tests.factories import AdFactory
 
 from core.choices import AdvertisementStatus, AdState
 
