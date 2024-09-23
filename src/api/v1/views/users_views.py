@@ -203,16 +203,18 @@ class ChangePassowrdView(GenericAPIView):
 @extend_schema_view(
     update=extend_schema(
         summary="Изменение сведений о пользователе.",
+        request=api_serializers.UserUpdateSerializer,
         responses={
-            status.HTTP_200_OK: schemes.USER_PUT_OK_200,
+            status.HTTP_200_OK: schemes.USER_GET_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
         examples=[schemes.USER_CHANGE_EXAMPLE],
     ),
     partial_update=extend_schema(
         summary="Изменение сведений о пользователе.",
+        request=api_serializers.UserUpdateSerializer,
         responses={
-            status.HTTP_200_OK: schemes.USER_PATCH_OK_200,
+            status.HTTP_200_OK: schemes.USER_GET_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
         examples=[schemes.USER_PART_CHANGE_EXAMPLE],

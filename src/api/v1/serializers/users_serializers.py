@@ -61,6 +61,7 @@ class UserReadSerializer(ModelSerializer):
             "first_name",
             "last_name",
             "role",
+            "photo",
         ]
 
 
@@ -76,6 +77,7 @@ class UserUpdateSerializer(ModelSerializer):
             "first_name",
             "last_name",
             "phone",
+            "photo",
         ]
 
 
