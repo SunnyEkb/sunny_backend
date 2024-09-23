@@ -65,9 +65,7 @@ class CustomUser(AbstractUser):
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
         default_related_name = "user"
-        ordering = [
-            "email",
-        ]
+        ordering = ["email"]
 
     def __str__(self) -> str:
         return self.email

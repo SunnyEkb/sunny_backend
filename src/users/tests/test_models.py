@@ -1,18 +1,29 @@
-from rest_framework.test import APITestCase
-
 from core.choices import Notifications, Role
+from core.fixtures import BaseTestCase
 from notifications.models import Notification
 from users.models import CustomUser
 from users.tests.factories import CustomUserFactory
 
 
-class UsersModelsTest(APITestCase):
+class UsersModelsTest(BaseTestCase):
     """Класс для тестирования моделей приложения users."""
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         cls.user = CustomUserFactory()
+        cls.user.photo = cls.uploaded
+        cls.user.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+
+    def test_user_photo_creation(self):
+        self.assertEqual(
+            self.user.photo,
+            f"users/{self.user.id}/{self.file_name}",
+        )
 
     def test_user_creation(self):
         self.assertIsInstance(self.user, CustomUser)
