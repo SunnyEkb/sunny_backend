@@ -207,7 +207,7 @@ class ChangePassowrdView(GenericAPIView):
             status.HTTP_200_OK: schemes.USER_PUT_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
-        examples=[schemes.USER_CHANGE_EXAMPLE]
+        examples=[schemes.USER_CHANGE_EXAMPLE],
     ),
     partial_update=extend_schema(
         summary="Изменение сведений о пользователе.",
