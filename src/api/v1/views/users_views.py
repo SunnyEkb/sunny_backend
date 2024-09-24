@@ -1,9 +1,11 @@
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware import csrf
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed, ParseError
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
@@ -237,12 +239,28 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
     def get_queryset(self):
         return User.objects.all()
 
-    def get_object(self):
-        if self.kwargs.get("pk", None) == "me":
-            self.kwargs["pk"] = self.request.user.pk
-        return super(UserViewSet, self).get_object()
-
     def get_serializer_class(self):
         if self.action in ["update", "partial_update"]:
             return api_serializers.UserUpdateSerializer
         return api_serializers.UserReadSerializer
+
+    @extend_schema(
+        request=None,
+        summary="Получить информацию о текущем пользователе.",
+        methods=["GET"],
+        responses={
+            status.HTTP_200_OK: schemes.USER_GET_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+        },
+    )
+    @action(
+        detail=False,
+        methods=("get",),
+        url_path="me",
+        url_name="me",
+        permission_classes=(IsAuthenticated,),
+    )
+    def get_me(self, request, *args, **kwargs):
+        user = get_object_or_404(User, pk=request.user.id)
+        serializer = self.get_serializer(user)
+        return Response(serializer.data)

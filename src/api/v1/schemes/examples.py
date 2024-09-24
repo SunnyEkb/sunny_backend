@@ -44,6 +44,7 @@ USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
 USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Данные пользователя",
     value={
+        "id": 1,
         "username": "Some_username",
         "email": "example@example.com",
         "phone": "+79000000000",
