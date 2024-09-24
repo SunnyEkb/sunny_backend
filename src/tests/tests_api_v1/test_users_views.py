@@ -137,7 +137,7 @@ class TestUser(TestUserFixtures):
         response = self.client_1.put(
             reverse("users-detail", kwargs={"pk": self.user_1.id}),
             data=self.change_user_data,
-            format="json"
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         user = User.objects.get(id=self.user_1.id)
@@ -148,7 +148,7 @@ class TestUser(TestUserFixtures):
         response = self.client_2.patch(
             reverse("users-detail", kwargs={"pk": self.user_2.id}),
             data=self.part_change_user_data,
-            format="json"
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         user = User.objects.get(id=self.user_2.id)
@@ -158,14 +158,14 @@ class TestUser(TestUserFixtures):
         response_1 = self.anon_client.patch(
             reverse("users-detail", kwargs={"pk": self.user_2.id}),
             data=self.part_change_user_data,
-            format="json"
+            format="json",
         )
         self.assertEqual(response_1.status_code, HTTPStatus.UNAUTHORIZED)
 
         response_2 = self.anon_client.put(
             reverse("users-detail", kwargs={"pk": self.user_2.id}),
             data=self.change_user_data,
-            format="json"
+            format="json",
         )
         self.assertEqual(response_2.status_code, HTTPStatus.UNAUTHORIZED)
 
