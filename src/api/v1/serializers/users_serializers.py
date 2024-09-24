@@ -55,12 +55,14 @@ class UserReadSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = [
+            "id",
             "username",
             "email",
             "phone",
             "first_name",
             "last_name",
             "role",
+            "photo",
         ]
 
 
@@ -76,6 +78,7 @@ class UserUpdateSerializer(ModelSerializer):
             "first_name",
             "last_name",
             "phone",
+            "photo",
         ]
 
 

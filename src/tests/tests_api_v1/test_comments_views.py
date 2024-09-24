@@ -3,9 +3,9 @@ from http import HTTPStatus
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 
-from core.choices import CommentStatus
-from core.fixtures import TestServiceFixtures
 from comments.models import Comment
+from core.choices import CommentStatus
+from tests.fixtures import TestServiceFixtures
 
 
 class TestCommentsView(TestServiceFixtures):

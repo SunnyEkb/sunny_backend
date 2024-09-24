@@ -1,6 +1,6 @@
-from core.fixtures import BaseTestCase
 from services.models import Service, ServiceImage
-from services.tests.factories import ServiceFactory, TypeFactory
+from tests import factories
+from tests.fixtures import BaseTestCase
 
 from core.choices import AdvertisementStatus
 
@@ -11,9 +11,9 @@ class ServiceModelsTest(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.service_1 = ServiceFactory()
-        cls.service_2 = ServiceFactory()
-        cls.type_1 = TypeFactory()
+        cls.service_1 = factories.ServiceFactory()
+        cls.service_2 = factories.ServiceFactory()
+        cls.type_1 = factories.TypeFactory()
         cls.service_1_image = ServiceImage.objects.create(
             service=cls.service_1, image=cls.uploaded
         )
