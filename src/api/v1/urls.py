@@ -40,6 +40,7 @@ api_v1_router.register(
     "serviceimage", ServiceImageViewSet, basename="serviceimage"
 )
 api_v1_router.register("adimage", AdImageViewSet, basename="adimage")
+api_v1_router.register("users", UserViewSet, basename="users")
 
 urlpatterns = [
     path("registry/", RegisrtyView.as_view(), name="registry"),
@@ -58,18 +59,6 @@ urlpatterns = [
         "change-password/",
         ChangePassowrdView.as_view(),
         name="change_password",
-    ),
-    re_path(
-        r"^users/me/$",
-        UserViewSet.as_view(
-            {
-                "get": "retrieve",
-                "put": "update",
-                "patch": "partial_update",
-            }
-        ),
-        kwargs={"pk": "me"},
-        name="users",
     ),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(

@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from ads.models import Ad, Category
 from core.choices import AdvertisementStatus
-from core.fixtures import TestAdsFixtures
+from tests.fixtures import TestAdsFixtures
 
 
 class TestCategoryView(TestAdsFixtures):

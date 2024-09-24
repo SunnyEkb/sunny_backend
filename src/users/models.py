@@ -8,6 +8,7 @@ from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 from core.choices import Role
+from core.db_utils import user_photo_path, validate_image
 from core.enums import Limits
 from users.managers import UserManager
 
@@ -46,6 +47,13 @@ class CustomUser(AbstractUser):
         default=Role.USER,
         max_length=Limits.MAX_LENGTH_USER_ROLE.value,
     )
+    photo = models.ImageField(
+        "Фото",
+        upload_to=user_photo_path,
+        blank=True,
+        null=True,
+        validators=[validate_image],
+    )
     favorites = GenericRelation("Favorites")
 
     USERNAME_FIELD = "email"
@@ -57,9 +65,7 @@ class CustomUser(AbstractUser):
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
         default_related_name = "user"
-        ordering = [
-            "email",
-        ]
+        ordering = ["email"]
 
     def __str__(self) -> str:
         return self.email

@@ -30,3 +30,9 @@ def ad_image_path(instance: object, filename: str) -> str:
     """Возвращает путь для сохранения фото к объявлению."""
 
     return "ads/{}/{}".format(instance.ad.id, filename).replace("\\\\", "/")
+
+
+def user_photo_path(instance: object, filename: str) -> str:
+    """Возвращает путь для сохранения фото пользователя."""
+
+    return "users/{}/{}".format(instance.id, filename).replace("\\\\", "/")
