@@ -1,8 +1,8 @@
 from core.choices import Notifications, Role
 from notifications.models import Notification
-from tests.fixtures import BaseTestCase
 from users.models import CustomUser
-from users.tests.factories import CustomUserFactory
+from tests.factories import CustomUserFactory
+from tests.fixtures import BaseTestCase
 
 
 class UsersModelsTest(BaseTestCase):

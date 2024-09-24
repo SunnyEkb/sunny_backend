@@ -7,12 +7,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
-from tests.factories import AdFactory, CategoryFactory
-from comments.tests.factories import CommentFactory
 from core.choices import AdvertisementStatus, AdState, CommentStatus
-from services.tests.factories import ServiceFactory, TypeFactory
 from users.models import Favorites
-from users.tests.factories import CustomUserFactory
+from tests import factories
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -68,10 +65,10 @@ class TestUserFixtures(BaseTestCase):
             "last_name": cls.last_name,
             "phone": cls.new_phone,
         }
-        cls.user_1 = CustomUserFactory()
-        cls.user_2 = CustomUserFactory(password=cls.password)
-        cls.user_3 = CustomUserFactory()
-        cls.user_4 = CustomUserFactory(password=cls.password)
+        cls.user_1 = factories.CustomUserFactory()
+        cls.user_2 = factories.CustomUserFactory(password=cls.password)
+        cls.user_3 = factories.CustomUserFactory()
+        cls.user_4 = factories.CustomUserFactory(password=cls.password)
 
         cls.client_1 = APIClient()
         cls.client_1.force_authenticate(cls.user_1)
@@ -88,43 +85,43 @@ class TestServiceFixtures(TestUserFixtures):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.type_1 = TypeFactory()
-        cls.type_2 = TypeFactory(parent=cls.type_1)
-        cls.service_1 = ServiceFactory(provider=cls.user_1)
+        cls.type_1 = factories.TypeFactory()
+        cls.type_2 = factories.TypeFactory(parent=cls.type_1)
+        cls.service_1 = factories.ServiceFactory(provider=cls.user_1)
         cls.service_1.type.set([cls.type_1])
-        cls.service_2 = ServiceFactory(
+        cls.service_2 = factories.ServiceFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
-        cls.service_3 = ServiceFactory(
+        cls.service_3 = factories.ServiceFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.HIDDEN.value,
         )
-        cls.service_4 = ServiceFactory(provider=cls.user_2)
+        cls.service_4 = factories.ServiceFactory(provider=cls.user_2)
         cls.service_4.type.set([cls.type_2])
-        cls.service_5 = ServiceFactory(provider=cls.user_2)
+        cls.service_5 = factories.ServiceFactory(provider=cls.user_2)
         cls.service_5.type.set([cls.type_2])
-        cls.service_6 = ServiceFactory(
+        cls.service_6 = factories.ServiceFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
         cls.service_6.type.set([cls.type_2])
-        cls.draft_service = ServiceFactory(
+        cls.draft_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.DRAFT.value
         )
-        cls.published_service = ServiceFactory(
+        cls.published_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.PUBLISHED.value
         )
-        cls.cancelled_service = ServiceFactory(
+        cls.cancelled_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.CANCELLED.value
         )
-        cls.changed_service = ServiceFactory(
+        cls.changed_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.CHANGED.value
         )
-        cls.moderate_service = ServiceFactory(
+        cls.moderate_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.MODERATION.value
         )
-        cls.hidden_service = ServiceFactory(
+        cls.hidden_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.MODERATION.value
         )
         cls.service_title = "Super_service"
@@ -138,12 +135,12 @@ class TestServiceFixtures(TestUserFixtures):
             "salon_name": "Some Name",
             "address": "Some Address",
         }
-        cls.comment_1 = CommentFactory(
+        cls.comment_1 = factories.CommentFactory(
             subject=cls.published_service,
             author=cls.user_1,
             status=CommentStatus.PUBLISHED.value,
         )
-        cls.comment_2 = CommentFactory(
+        cls.comment_2 = factories.CommentFactory(
             subject=cls.published_service,
             author=cls.user_2,
             status=CommentStatus.PUBLISHED.value,
@@ -170,20 +167,20 @@ class TestAdsFixtures(TestUserFixtures):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.category_1 = CategoryFactory()
-        cls.category_2 = CategoryFactory(parent=cls.category_1)
-        cls.ad_1 = AdFactory(provider=cls.user_1)
+        cls.category_1 = factories.CategoryFactory()
+        cls.category_2 = factories.CategoryFactory(parent=cls.category_1)
+        cls.ad_1 = factories.AdFactory(provider=cls.user_1)
         cls.ad_1.category.set([cls.category_1])
-        cls.ad_2 = AdFactory(
+        cls.ad_2 = factories.AdFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
         cls.ad_2.category.set([cls.category_2])
-        cls.ad_draft = AdFactory(
+        cls.ad_draft = factories.AdFactory(
             provider=cls.user_2,
         )
         cls.ad_draft.category.set([cls.category_1])
-        cls.ad_hidden = AdFactory(
+        cls.ad_hidden = factories.AdFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.HIDDEN.value,
         )

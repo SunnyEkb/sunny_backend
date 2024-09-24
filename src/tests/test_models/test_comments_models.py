@@ -1,10 +1,8 @@
 from django.db import IntegrityError
 
 from comments.models import CommentImage
-from comments.tests.factories import CommentFactory
+from tests import factories
 from tests.fixtures import BaseTestCase
-from services.tests.factories import ServiceFactory
-from users.tests.factories import CustomUserFactory
 
 
 class CommentModelsTest(BaseTestCase):
@@ -13,9 +11,9 @@ class CommentModelsTest(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.author_1 = CustomUserFactory()
-        cls.service_1 = ServiceFactory()
-        cls.comment_1 = CommentFactory(
+        cls.author_1 = factories.CustomUserFactory()
+        cls.service_1 = factories.ServiceFactory()
+        cls.comment_1 = factories.CommentFactory(
             subject=cls.service_1, author=cls.author_1
         )
         cls.comment_1_image = CommentImage.objects.create(
@@ -45,4 +43,6 @@ class CommentModelsTest(BaseTestCase):
 
     def test_author_can_create_only_one_comment(self):
         with self.assertRaises(IntegrityError):
-            CommentFactory(subject=self.service_1, author=self.author_1)
+            factories.CommentFactory(
+                subject=self.service_1, author=self.author_1
+            )
