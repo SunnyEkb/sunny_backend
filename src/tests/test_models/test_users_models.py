@@ -12,7 +12,7 @@ class UsersModelsTest(BaseTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = CustomUserFactory()
-        cls.user.photo = cls.uploaded
+        cls.user.avatar = cls.uploaded
         cls.user.save()
 
     @classmethod
@@ -21,7 +21,7 @@ class UsersModelsTest(BaseTestCase):
 
     def test_user_photo_creation(self):
         self.assertEqual(
-            self.user.photo,
+            self.user.avatar,
             f"users/{self.user.id}/{self.file_name}",
         )
 

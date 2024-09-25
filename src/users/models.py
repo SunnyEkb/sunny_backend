@@ -47,7 +47,7 @@ class CustomUser(AbstractUser):
         default=Role.USER,
         max_length=Limits.MAX_LENGTH_USER_ROLE.value,
     )
-    photo = models.ImageField(
+    avatar = models.ImageField(
         "Фото",
         upload_to=user_photo_path,
         blank=True,
