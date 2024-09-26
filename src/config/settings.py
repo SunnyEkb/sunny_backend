@@ -192,10 +192,9 @@ CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"  # "Lax" заменить на проде
 SESSION_COOKIE_SAMESITE = "None"  # "Lax" заменить на проде
-CSRF_TRUSTED_ORIGINS = ["http://*", "https://*"]  # Удалить на проде
-# CSRF_TRUSTED_ORIGINS = os.getenv(
-#    "CSRF_TRUSTED_ORIGINS", "http://127.0.0.1"
-# ).split(", ")
+CSRF_TRUSTED_ORIGINS = os.getenv(
+   "CSRF_TRUSTED_ORIGINS", "http://127.0.0.1"
+).split(", ")
 CORS_ALLOWED_ORIGINS = os.getenv(
     "CORS_ALLOWED_ORIGINS", "http://127.0.0.1"
 ).split(", ")
