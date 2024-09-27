@@ -74,7 +74,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         request=api_serializers.ServiceCreateUpdateSerializer,
         summary="Создание услуги.",
         responses={
-            status.HTTP_201_CREATED: schemes.SERVICE_CREATED_201,
+            status.HTTP_201_CREATED: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
         examples=[schemes.SERVICE_CREATE_UPDATE_EXAMPLE],

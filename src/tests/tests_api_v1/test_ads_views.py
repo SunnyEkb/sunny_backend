@@ -249,8 +249,6 @@ class TestAdView(TestAdsFixtures):
 
     def test_an_ad_is_favorited(self):
         response = self.client_3.get(
-            reverse(
-                "ads-detail", kwargs={"pk": self.ad_2.id}
-            )
+            reverse("ads-detail", kwargs={"pk": self.ad_2.id})
         )
         self.assertTrue(response.json()["is_favorited"])

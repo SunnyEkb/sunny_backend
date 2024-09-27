@@ -65,7 +65,7 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         summary="Создание объявления.",
         examples=[schemes.AD_CREATE_UPDATE_EXAMPLE],
         responses={
-            status.HTTP_201_CREATED: schemes.AD_CREATED_201,
+            status.HTTP_201_CREATED: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
