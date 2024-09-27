@@ -51,6 +51,27 @@ class AdImageRetrieveSerializer(serializers.ModelSerializer):
         )
 
 
+class AdRetrieveSerializer(serializers.ModelSerializer):
+    """Сериализатор для просмотра объявления."""
+
+    provider = serializers.StringRelatedField(read_only=True)
+    images = AdImageRetrieveSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Ad
+        fields = (
+            "id",
+            "title",
+            "description",
+            "provider",
+            "price",
+            "status",
+            "images",
+            "condition",
+            "category",
+        )
+
+
 class AdCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания и изменения объявления."""
 
@@ -95,23 +116,6 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
         if category.parent:
             self.__ad_category(ad, category.parent)
 
-
-class AdRetrieveSerializer(serializers.ModelSerializer):
-    """Сериализатор для просмотра объявления."""
-
-    provider = serializers.StringRelatedField(read_only=True)
-    images = AdImageRetrieveSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Ad
-        fields = (
-            "id",
-            "title",
-            "description",
-            "provider",
-            "price",
-            "status",
-            "images",
-            "condition",
-            "category",
-        )
+    def to_representation(self, instance):
+        serializer = AdRetrieveSerializer(instance)
+        return serializer.data
