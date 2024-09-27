@@ -16,6 +16,25 @@ from core.choices import APIResponses
 User = get_user_model()
 
 
+class UserReadSerializer(ModelSerializer):
+    """
+    Сериализатор для получения данных о пользователе.
+    """
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "username",
+            "email",
+            "phone",
+            "first_name",
+            "last_name",
+            "role",
+            "avatar",
+        ]
+
+
 class UserCreateSerializer(ModelSerializer):
     """
     Сериализатор для создания пользователя.
@@ -46,24 +65,9 @@ class UserCreateSerializer(ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
-
-class UserReadSerializer(ModelSerializer):
-    """
-    Сериализатор для получения данных о пользователе.
-    """
-
-    class Meta:
-        model = User
-        fields = [
-            "id",
-            "username",
-            "email",
-            "phone",
-            "first_name",
-            "last_name",
-            "role",
-            "avatar",
-        ]
+    def to_representation(self, instance):
+        serializer = UserReadSerializer(instance)
+        return serializer.data
 
 
 class UserUpdateSerializer(ModelSerializer):
@@ -80,6 +84,10 @@ class UserUpdateSerializer(ModelSerializer):
             "phone",
             "avatar",
         ]
+
+    def to_representation(self, instance):
+        serializer = UserReadSerializer(instance)
+        return serializer.data
 
 
 class NonErrorFieldSerializer(Serializer):
