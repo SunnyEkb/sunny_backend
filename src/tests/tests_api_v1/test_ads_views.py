@@ -246,3 +246,11 @@ class TestAdView(TestAdsFixtures):
             reverse("ads-delete_from_favorites", kwargs={"pk": self.ad_1.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_an_ad_is_favorited(self):
+        response = self.client_3.get(
+            reverse(
+                "ads-detail", kwargs={"pk": self.ad_2.id}
+            )
+        )
+        self.assertTrue(response.json()["is_favorited"])

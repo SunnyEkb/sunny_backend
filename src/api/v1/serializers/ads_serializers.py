@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from ads.models import Ad, AdImage, Category
 from api.v1.validators import validate_file_size
+from users.models import Favorites
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -56,6 +58,7 @@ class AdRetrieveSerializer(serializers.ModelSerializer):
 
     provider = serializers.StringRelatedField(read_only=True)
     images = AdImageRetrieveSerializer(many=True, read_only=True)
+    is_favorited = serializers.SerializerMethodField()
 
     class Meta:
         model = Ad
@@ -69,7 +72,23 @@ class AdRetrieveSerializer(serializers.ModelSerializer):
             "images",
             "condition",
             "category",
+            "is_favorited",
         )
+
+    def get_is_favorited(self, obj):
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+            if user.is_authenticated:
+                return Favorites.objects.filter(
+                    user=user,
+                    content_type=ContentType.objects.get(
+                        app_label="ads", model="ad"
+                    ),
+                    object_id=obj.id,
+                ).exists()
+        return False
 
 
 class AdCreateUpdateSerializer(serializers.ModelSerializer):
