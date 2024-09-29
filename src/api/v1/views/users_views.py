@@ -240,7 +240,7 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
         return User.objects.all()
 
     def get_serializer_class(self):
-        if self.action in ["update", "partial_update"]:
+        if self.request.method in ["PUT", "PATCH"]:
             return api_serializers.UserUpdateSerializer
         return api_serializers.UserReadSerializer
 
