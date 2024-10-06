@@ -1,8 +1,9 @@
 import logging
-from asgiref.sync import async_to_sync
 
-import telegram
+from asgiref.sync import async_to_sync
 from django.conf import settings
+import telegram
+
 
 logger = logging.getLogger("django")
 

@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+
 from core.utils import send_telegram_message
 
 
