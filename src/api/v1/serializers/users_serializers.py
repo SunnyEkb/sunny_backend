@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.serializers import (
     CharField,
     EmailField,
+    ImageField,
     ListField,
     ModelSerializer,
     Serializer,
@@ -11,6 +12,7 @@ from rest_framework.serializers import (
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
+from api.v1.validators import validate_file_size
 from core.choices import APIResponses
 
 User = get_user_model()
@@ -74,6 +76,12 @@ class UserUpdateSerializer(ModelSerializer):
     """
     Сериализатор для изменения данных о пользователе.
     """
+
+    avatar = ImageField(
+        required=True,
+        allow_null=False,
+        validators=[validate_file_size],
+    )
 
     class Meta:
         model = User
