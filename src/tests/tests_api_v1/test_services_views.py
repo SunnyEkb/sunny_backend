@@ -409,3 +409,11 @@ class TestServivecesView(TestServiceFixtures):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_ad_serviceimage(self):
+        data = {"image": self.uploaded}
+        response = self.client_1.post(
+            reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
+            data=data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
