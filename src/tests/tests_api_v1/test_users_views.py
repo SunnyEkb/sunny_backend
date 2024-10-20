@@ -134,7 +134,7 @@ class TestUser(TestUserFixtures):
         )
 
     def test_change_user_info(self):
-        response = self.client_1.put(
+        response = self.client_1.patch(
             reverse("users-detail", kwargs={"pk": self.user_1.id}),
             data=self.change_user_data,
             format="json",
@@ -171,5 +171,13 @@ class TestUser(TestUserFixtures):
 
     def test_get_me(self):
         response = self.client_1.get(reverse("users-me"))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.data["id"], self.user_1.id)
+
+    def test_ad_avatar(self):
+        data = {"avatar": self.uploaded}
+        response = self.client_1.patch(
+            reverse("users-detail", kwargs={"pk": self.user_1.id}), data=data
+        )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(response.data["id"], self.user_1.id)
