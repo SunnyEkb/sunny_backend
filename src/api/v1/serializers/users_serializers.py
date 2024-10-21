@@ -78,8 +78,8 @@ class UserUpdateSerializer(ModelSerializer):
     """
 
     avatar = ImageField(
-        required=True,
-        allow_null=False,
+        required=False,
+        allow_null=True,
         validators=[validate_file_size],
     )
 
