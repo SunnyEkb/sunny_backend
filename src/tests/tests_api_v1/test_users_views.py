@@ -134,7 +134,7 @@ class TestUser(TestUserFixtures):
         )
 
     def test_change_user_info(self):
-        response = self.client_1.patch(
+        response = self.client_1.put(
             reverse("users-detail", kwargs={"pk": self.user_1.id}),
             data=self.change_user_data,
             format="json",
