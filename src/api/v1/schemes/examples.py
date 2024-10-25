@@ -57,7 +57,7 @@ USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 LOGIN_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Данные для входа в систему.",
+    name="Данные для входа в систему",
     value={"email": "foo@bar.bar", "password": "password"},
 )
 
@@ -97,7 +97,7 @@ WRONG_EMAIL_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 PASSWORD_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Пример изменения пароля пользователя.",
+    name="Пример изменения пароля пользователя",
     value={
         "current_password": "superPuper",
         "new_password": "superPuper2",
