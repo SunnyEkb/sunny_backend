@@ -96,6 +96,12 @@ USER_PUT_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.USER_CHANGE_EXAMPLE],
 )
 
+USER_UPDATE_AVATR_OK_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.UserUpdateSerializer,
+    description="Изменение аватара пользователя",
+    examples=[examples.USER_UPDATE_AVATAR_EXAMPLE],
+)
+
 USER_PATCH_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.UserUpdateSerializer,
     description="Частичное изменение данных пользователя",

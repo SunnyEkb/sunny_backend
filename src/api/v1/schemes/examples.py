@@ -40,6 +40,11 @@ USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"last_name": "Some_name"},
 )
 
+USER_UPDATE_AVATAR_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Изменение аватара пользователя",
+    value={"avatar": "string"},
+)
+
 
 USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Данные пользователя",

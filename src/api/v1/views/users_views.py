@@ -268,10 +268,11 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
 
 @extend_schema(
     tags=["Users"],
-    summary="Добавление аватара пользователя.",
+    summary="Изменение аватара пользователя.",
     request=api_serializers.UserAdAvatarSerializer,
+    examples=[schemes.USER_UPDATE_AVATAR_EXAMPLE],
     responses={
-        status.HTTP_200_OK: schemes.PASSWORD_CHANGED_OK_200,
+        status.HTTP_200_OK: schemes.USER_GET_OK_200,
         status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
 )
