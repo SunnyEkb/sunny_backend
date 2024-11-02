@@ -32,13 +32,17 @@ USER_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
         "first_name": "Some_name",
         "last_name": "Some_name",
         "phone": "+79000000000",
-        "avatar": "string",
     },
 )
 
 USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Частичное изменение данных о пользователе",
     value={"last_name": "Some_name"},
+)
+
+USER_UPDATE_AVATAR_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Изменение аватара пользователя",
+    value={"avatar": "string"},
 )
 
 
@@ -52,7 +56,6 @@ USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
         "first_name": "Some_name",
         "last_name": "Some_name",
         "role": "user",
-        "avatar": "string",
     },
 )
 
