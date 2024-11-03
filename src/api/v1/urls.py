@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from api.v1.views import (
+    AdAvatarView,
     AdViewSet,
     AdImageViewSet,
     CategoryViewSet,
@@ -44,6 +45,7 @@ api_v1_router.register("users", UserViewSet, basename="users")
 
 urlpatterns = [
     path("registry/", RegisrtyView.as_view(), name="registry"),
+    path("users/avatar/<int:pk>/", AdAvatarView.as_view(), name="avatar"),
     re_path(
         r"^password_reset/",
         include("django_rest_passwordreset.urls", namespace="password_reset"),

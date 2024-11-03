@@ -177,6 +177,6 @@ class TestUser(TestUserFixtures):
     def test_add_avatar(self):
         data = {"avatar": self.uploaded}
         response = self.client_1.patch(
-            reverse("users-detail", kwargs={"pk": self.user_1.id}), data=data
+            reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
