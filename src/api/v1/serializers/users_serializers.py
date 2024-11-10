@@ -33,7 +33,6 @@ class UserReadSerializer(ModelSerializer):
             "first_name",
             "last_name",
             "role",
-            "avatar",
         ]
 
 
@@ -77,12 +76,6 @@ class UserUpdateSerializer(ModelSerializer):
     Сериализатор для изменения данных о пользователе.
     """
 
-    avatar = ImageField(
-        required=True,
-        allow_null=False,
-        validators=[validate_file_size],
-    )
-
     class Meta:
         model = User
         fields = [
@@ -90,6 +83,27 @@ class UserUpdateSerializer(ModelSerializer):
             "first_name",
             "last_name",
             "phone",
+        ]
+
+    def to_representation(self, instance):
+        serializer = UserReadSerializer(instance)
+        return serializer.data
+
+
+class UserAdAvatarSerializer(ModelSerializer):
+    """
+    Сериализатор для изменения фото пользователя.
+    """
+
+    avatar = ImageField(
+        required=True,
+        allow_null=True,
+        validators=[validate_file_size],
+    )
+
+    class Meta:
+        model = User
+        fields = [
             "avatar",
         ]
 

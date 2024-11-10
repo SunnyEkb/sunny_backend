@@ -4,7 +4,7 @@ from django.middleware import csrf
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed, ParseError
 from rest_framework.generics import GenericAPIView
@@ -25,6 +25,7 @@ from api.v1.utils import (
     set_refresh_cookie,
 )
 from core.choices import APIResponses
+from services.tasks import delete_image_files
 
 User = get_user_model()
 
@@ -264,3 +265,32 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
         user = get_object_or_404(User, pk=request.user.id)
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+
+@extend_schema(
+    tags=["Users"],
+    summary="Изменение аватара пользователя.",
+    request=api_serializers.UserAdAvatarSerializer,
+    examples=[schemes.USER_UPDATE_AVATAR_EXAMPLE],
+    responses={
+        status.HTTP_200_OK: schemes.USER_GET_OK_200,
+        status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+    },
+)
+class AdAvatarView(generics.UpdateAPIView):
+    """
+    Добавление аватара пользователя.
+    """
+
+    permission_classes = (SelfOnly,)
+    serializer_class = api_serializers.UserAdAvatarSerializer
+
+    def get_queryset(self):
+        return User.objects.filter(id=self.request.user.id)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.avatar:
+            old_image = instance.avatar
+            delete_image_files.delay(str(old_image))
+        return super().update(request, *args, **kwargs)

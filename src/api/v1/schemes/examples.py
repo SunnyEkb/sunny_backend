@@ -1,3 +1,4 @@
+from django.utils import timezone
 from drf_spectacular.utils import OpenApiExample
 
 from core.choices import (
@@ -31,13 +32,17 @@ USER_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
         "first_name": "Some_name",
         "last_name": "Some_name",
         "phone": "+79000000000",
-        "avatar": "string",
     },
 )
 
 USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Частичное изменение данных о пользователе",
     value={"last_name": "Some_name"},
+)
+
+USER_UPDATE_AVATAR_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Изменение аватара пользователя",
+    value={"avatar": "string"},
 )
 
 
@@ -51,12 +56,11 @@ USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
         "first_name": "Some_name",
         "last_name": "Some_name",
         "role": "user",
-        "avatar": "string",
     },
 )
 
 LOGIN_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Данные для входа в систему.",
+    name="Данные для входа в систему",
     value={"email": "foo@bar.bar", "password": "password"},
 )
 
@@ -96,7 +100,7 @@ WRONG_EMAIL_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 PASSWORD_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Пример изменения пароля пользователя.",
+    name="Пример изменения пароля пользователя",
     value={
         "current_password": "superPuper",
         "new_password": "superPuper2",
@@ -178,14 +182,14 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type": [1, 2, 3],
-        "price": {"маникюр": 500},
+        "price": [{"маникюр": 500}],
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
         "avg_rating": 4.1,
         "comments_quantity": 15,
-        "created_at": "2024-06-20T06:25:52.449498Z",
+        "created_at": timezone.now(),
         "is_favorited": False,
     },
 )
@@ -200,14 +204,14 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type": [1, 2, 3],
-        "price": {"маникюр": 500},
+        "price": [{"маникюр": 500}],
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
         "avg_rating": 4.1,
         "comments_quantity": 15,
-        "created_at": "2024-06-20T06:25:52.449498Z",
+        "created_at": timezone.now(),
         "comments": COMMENT_LIST_EXAMPLE.value,
     },
 )
@@ -220,7 +224,7 @@ SERVICE_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type_id": 2,
-        "price": {"маникюр": 500},
+        "price": [{"маникюр": 500}],
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
     },
@@ -231,7 +235,7 @@ SERVICE_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={
         "description": "string",
         "place_of_provision": ServicePlace.OPTIONS.value,
-        "price": {"маникюр": 500},
+        "price": [{"маникюр": 500}],
         "address": "Lenina st, 8/13",
     },
 )
@@ -340,7 +344,7 @@ AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "price": "500.00",
         "status": AdvertisementStatus.DRAFT.value,
         "images": [{"id": 1, "image": "string"}],
-        "created_at": "2024-06-20T06:25:52.449498Z",
+        "created_at": timezone.now(),
         "is_favorited": False,
     },
 )
@@ -358,7 +362,7 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
             "price": "500.00",
             "status": AdvertisementStatus.DRAFT.value,
             "images": [{"id": 1, "image": "string"}],
-            "created_at": "2024-06-20T06:25:52.449498Z",
+            "created_at": timezone.now(),
             "is_favorited": False,
         }
     ],
