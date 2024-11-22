@@ -93,7 +93,7 @@ def bad_words_filter(text: str) -> List[str]:
     result = []
     for word in bad_words:
         for part in range(len(text)):
-            fragment = text[part : part + len(word)]
+            fragment = text[part : part + len(word)]  # noqa
             if fragment == word:
                 result.append(fragment)
     return result
