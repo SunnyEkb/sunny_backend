@@ -1,5 +1,6 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.urls import reverse
 
 from core.choices import EmailSubjects
 
@@ -24,14 +25,18 @@ def send_email(
     message.send()
 
 
-def send_password_reset_token(reset_password_token):
+def send_password_reset_token(instance, reset_password_token):
     """
     Отправка токена для смены пароля от ЛК на email.
     """
 
     context = {
         "username": reset_password_token.user.username,
-        "token": reset_password_token.key,
+        "reset_password_url": "{}?token={}".format(
+            instance.request.build_absolute_uri(
+                reverse('password_reset:reset-password-confirm')
+            ),
+            reset_password_token.key),
     }
     html_template = "email/reset_password.html"
     text_template = "email/reset_password.txt"
