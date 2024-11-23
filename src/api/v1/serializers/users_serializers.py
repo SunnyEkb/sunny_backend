@@ -23,6 +23,8 @@ class UserReadSerializer(ModelSerializer):
     Сериализатор для получения данных о пользователе.
     """
 
+    avatar = ImageField()
+
     class Meta:
         model = User
         fields = [
@@ -33,6 +35,7 @@ class UserReadSerializer(ModelSerializer):
             "first_name",
             "last_name",
             "role",
+            "avatar",
         ]
 
 
