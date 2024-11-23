@@ -30,8 +30,7 @@ def password_reset_token_created(
 
     if "test" not in sys.argv:
         send_password_reset_token_task.delay(
-            instance=instance,
-            reset_password_token=reset_password_token
+            instance=instance, reset_password_token=reset_password_token
         )
     else:
         send_password_reset_token(instance, reset_password_token)
