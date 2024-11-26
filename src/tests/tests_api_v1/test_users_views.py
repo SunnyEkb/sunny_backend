@@ -74,7 +74,7 @@ class TestUser(TestUserFixtures):
         self.assertEqual(response_1.status_code, HTTPStatus.OK)
 
         email_content = mail.outbox[0].body
-        token_re = r": ([A-Za-z0-9:\-]+)"
+        token_re = r"token=([A-Za-z0-9:\-]+)"
         match = re.search(token_re, email_content)
         token = match.group(1)
 
