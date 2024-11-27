@@ -8,7 +8,7 @@ from django_rest_passwordreset.signals import reset_password_token_created
 from core.choices import Notifications
 from core.email_services import send_password_reset_token, send_welcome_email
 from notifications.models import Notification
-from users.tasks import send_password_reset_token_task, send_welcome_email_task
+from users.tasks import send_welcome_email_task
 
 User = get_user_model()
 
@@ -28,12 +28,12 @@ def password_reset_token_created(
     :return:
     """
 
-    if "test" not in sys.argv:
-        send_password_reset_token_task.delay(
-            instance=instance, reset_password_token=reset_password_token
-        )
-    else:
-        send_password_reset_token(instance, reset_password_token)
+    #    if "test" not in sys.argv:
+    #        send_password_reset_token_task.delay(
+    #            instance=instance, reset_password_token=reset_password_token
+    #        )
+    #    else:
+    send_password_reset_token(instance, reset_password_token)
 
 
 @receiver(post_save, sender=User)
