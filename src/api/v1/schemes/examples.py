@@ -351,22 +351,7 @@ AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Список объявлений",
-    value=[
-        {
-            "id": 1,
-            "provider": USER_INFO_EXAMPLE.value,
-            "title": "string",
-            "description": "string",
-            "category": [1, 2, 3],
-            "condition": AdState.USED.value,
-            "price": "500.00",
-            "status": AdvertisementStatus.DRAFT.value,
-            "images": [{"id": 1, "image": "string"}],
-            "created_at": timezone.now(),
-            "is_favorited": False,
-        }
-    ],
+    name="Список объявлений", value=AD_RETRIEVE_EXAMPLE.value
 )
 
 AD_CATEGORIES_EXAMPLE: OpenApiExample = OpenApiExample(
@@ -411,12 +396,6 @@ AD_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
 FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список избранного",
     value={
-        "count": 123,
-        "next": "http://api.example.org/accounts/?page=4",
-        "previous": "http://api.example.org/accounts/?page=2",
-        "results": [
-            {"subject": AD_RETRIEVE_EXAMPLE.value},
-            {"subject": SERVICE_LIST_EXAMPLE.value},
-        ],
+        "subject": AD_RETRIEVE_EXAMPLE.value,
     },
 )
