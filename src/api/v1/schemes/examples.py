@@ -121,26 +121,23 @@ REFRESH_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
 
 TYPE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список типов услуг",
-    value=[
-        {
-            "id": 1,
-            "title": "Красота и здоровье",
-            "subcategories": [
-                {
-                    "id": 3,
-                    "title": "Массаж",
-                    "subcategories": [
-                        {
-                            "id": 4,
-                            "title": "Массаж спины",
-                            "subcategories": None,
-                        },
-                    ],
-                },
-            ],
-        },
-        {"id": 2, "title": "Ремонт", "subcategories": None},
-    ],
+    value={
+        "id": 1,
+        "title": "Красота и здоровье",
+        "subcategories": [
+            {
+                "id": 3,
+                "title": "Массаж",
+                "subcategories": [
+                    {
+                        "id": 4,
+                        "title": "Массаж спины",
+                        "subcategories": None,
+                    },
+                ],
+            },
+        ],
+    },
 )
 
 COMMENT_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
@@ -356,33 +353,28 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
 
 AD_CATEGORIES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список категорий объявлений",
-    value=[
-        [
+    value={
+        "id": 1,
+        "title": "Личные вещи",
+        "subcategories": [
             {
-                "id": 1,
-                "title": "Личные вещи",
+                "id": 3,
+                "title": "Одежа",
                 "subcategories": [
                     {
-                        "id": 3,
-                        "title": "Одежа",
-                        "subcategories": [
-                            {
-                                "id": 4,
-                                "title": "Одежда мужская",
-                                "subcategories": None,
-                            },
-                            {
-                                "id": 5,
-                                "title": "Одежда женская",
-                                "subcategories": None,
-                            },
-                        ],
-                    }
+                        "id": 4,
+                        "title": "Одежда мужская",
+                        "subcategories": None,
+                    },
+                    {
+                        "id": 5,
+                        "title": "Одежда женская",
+                        "subcategories": None,
+                    },
                 ],
-            },
-            {"id": 2, "title": "Электроника", "subcategories": None},
-        ]
-    ],
+            }
+        ],
+    },
 )
 
 AD_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
