@@ -231,7 +231,7 @@ AD_LIST_OK_200: OpenApiResponse = OpenApiResponse(
 AD_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение информации об объявлении",
-    examples=[examples.AD_LIST_EXAMPLE],
+    examples=[examples.AD_RETRIEVE_EXAMPLE],
 )
 
 AD_CREATED_201: OpenApiResponse = OpenApiResponse(
