@@ -32,4 +32,5 @@ async def notify_about_moderation(url: str) -> None:
             await bot.send_message(
                 chat_id=chat_id,
                 text=f"Необходима модерация. Ссылка: {url}",
+                message_thread_id=settings.TELEGRAM_MODERATORS_CHAT_TOPIC,
             )
