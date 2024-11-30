@@ -252,3 +252,9 @@ class TestAdView(TestAdsFixtures):
             reverse("ads-detail", kwargs={"pk": self.ad_2.id})
         )
         self.assertTrue(response.json()["is_favorited"])
+
+    def test_get_ad_image(self):
+        response = self.client_3.get(
+            reverse("adimage-detail", kwargs={"pk": self.ad_2_image.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)

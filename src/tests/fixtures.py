@@ -8,6 +8,7 @@ from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
 from core.choices import AdvertisementStatus, AdState, CommentStatus
+from ads.models import AdImage
 from users.models import Favorites
 from tests import factories
 
@@ -176,6 +177,10 @@ class TestAdsFixtures(TestUserFixtures):
             status=AdvertisementStatus.PUBLISHED.value,
         )
         cls.ad_2.category.set([cls.category_2])
+        cls.ad_2_image = AdImage.objects.create(
+            ad=cls.ad_2,
+            image=cls.uploaded
+        )
         cls.ad_draft = factories.AdFactory(
             provider=cls.user_2,
         )

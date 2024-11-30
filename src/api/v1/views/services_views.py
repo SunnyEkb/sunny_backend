@@ -15,7 +15,12 @@ from rest_framework.decorators import action
 
 from api.v1.filters import ServiceFilter, TypeFilter
 from api.v1.paginators import CustomPaginator
-from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
+from api.v1.permissions import (
+    OwnerOrReadOnly,
+    PhotoOwnerOrReadOnly,
+    ReadOnly,
+    PhotoReadOnly,
+)
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus, APIResponses
@@ -475,7 +480,7 @@ class ServiceImageViewSet(
 
     def get_permissions(self):
         if self.action == "retrieve":
-            return (ReadOnly(),)
+            return (PhotoReadOnly(),)
         return (PhotoOwnerOrReadOnly(),)
 
     def destroy(self, request, *args, **kwargs):

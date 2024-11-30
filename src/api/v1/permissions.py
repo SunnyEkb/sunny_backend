@@ -45,6 +45,23 @@ class PhotoOwnerOrReadOnly(BasePermission):
         return False
 
 
+class PhotoReadOnly(BasePermission):
+    """
+    Разрешение на просмотр фото услуги или объявления
+    незарегистрированному пользователю.
+    """
+
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+
+    def has_object_permission(self, request, view, obj):
+        if isinstance(obj, ServiceImage):
+            return obj.service.status == AdvertisementStatus.PUBLISHED.value
+        if isinstance(obj, AdImage):
+            return obj.ad.status == AdvertisementStatus.PUBLISHED.value
+        return False
+
+
 class ReadOnly(BasePermission):
     """
     Разрешение на просмотр услуги или объявления
