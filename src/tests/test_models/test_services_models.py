@@ -25,7 +25,7 @@ class ServiceModelsTest(BaseTestCase):
     def test_service_image_creation(self):
         self.assertEqual(
             self.service_1_image.image,
-            f"services/{self.service_1.id}/{self.file_name}",
+            f"services/{self.service_1.id}/{self.file_name_1}",
         )
 
     def test_models_have_correct_object_names(self):

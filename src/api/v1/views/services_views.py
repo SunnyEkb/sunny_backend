@@ -476,7 +476,7 @@ class ServiceImageViewSet(
     """Фото к услугам."""
 
     queryset = ServiceImage.objects.all()
-    serializer_class = None
+    serializer_class = api_serializers.ServiceImageRetrieveSerializer
 
     def get_permissions(self):
         if self.action == "retrieve":
@@ -487,6 +487,7 @@ class ServiceImageViewSet(
         instance: ServiceImage = self.get_object()
 
         # удаляем файл
-        instance.delete_image_files()
+        if "test" not in sys.argv:
+            instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)

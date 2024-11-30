@@ -22,7 +22,7 @@ class UsersModelsTest(BaseTestCase):
     def test_user_photo_creation(self):
         self.assertEqual(
             self.user.avatar,
-            f"users/{self.user.id}/{self.file_name}",
+            f"users/{self.user.id}/{self.file_name_1}",
         )
 
     def test_user_creation(self):

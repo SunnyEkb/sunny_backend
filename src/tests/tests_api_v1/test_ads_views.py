@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from django.urls import reverse
 
-from ads.models import Ad, Category
+from ads.models import Ad, AdImage, Category
 from core.choices import AdvertisementStatus
 from tests.fixtures import TestAdsFixtures
 
@@ -264,3 +264,6 @@ class TestAdView(TestAdsFixtures):
             reverse("adimage-detail", kwargs={"pk": self.ad_2_image.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+        self.assertFalse(
+            AdImage.objects.filter(id=self.ad_2_image.id).exists()
+        )
