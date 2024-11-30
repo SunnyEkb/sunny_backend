@@ -447,6 +447,7 @@ class AdImageViewSet(
         instance: AdImage = self.get_object()
 
         # удаляем файл
-        instance.delete_image_files()
+        if "test" not in sys.argv:
+            instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)

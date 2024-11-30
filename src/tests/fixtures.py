@@ -178,8 +178,7 @@ class TestAdsFixtures(TestUserFixtures):
         )
         cls.ad_2.category.set([cls.category_2])
         cls.ad_2_image = AdImage.objects.create(
-            ad=cls.ad_2,
-            image=cls.uploaded
+            ad=cls.ad_2, image=cls.uploaded
         )
         cls.ad_draft = factories.AdFactory(
             provider=cls.user_2,

@@ -258,3 +258,9 @@ class TestAdView(TestAdsFixtures):
             reverse("adimage-detail", kwargs={"pk": self.ad_2_image.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_delete_ad_image(self):
+        response = self.client_2.delete(
+            reverse("adimage-detail", kwargs={"pk": self.ad_2_image.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
