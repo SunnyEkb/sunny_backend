@@ -8,6 +8,8 @@ from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
 from core.choices import AdvertisementStatus, AdState, CommentStatus
+from ads.models import AdImage
+from services.models import ServiceImage
 from users.models import Favorites
 from tests import factories
 
@@ -31,9 +33,13 @@ class BaseTestCase(APITestCase):
             b"\x02\x00\x01\x00\x00\x02\x02\x0C"
             b"\x0A\x00\x3B"
         )
-        cls.file_name = "small_1.gif"
+        cls.file_name_1 = "small_1.gif"
+        cls.file_name_2 = "small_2.gif"
         cls.uploaded = SimpleUploadedFile(
-            name=cls.file_name, content=small_gif, content_type="image/gif"
+            name=cls.file_name_1, content=small_gif, content_type="image/gif"
+        )
+        cls.uploaded_2 = SimpleUploadedFile(
+            name=cls.file_name_2, content=small_gif, content_type="image/gif"
         )
 
     @classmethod
@@ -92,6 +98,9 @@ class TestServiceFixtures(TestUserFixtures):
         cls.service_2 = factories.ServiceFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.PUBLISHED.value,
+        )
+        cls.service_2_image = ServiceImage.objects.create(
+            service=cls.service_2, image=cls.uploaded_2
         )
         cls.service_3 = factories.ServiceFactory(
             provider=cls.user_2,
@@ -176,6 +185,9 @@ class TestAdsFixtures(TestUserFixtures):
             status=AdvertisementStatus.PUBLISHED.value,
         )
         cls.ad_2.category.set([cls.category_2])
+        cls.ad_2_image = AdImage.objects.create(
+            ad=cls.ad_2, image=cls.uploaded
+        )
         cls.ad_draft = factories.AdFactory(
             provider=cls.user_2,
         )
