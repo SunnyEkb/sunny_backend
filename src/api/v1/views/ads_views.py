@@ -13,7 +13,12 @@ from rest_framework.decorators import action
 
 from ads.models import Ad, AdImage, Category
 from api.v1.paginators import CustomPaginator
-from api.v1.permissions import OwnerOrReadOnly, ReadOnly, PhotoOwnerOrReadOnly
+from api.v1.permissions import (
+    OwnerOrReadOnly,
+    ReadOnly,
+    PhotoOwnerOrReadOnly,
+    PhotoReadOnly,
+)
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus, APIResponses
@@ -348,10 +353,10 @@ class AdViewSet(
     def delete_from_favorites(self, request, *args, **kwargs):
         """Удалить из избранного."""
 
-        service: Ad = self.get_object()
+        ad: Ad = self.get_object()
         if not Favorites.objects.filter(
             content_type=ContentType.objects.get(app_label="ads", model="ad"),
-            object_id=service.id,
+            object_id=ad.id,
             user=request.user,
         ).exists():
             return response.Response(
@@ -360,7 +365,7 @@ class AdViewSet(
             )
         Favorites.objects.get(
             content_type=ContentType.objects.get(app_label="ads", model="ad"),
-            object_id=service.id,
+            object_id=ad.id,
             user=request.user,
         ).delete()
         return response.Response(
@@ -401,6 +406,7 @@ class AdViewSet(
             )
         if img_serializer.is_valid():
             img_serializer.save(ad=ad)
+            ad: Ad = self.get_object()
             ad_serializer = api_serializers.AdRetrieveSerializer(ad)
             return response.Response(ad_serializer.data)
         return response.Response(
@@ -430,17 +436,18 @@ class AdImageViewSet(
     """Фото к объявлениям."""
 
     queryset = AdImage.objects.all()
-    serializer_class = None
+    serializer_class = api_serializers.AdImageRetrieveSerializer
 
     def get_permissions(self):
         if self.action == "retrieve":
-            return (ReadOnly(),)
+            return (PhotoReadOnly(),)
         return (PhotoOwnerOrReadOnly(),)
 
     def destroy(self, request, *args, **kwargs):
         instance: AdImage = self.get_object()
 
         # удаляем файл
-        instance.delete_image_files()
+        if "test" not in sys.argv:
+            instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)

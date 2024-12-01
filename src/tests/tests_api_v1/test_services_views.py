@@ -4,7 +4,7 @@ from django.db.models import Avg
 from django.urls import reverse
 
 from core.choices import ServicePlace, AdvertisementStatus
-from services.models import Service, Type
+from services.models import Service, ServiceImage, Type
 from tests.fixtures import TestServiceFixtures
 
 
@@ -410,10 +410,29 @@ class TestServivecesView(TestServiceFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
-    def test_ad_serviceimage(self):
+    def test_add_serviceimage(self):
         data = {"image": self.uploaded}
         response = self.client_1.post(
             reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
             data=data,
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_get_service_image(self):
+        response = self.client_3.get(
+            reverse(
+                "serviceimage-detail", kwargs={"pk": self.service_2_image.id}
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_delete_ad_image(self):
+        response = self.client_2.delete(
+            reverse(
+                "serviceimage-detail", kwargs={"pk": self.service_2_image.id}
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+        self.assertFalse(
+            ServiceImage.objects.filter(id=self.service_2_image.id).exists()
+        )

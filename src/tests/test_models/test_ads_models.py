@@ -23,7 +23,7 @@ class AdModelsTest(BaseTestCase):
 
     def test_ad_image_creation(self):
         self.assertEqual(
-            self.ad_1_image.image, f"ads/{self.ad_1.id}/{self.file_name}"
+            self.ad_1_image.image, f"ads/{self.ad_1.id}/{self.file_name_1}"
         )
 
     def test_models_have_correct_object_names(self):
