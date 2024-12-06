@@ -138,6 +138,12 @@ SERVICE_AD_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     examples=[examples.SERVICE_AD_NO_PERMISSION_EXAMPLE],
 )
 
+WRONG_PARAMETR_400: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Неверно указан параметр",
+    examples=[examples.WRONG_PARAMETR_EXAMPLE],
+)
+
 COMMENT_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Только автор может удалить комментарий",

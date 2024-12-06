@@ -45,6 +45,15 @@ class TestAdView(TestAdsFixtures):
         self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
         self.assertEqual(len(response_auth_user.json()["results"]), 0)
 
+    def test_get_ads_with_wrong_category_id(self):
+        wrong_parametres = [-1, "jsgfkjqegk"]
+        for k in wrong_parametres:
+            with self.subTest(filter=k):
+                response = self.client_1.get(
+                    reverse("ads-list") + f"?category_id={k}"
+                )
+                self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
     def test_anon_user_get_ads_list_with_no_category_id(self):
         response_anon_user = self.client_1.get(reverse("ads-list"))
         self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)

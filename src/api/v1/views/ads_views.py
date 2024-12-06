@@ -8,7 +8,14 @@ from drf_spectacular.utils import (
     extend_schema_view,
     OpenApiParameter,
 )
-from rest_framework import mixins, permissions, response, status, viewsets
+from rest_framework import (
+    exceptions,
+    mixins,
+    permissions,
+    response,
+    status,
+    viewsets,
+)
 from rest_framework.decorators import action
 
 from ads.models import Ad, AdImage, Category
@@ -55,6 +62,7 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         ),
         responses={
             status.HTTP_200_OK: schemes.AD_LIST_OK_200,
+            status.HTTP_400_BAD_REQUEST: schemes.WRONG_PARAMETR_400,
         },
         parameters=[OpenApiParameter("category_id", int)],
     ),
@@ -117,8 +125,20 @@ class AdViewSet(
         if self.action == "list":
             params = self.request.query_params
             if "category_id" in params:
+                try:
+                    category_id = int(params.get("category_id"))
+                except ValueError:
+                    raise exceptions.ValidationError(
+                        detail=APIResponses.INVALID_PARAMETR.value,
+                        code=status.HTTP_400_BAD_REQUEST,
+                    )
+                if category_id < 0:
+                    raise exceptions.ValidationError(
+                        detail=APIResponses.INVALID_PARAMETR.value,
+                        code=status.HTTP_400_BAD_REQUEST,
+                    )
                 queryset = queryset.filter(
-                    category__id=params.get("category_id"),
+                    category__id=category_id,
                     status=AdvertisementStatus.PUBLISHED.value,
                 )
             else:
@@ -134,6 +154,15 @@ class AdViewSet(
 
     def perform_create(self, serializer):
         serializer.save(provider=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except exceptions.ValidationError:
+            return response.Response(
+                data={"detail": APIResponses.INVALID_PARAMETR.value},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
