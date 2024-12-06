@@ -71,6 +71,7 @@ class APIResponses(models.TextChoices):
     COMMENTS_BY_PROVIDER_PROHIBITED = (
         "Лицо, оказывающее услуги не может оставлять комментарий."
     )
+    INVALID_PARAMETR = "Параметр должен быть положительным числом."
 
 
 class SystemMessages(models.TextChoices):
