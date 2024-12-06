@@ -243,6 +243,11 @@ SERVICE_AD_NO_PERMISSION_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.NO_PERMISSION.value},
 )
 
+WRONG_PARAMETR_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Неверно задан параметр",
+    value={"detail": APIResponses.INVALID_PARAMETR.value},
+)
+
 CANT_HIDE_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга/объявление не может быть скрыта",
     value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE_OR_AD.value},

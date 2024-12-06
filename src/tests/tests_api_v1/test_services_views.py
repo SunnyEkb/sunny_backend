@@ -144,6 +144,15 @@ class TestServivecesView(TestServiceFixtures):
                 )
                 self.assertEqual(len(response.data["results"]), len(v[1]))
 
+    def test_get_services_with_wrong_type_id(self):
+        wrong_parametres = [-1, "jsgfkjqegk"]
+        for k in wrong_parametres:
+            with self.subTest(filter=k):
+                response = self.client_1.get(
+                    reverse("services-list") + f"?type_id={k}"
+                )
+                self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
     def test_service_ordering(self):
         templates = {
             "experience": (

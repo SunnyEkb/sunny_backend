@@ -10,7 +10,14 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import mixins, viewsets, permissions, response, status
+from rest_framework import (
+    exceptions,
+    mixins,
+    viewsets,
+    permissions,
+    response,
+    status,
+)
 from rest_framework.decorators import action
 
 from api.v1.filters import ServiceFilter, TypeFilter
@@ -66,6 +73,7 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         parameters=[OpenApiParameter("type_id", int)],
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_400_BAD_REQUEST: schemes.WRONG_PARAMETR_400,
         },
     ),
     retrieve=extend_schema(
@@ -136,7 +144,19 @@ class ServiceViewSet(
                 status=AdvertisementStatus.PUBLISHED.value
             )
             if "type_id" in params:
-                queryset = queryset.filter(type__id=params.get("type_id"))
+                try:
+                    type_id = int(params.get("type_id"))
+                except ValueError:
+                    raise exceptions.ValidationError(
+                        detail=APIResponses.INVALID_PARAMETR.value,
+                        code=status.HTTP_400_BAD_REQUEST,
+                    )
+                if type_id < 0:
+                    raise exceptions.ValidationError(
+                        detail=APIResponses.INVALID_PARAMETR.value,
+                        code=status.HTTP_400_BAD_REQUEST,
+                    )
+                queryset = queryset.filter(type__id=type_id)
         return queryset
 
     def get_serializer_class(self):
@@ -153,6 +173,15 @@ class ServiceViewSet(
 
     def perform_create(self, serializer):
         serializer.save(provider=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except exceptions.ValidationError:
+            return response.Response(
+                data={"detail": APIResponses.INVALID_PARAMETR.value},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
