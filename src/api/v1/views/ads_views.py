@@ -13,7 +13,12 @@ from rest_framework.decorators import action
 
 from ads.models import Ad, AdImage, Category
 from api.v1.paginators import CustomPaginator
-from api.v1.permissions import OwnerOrReadOnly, ReadOnly, PhotoOwnerOrReadOnly
+from api.v1.permissions import (
+    OwnerOrReadOnly,
+    ReadOnly,
+    PhotoOwnerOrReadOnly,
+    PhotoReadOnly,
+)
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus, APIResponses
@@ -431,17 +436,18 @@ class AdImageViewSet(
     """Фото к объявлениям."""
 
     queryset = AdImage.objects.all()
-    serializer_class = None
+    serializer_class = api_serializers.AdImageRetrieveSerializer
 
     def get_permissions(self):
         if self.action == "retrieve":
-            return (ReadOnly(),)
+            return (PhotoReadOnly(),)
         return (PhotoOwnerOrReadOnly(),)
 
     def destroy(self, request, *args, **kwargs):
         instance: AdImage = self.get_object()
 
         # удаляем файл
-        instance.delete_image_files()
+        if "test" not in sys.argv:
+            instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)

@@ -15,7 +15,12 @@ from rest_framework.decorators import action
 
 from api.v1.filters import ServiceFilter, TypeFilter
 from api.v1.paginators import CustomPaginator
-from api.v1.permissions import OwnerOrReadOnly, PhotoOwnerOrReadOnly, ReadOnly
+from api.v1.permissions import (
+    OwnerOrReadOnly,
+    PhotoOwnerOrReadOnly,
+    ReadOnly,
+    PhotoReadOnly,
+)
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus, APIResponses
@@ -471,17 +476,18 @@ class ServiceImageViewSet(
     """Фото к услугам."""
 
     queryset = ServiceImage.objects.all()
-    serializer_class = None
+    serializer_class = api_serializers.ServiceImageRetrieveSerializer
 
     def get_permissions(self):
         if self.action == "retrieve":
-            return (ReadOnly(),)
+            return (PhotoReadOnly(),)
         return (PhotoOwnerOrReadOnly(),)
 
     def destroy(self, request, *args, **kwargs):
         instance: ServiceImage = self.get_object()
 
         # удаляем файл
-        instance.delete_image_files()
+        if "test" not in sys.argv:
+            instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)

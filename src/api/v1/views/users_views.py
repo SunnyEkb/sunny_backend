@@ -25,6 +25,7 @@ from api.v1.utils import (
     set_refresh_cookie,
 )
 from core.choices import APIResponses
+from services.tasks import delete_image_files
 
 User = get_user_model()
 
@@ -286,3 +287,10 @@ class AdAvatarView(generics.UpdateAPIView):
 
     def get_queryset(self):
         return User.objects.filter(id=self.request.user.id)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.avatar:
+            old_image = instance.avatar
+            delete_image_files.delay(str(old_image))
+        return super().update(request, *args, **kwargs)
