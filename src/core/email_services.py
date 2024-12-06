@@ -1,6 +1,6 @@
 from django.core.mail import EmailMultiAlternatives
+from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.urls import reverse
 
 from core.choices import EmailSubjects
 
@@ -30,12 +30,11 @@ def send_password_reset_token(instance, reset_password_token):
     Отправка токена для смены пароля от ЛК на email.
     """
 
+    domain = get_current_site(instance.request).domain
     context = {
         "username": reset_password_token.user.username,
-        "reset_password_url": "{}?token={}".format(
-            instance.request.build_absolute_uri(
-                reverse("password_reset:reset-password-confirm")
-            ),
+        "reset_password_url": "https://{}/password-forget?token={}".format(
+            domain,
             reset_password_token.key,
         ),
     }
