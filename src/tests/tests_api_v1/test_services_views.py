@@ -73,6 +73,14 @@ class TestServivecesView(TestServiceFixtures):
                     ).filter(title__icontains=self.service_1.title)
                 ),
             ],
+            "description": [
+                self.service_1.description,
+                (
+                    Service.objects.filter(
+                        status=AdvertisementStatus.PUBLISHED.value
+                    ).filter(description__icontains=self.service_1.description)
+                ),
+            ],
             "type_id": [
                 self.type_1.id,
                 (

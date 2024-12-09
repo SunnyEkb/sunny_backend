@@ -39,6 +39,11 @@ class ServiceFilter(FilterSet):
         lookup_expr="icontains",
         label="Название",
     )
+    description = CharFilter(
+        field_name="description",
+        lookup_expr="icontains",
+        label="Описание",
+    )
     place_of_provision = ChoiceFilter(
         choices=ServicePlace.choices,
         label="Место оказания услуги",
@@ -88,6 +93,7 @@ class ServiceFilter(FilterSet):
         model = Service
         fields = (
             "title",
+            "description",
             "place_of_provision",
             "experience",
             "my_services",
