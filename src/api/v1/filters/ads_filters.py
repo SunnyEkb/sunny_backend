@@ -73,7 +73,8 @@ class AdFilter(FilterSet):
 
     def get_rating(self, queryset, name, value):
         """
-        Возвращает список объявлений, у которых рейтинг больше или равен значению.
+        Возвращает список объявлений,
+        у которых рейтинг больше или равен значению.
         """
         return (
             Ad.cstm_mng.annotate(rating=Avg("comments__rating"))
