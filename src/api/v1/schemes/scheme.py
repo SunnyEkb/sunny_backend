@@ -111,7 +111,10 @@ USER_PATCH_OK_200: OpenApiResponse = OpenApiResponse(
 TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.TypeGetSerializer,
     description="Получение списка типов услуг",
-    examples=[examples.TYPE_LIST_EXAMPLE],
+    examples=[
+        examples.TYPE_LIST_HIERARCHY_EXAMPLE,
+        examples.TYPE_LIST_FLAT_EXAMPLE
+    ],
 )
 
 SERVICE_LIST_OK_200: OpenApiResponse = OpenApiResponse(

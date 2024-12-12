@@ -40,7 +40,7 @@ User = get_user_model()
 
 @extend_schema(
     tags=["Services types"],
-    examples=[schemes.TYPE_LIST_EXAMPLE],
+    examples=[schemes.TYPE_LIST_FLAT_EXAMPLE],
     responses={
         status.HTTP_200_OK: schemes.TYPES_GET_OK_200,
     },
