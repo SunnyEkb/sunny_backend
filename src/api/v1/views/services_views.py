@@ -20,7 +20,7 @@ from rest_framework import (
 )
 from rest_framework.decorators import action
 
-from api.v1.filters import ServiceFilter, TypeFilter
+from api.v1.filters import ServiceFilter
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import (
     OwnerOrReadOnly,
@@ -44,6 +44,7 @@ User = get_user_model()
     responses={
         status.HTTP_200_OK: schemes.TYPES_GET_OK_200,
     },
+    parameters=[OpenApiParameter("title", str)],
 )
 @extend_schema_view(
     list=extend_schema(summary="Список типов услуг."),
@@ -51,10 +52,20 @@ User = get_user_model()
 class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список типов услуг."""
 
-    queryset = Type.objects.filter(parent=None)
-    serializer_class = api_serializers.TypeGetSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = TypeFilter
+    def get_queryset(self):
+        params = self.request.query_params
+        if "title" in params:
+            title = params.get("title")
+            queryset = Type.objects.filter(title__icontains=title)
+        else:
+            queryset = Type.objects.filter(parent=None)
+        return queryset
+
+    def get_serializer_class(self):
+        params = self.request.query_params
+        if "title" in params:
+            return api_serializers.TypeGetWithoutSubCatSerializer
+        return api_serializers.TypeGetSerializer
 
     @method_decorator(cache_page(60 * 2))
     def list(self, request, *args, **kwargs):
