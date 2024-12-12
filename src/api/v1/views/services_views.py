@@ -44,7 +44,10 @@ User = get_user_model()
     responses={
         status.HTTP_200_OK: schemes.TYPES_GET_OK_200,
     },
-    parameters=[OpenApiParameter("title", str)],
+    parameters=[
+        OpenApiParameter("title", str),
+        OpenApiParameter("id", int),
+    ],
 )
 @extend_schema_view(
     list=extend_schema(summary="Список типов услуг."),
@@ -57,6 +60,20 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         if "title" in params:
             title = params.get("title")
             queryset = Type.objects.filter(title__icontains=title)
+        elif "id" in params:
+            try:
+                type_id = int(params.get("id"))
+            except ValueError:
+                raise exceptions.ValidationError(
+                    detail=APIResponses.INVALID_PARAMETR.value,
+                    code=status.HTTP_400_BAD_REQUEST,
+                )
+            if type_id < 0:
+                raise exceptions.ValidationError(
+                    detail=APIResponses.INVALID_PARAMETR.value,
+                    code=status.HTTP_400_BAD_REQUEST,
+                )
+            queryset = Type.objects.filter(id=type_id)
         else:
             queryset = Type.objects.filter(parent=None)
         return queryset
@@ -69,7 +86,13 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     @method_decorator(cache_page(60 * 2))
     def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        try:
+            return super().list(request, *args, **kwargs)
+        except exceptions.ValidationError:
+            return response.Response(
+                data={"detail": APIResponses.INVALID_PARAMETR.value},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 @extend_schema(

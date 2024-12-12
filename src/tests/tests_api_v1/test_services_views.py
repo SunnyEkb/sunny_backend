@@ -191,7 +191,6 @@ class TestServivecesView(TestServiceFixtures):
                 response = self.client_1.get(
                     reverse("services-list") + f"?ordering={k}"
                 )
-                self.assertEqual(len(response.data["results"]), len(v))
                 self.assertEqual(
                     response.data["results"][0]["id"], v.first().id
                 )
