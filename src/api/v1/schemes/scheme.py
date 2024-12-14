@@ -113,7 +113,7 @@ TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     description="Получение списка типов услуг",
     examples=[
         examples.TYPE_LIST_HIERARCHY_EXAMPLE,
-        examples.TYPE_LIST_FLAT_EXAMPLE
+        examples.TYPE_LIST_FLAT_EXAMPLE,
     ],
 )
 
