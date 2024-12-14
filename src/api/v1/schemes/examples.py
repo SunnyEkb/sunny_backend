@@ -119,8 +119,8 @@ REFRESH_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"Success": APIResponses.SUCCESS_TOKEN_REFRESH.value},
 )
 
-TYPE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Список типов услуг",
+TYPE_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Иерархический список типов услуг",
     value={
         "id": 1,
         "title": "Красота и здоровье",
@@ -137,6 +137,14 @@ TYPE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
                 ],
             },
         ],
+    },
+)
+
+TYPE_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Cписок типов услуг при фильтрации по названию",
+    value={
+        "id": 1,
+        "title": "Красота и здоровье",
     },
 )
 
