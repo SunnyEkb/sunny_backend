@@ -9,6 +9,14 @@ from services.models import Service, ServiceImage, Type
 from users.models import Favorites
 
 
+class TypeGetWithoutSubCatSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения типов услуг без подтипов."""
+
+    class Meta:
+        model = Type
+        fields = ("id", "title")
+
+
 class TypeGetSerializer(serializers.ModelSerializer):
     """Сериализатор для получения типов услуг."""
 
