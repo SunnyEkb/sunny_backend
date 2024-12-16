@@ -16,14 +16,14 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from api.v1.permissions import SelfOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from api.v1.utils import (
+from api.v1.auth_utils import (
     get_tokens_for_user,
     set_access_cookie,
     set_refresh_cookie,
 )
+from api.v1.permissions import SelfOnly
 from core.choices import APIResponses
 from services.tasks import delete_image_files, delete_image_files_task
 
