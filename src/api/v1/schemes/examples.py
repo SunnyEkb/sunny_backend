@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiExample
 
@@ -18,6 +20,21 @@ USER_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "password": "your-password",
         "confirmation": "your-password",
     },
+)
+
+REGISTRY_VERIFICATION_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Подтверждение регистрации",
+    value={"token": uuid4()},
+)
+
+VERIFICATION_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Регистрация подтверждена",
+    value={"datail": APIResponses.VERIFICATION_SUCCESS.value},
+)
+
+VERIFICATION_FAILED_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Регистрация не подтверждена",
+    value={"datail": APIResponses.VERIFICATION_FAILED.value},
 )
 
 USER_CREATED_EXAMPLE = OpenApiExample(

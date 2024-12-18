@@ -1,4 +1,5 @@
 from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 
@@ -46,12 +47,18 @@ def send_password_reset_token(instance, reset_password_token):
     send_email(html_template, text_template, mail_to, context, subject)
 
 
-def send_welcome_email(username, email):
+def send_welcome_email(instance, token, email):
     """
     Отправка приветственного сообщения на email.
     """
 
-    context = {"username": username}
+    domain = settings.DOMAIN
+    verification_url = f"https://{domain}/registry-verification?token={token}"
+    print(verification_url)
+    context = {
+        "username": instance.username,
+        "verification_url": verification_url,
+    }
     html_template = "email/welcome.html"
     text_template = "email/welcome.txt"
     subject = EmailSubjects.WELCOME.value

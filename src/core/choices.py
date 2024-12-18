@@ -72,6 +72,8 @@ class APIResponses(models.TextChoices):
         "Лицо, оказывающее услуги не может оставлять комментарий."
     )
     INVALID_PARAMETR = "Параметр должен быть положительным числом."
+    VERIFICATION_SUCCESS = "Регистрация подтверждена."
+    VERIFICATION_FAILED = "Пользователь не найден."
 
 
 class SystemMessages(models.TextChoices):

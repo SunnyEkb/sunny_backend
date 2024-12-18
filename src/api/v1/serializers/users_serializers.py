@@ -14,6 +14,7 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
 from core.choices import APIResponses
+from users.models import VerificationToken
 
 User = get_user_model()
 
@@ -168,3 +169,13 @@ class PasswordChangeSerializer(Serializer):
                 {"password": APIResponses.PASSWORD_DO_NOT_MATCH.value}
             )
         return attrs
+
+
+class VerificationTokenSerialiser(ModelSerializer):
+    """
+    Сериализатор для подтверждения регистрации.
+    """
+
+    class Meta:
+        model = VerificationToken
+        fields = ["token"]

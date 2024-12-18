@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from users.forms import UserChangeForm, UserCreationForm
-from users.models import CustomUser, Favorites
+from users.models import CustomUser, Favorites, VerificationToken
 
 
 @admin.register(CustomUser)
@@ -47,10 +47,16 @@ class FavoritesAdmin(admin.ModelAdmin):
     Отображение модели избранное в админке.
     """
 
-    list_display = [
-        "user",
-        "content_type",
-        "object_id",
-    ]
+    list_display = ["user", "content_type", "object_id"]
     list_filter = ["content_type"]
     search_fields = ["user", "object_id"]
+
+
+@admin.register(VerificationToken)
+class VerificationTokenAdmin(admin.ModelAdmin):
+    """
+    Отображение модели токена для подтверждения регистрации в админке.
+    """
+
+    list_display = ["user"]
+    search_fields = ["user"]

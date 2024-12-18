@@ -26,6 +26,8 @@ from api.v1.auth_utils import (
 from api.v1.permissions import SelfOnly
 from core.choices import APIResponses
 from services.tasks import delete_image_files, delete_image_files_task
+from users.exceptions import TokenDoesNotExists
+from users.utils import verify_user
 
 User = get_user_model()
 
@@ -297,3 +299,37 @@ class AdAvatarView(generics.UpdateAPIView):
             else:
                 delete_image_files(str(old_image))
         return super().update(request, *args, **kwargs)
+
+
+@extend_schema(
+    request=api_serializers.VerificationToken,
+    summary="Подтверждение регистрации пользователя.",
+    tags=["Users"],
+    examples=[schemes.REGISTRY_VERIFICATION_EXAMPLE],
+    responses={
+        status.HTTP_200_OK: schemes.USER_VERIFIED_200,
+        status.HTTP_403_FORBIDDEN: schemes.VERIFICACTION_FAILED_403,
+    },
+)
+class VerificationView(APIView):
+    """
+    Подтверждение регистрации пользователя.
+    """
+
+    def post(self, request):
+        serializer = api_serializers.VerificationTokenSerialiser(
+            data=request.data
+        )
+        if serializer.is_valid():
+            try:
+                token = serializer.validated_data.get("token")
+                verify_user(token)
+                return Response(
+                    status=status.HTTP_200_OK,
+                    data=APIResponses.VERIFICATION_SUCCESS.value,
+                )
+            except TokenDoesNotExists:
+                return Response(
+                    status=status.HTTP_403_FORBIDDEN,
+                    data=APIResponses.VERIFICATION_FAILED.value,
+                )

@@ -117,7 +117,7 @@ class CommentCreateDestroyViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="add_photo",
+        url_path="add-photo",
         url_name="add_photo",
         permission_classes=(CommentAuthorOnly,),
     )

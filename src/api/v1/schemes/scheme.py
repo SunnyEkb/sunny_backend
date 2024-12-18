@@ -30,6 +30,18 @@ USER_CREATED_201: OpenApiResponse = OpenApiResponse(
     examples=[examples.USER_CREATED_EXAMPLE],
 )
 
+USER_VERIFIED_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Регистрация подтверждена",
+    examples=[examples.VERIFICATION_SUCCESS_EXAMPLE],
+)
+
+VERIFICACTION_FAILED_403: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Регистрация не подтверждена",
+    examples=[examples.VERIFICATION_FAILED_EXAMPLE],
+)
+
 USER_BAD_REQUEST_400: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Bad request",
