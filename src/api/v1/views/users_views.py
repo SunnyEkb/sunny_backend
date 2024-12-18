@@ -16,16 +16,16 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from api.v1.permissions import SelfOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from api.v1.utils import (
+from api.v1.auth_utils import (
     get_tokens_for_user,
     set_access_cookie,
     set_refresh_cookie,
 )
+from api.v1.permissions import SelfOnly
 from core.choices import APIResponses
-from services.tasks import delete_image_files
+from services.tasks import delete_image_files, delete_image_files_task
 
 User = get_user_model()
 
@@ -292,5 +292,8 @@ class AdAvatarView(generics.UpdateAPIView):
         instance = self.get_object()
         if instance.avatar:
             old_image = instance.avatar
-            delete_image_files.delay(str(old_image))
+            if settings.PROD_DB:
+                delete_image_files_task.delay(str(old_image))
+            else:
+                delete_image_files(str(old_image))
         return super().update(request, *args, **kwargs)

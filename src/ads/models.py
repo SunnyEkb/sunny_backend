@@ -9,7 +9,7 @@ from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.managers import TypeCategoryManager
 from core.models import AbstractAdvertisement
-from services.tasks import delete_image_files
+from services.tasks import delete_image_files_task
 
 
 class Category(models.Model):
@@ -98,4 +98,4 @@ class AdImage(models.Model):
     def delete_image_files(self):
         """Удаление файлов изображений."""
 
-        delete_image_files.delay(str(self.image))
+        delete_image_files_task.delay(str(self.image))
