@@ -10,7 +10,7 @@ from core.db_utils import comment_image_path, validate_image
 from core.enums import Limits
 from core.models import TimeCreateUpdateModel
 from comments.managers import CommentManager
-from services.tasks import delete_image_files, delete_images_dir
+from services.tasks import delete_image_files_task, delete_images_dir_task
 
 User = get_user_model()
 
@@ -72,7 +72,7 @@ class Comment(TimeCreateUpdateModel):
         if images:
             for image in images:
                 image.delete()
-            delete_images_dir.delay(f"comments/{self.id}")
+            delete_images_dir_task.delay(f"comments/{self.id}")
 
     def publish(self):
         if self.status == CommentStatus.DRAFT.value:
@@ -115,4 +115,4 @@ class CommentImage(models.Model):
     def delete_image_files(self):
         """Удаление файлов изображений."""
 
-        delete_image_files.delay(str(self.image))
+        delete_image_files_task.delay(str(self.image))
