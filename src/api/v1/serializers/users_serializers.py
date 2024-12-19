@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth import password_validation
 from rest_framework.serializers import (
     CharField,
     EmailField,
@@ -63,6 +64,22 @@ class UserCreateSerializer(ModelSerializer):
     def validate(self, attrs):
         if attrs["password"] != attrs["confirmation"]:
             raise ValidationError(APIResponses.PASSWORD_DO_NOT_MATCH.value)
+
+        data = attrs.copy()
+        del data["confirmation"]
+
+        errors = dict()
+        user = User(**data)
+
+        try:
+            password_validation.validate_password(
+                password=attrs["password"], user=user
+            )
+        except ValidationError as e:
+            errors["password"] = list(e.messages)
+
+        if errors:
+            raise ValidationError(errors)
         return attrs
 
     def create(self, validated_data):
