@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 def verify_user(token: UUID):
-    ver_token = VerificationToken.objects.get(token=token)
+    ver_token = VerificationToken.cstm_mng.get(token=token)
     if ver_token is not None:
         user = ver_token.user
         user.is_active = True

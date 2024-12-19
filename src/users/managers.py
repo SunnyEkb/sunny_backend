@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import BaseUserManager
+from django.db import models
 
 from core.choices import Role
 
@@ -24,3 +25,12 @@ class UserManager(BaseUserManager):
         user.role = Role.ADMIN
         user.save(using=self._db)
         return user
+
+
+class VerificationTokenManager(models.Manager):
+    """
+    Пользовательский менеджер для модели Токена для подтверждения регистрации.
+    """
+
+    def get_queryset(self) -> models.QuerySet:
+        return super().get_queryset().select_related("user")

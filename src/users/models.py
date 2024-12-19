@@ -10,7 +10,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from core.choices import Role
 from core.db_utils import user_photo_path, validate_image
 from core.enums import Limits
-from users.managers import UserManager
+from users.managers import UserManager, VerificationTokenManager
 
 
 class CustomUser(AbstractUser):
@@ -125,6 +125,9 @@ class VerificationToken(models.Model):
         verbose_name="Пользователь",
     )
     token = models.UUIDField(verbose_name="Токен")
+
+    objects = models.Manager()
+    cstm_mng = VerificationTokenManager()
 
     class Meta:
         verbose_name = "Токен для подтверждения регистрации"
