@@ -25,3 +25,4 @@ class Limits(IntEnum):
     MAX_RATING = 5
     MIN_RATING = 1
     MAX_COMMENT_TEXT = 500
+    REGISTRY_TOKEN_LIFETIME = 24

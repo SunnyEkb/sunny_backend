@@ -125,6 +125,11 @@ class VerificationToken(models.Model):
         verbose_name="Пользователь",
     )
     token = models.UUIDField(verbose_name="Токен")
+    created_at = models.DateTimeField(
+        "Время создания",
+        auto_now_add=True,
+        db_index=True,
+    )
 
     objects = models.Manager()
     cstm_mng = VerificationTokenManager()
