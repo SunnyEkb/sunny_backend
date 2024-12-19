@@ -185,6 +185,24 @@ class PasswordChangeSerializer(Serializer):
             raise ValidationError(
                 {"password": APIResponses.PASSWORD_DO_NOT_MATCH.value}
             )
+        if (
+            self.initial_data["new_password"]
+            == self.initial_data["current_password"]
+        ):
+            raise ValidationError(
+                {"password": APIResponses.NOT_SAME_PASSWORD.value}
+            )
+
+        errors = dict()
+        try:
+            password_validation.validate_password(
+                password=attrs["new_password"], user=user
+            )
+        except ValidationError as e:
+            errors["password"] = list(e.messages)
+
+        if errors:
+            raise ValidationError(errors)
         return attrs
 
 

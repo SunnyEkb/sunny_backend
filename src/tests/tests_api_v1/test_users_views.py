@@ -137,6 +137,36 @@ class TestUser(TestUserFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
+    def test_password_change_by_the_same_password(self):
+        response = self.client_2.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.password,
+                "new_password": self.password,
+                "confirmation": self.password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.data["password"][0], APIResponses.NOT_SAME_PASSWORD.value
+        )
+
+    def test_password_change_by_wrong_password(self):
+        response = self.client_2.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.new_password,
+                "new_password": self.new_password,
+                "confirmation": self.new_password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.data["password"][0], APIResponses.WRONG_PASSWORD.value
+        )
+
     def test_password_change(self):
         response = self.client_4.post(
             reverse("change_password"),
