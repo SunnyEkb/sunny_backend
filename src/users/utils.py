@@ -24,3 +24,15 @@ def verify_user(token: UUID):
                 ver_token.delete()
     else:
         raise TokenDoesNotExists()
+
+
+def delete_expired_tokens():
+    tokens = VerificationToken.cstm_mng.filter(
+        created_at__lt=datetime.now(timezone.utc)
+        - timedelta(hours=Limits.REGISTRY_TOKEN_LIFETIME.value)
+    )
+    for token in tokens:
+        with transaction.atomic():
+            user = token.user
+            user.delete()
+            token.delete()
