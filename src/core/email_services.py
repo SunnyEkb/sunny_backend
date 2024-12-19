@@ -54,7 +54,6 @@ def send_welcome_email(instance, token, email):
 
     domain = settings.DOMAIN
     verification_url = f"https://{domain}/registry-verification?token={token}"
-    print(verification_url)
     context = {
         "username": instance.username,
         "verification_url": verification_url,
