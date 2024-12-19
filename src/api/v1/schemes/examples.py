@@ -112,6 +112,20 @@ PASSWORD_DO_NOT_MATCH_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"non_field_errors": [APIResponses.PASSWORD_DO_NOT_MATCH.value]},
 )
 
+PASSWORD_ERRORS: OpenApiExample = OpenApiExample(
+    name="Пароль не соответствует требованиям безопасности.",
+    value={
+        "non_field_errors": [
+            (
+                "Введённый пароль слишком короткий. "
+                "Он должен содержать как минимум 8 символов."
+            ),
+            "Введённый пароль слишком широко распространён.",
+            "Введённый пароль состоит только из цифр.",
+        ]
+    },
+)
+
 WRONG_EMAIL_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Неверная электронаая почта",
     value={"email": ["Введите правильный адрес электронной почты."]},

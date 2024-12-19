@@ -38,7 +38,7 @@ User = get_user_model()
     tags=["Users"],
     examples=[schemes.USER_CREATE_EXAMPLE],
     responses={
-        status.HTTP_201_CREATED: schemes.USER_CREATED_201,
+        status.HTTP_201_CREATED: schemes.USER_INFO_EXAMPLE,
         status.HTTP_400_BAD_REQUEST: schemes.USER_BAD_REQUEST_400,
     },
 )
@@ -177,7 +177,7 @@ class CookieTokenRefreshView(TokenRefreshView):
     examples=[schemes.PASSWORD_CHANGE_EXAMPLE],
     responses={
         status.HTTP_200_OK: schemes.PASSWORD_CHANGED_OK_200,
-        status.HTTP_400_BAD_REQUEST: schemes.USER_BAD_REQUEST_400,
+        status.HTTP_400_BAD_REQUEST: schemes.PASSWORD_ERRORS_400,
         status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
 )
