@@ -75,6 +75,11 @@ class APIResponses(models.TextChoices):
     INVALID_PARAMETR = "Параметр должен быть положительным числом."
     VERIFICATION_SUCCESS = "Регистрация подтверждена."
     VERIFICATION_FAILED = "Пользователь не найден."
+    WRONG_USERNAME = (
+        "Псевдоним должен состоять из следующих символов: кириллица, латиница,"
+        " цифры, разделители, в верхнем или нижнем регистре. "
+        "Минимальный размер - 2 символа, максимальный - 25."
+    )
 
 
 class SystemMessages(models.TextChoices):

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth import password_validation
+from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework.serializers import (
     CharField,
     EmailField,
@@ -13,7 +14,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from api.v1.serializers.image_fields import Base64ImageField
-from api.v1.validators import validate_file_size
+from api.v1.validators import validate_file_size, validate_username
 from core.choices import APIResponses
 from users.models import VerificationToken
 
@@ -46,7 +47,9 @@ class UserCreateSerializer(ModelSerializer):
     Сериализатор для создания пользователя.
     """
 
+    phone = PhoneNumberField(required=False, region="RU")
     confirmation = CharField(write_only=True, required=True)
+    username = CharField(required=True, validators=[validate_username])
 
     class Meta:
         model = User
