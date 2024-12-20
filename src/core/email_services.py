@@ -53,7 +53,7 @@ def send_welcome_email(instance, token, email):
     """
 
     domain = settings.DOMAIN
-    verification_url = f"https://{domain}/registry-verification?token={token}"
+    verification_url = f"https://{domain}/registry-activate?token={token}"
     context = {
         "username": instance.username,
         "verification_url": verification_url,
