@@ -106,9 +106,7 @@ class UserAdAvatarSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
-            "avatar",
-        ]
+        fields = ["avatar"]
 
     def to_representation(self, instance):
         serializer = UserReadSerializer(instance)

@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.v1.serializers import CommentReadSerializer, UserReadSerializer
+from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
 from services.models import Service, ServiceImage, Type
 from users.models import Favorites
@@ -39,9 +40,9 @@ class TypeGetSerializer(serializers.ModelSerializer):
 class ServiceImageCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания фото к услуге."""
 
-    image = serializers.ImageField(
+    image = Base64ImageField(
         required=True,
-        allow_null=False,
+        allow_null=True,
         validators=[validate_file_size],
     )
 
@@ -57,10 +58,7 @@ class ServiceImageRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ServiceImage
-        fields = (
-            "id",
-            "image",
-        )
+        fields = ("id", "image")
 
 
 class ServiceListSerializer(serializers.ModelSerializer):
