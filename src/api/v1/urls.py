@@ -18,6 +18,7 @@ from api.v1.views import (
     ServiceImageViewSet,
     ServiceViewSet,
     TypeViewSet,
+    VerificationView,
     UserViewSet,
 )
 
@@ -45,6 +46,11 @@ api_v1_router.register("users", UserViewSet, basename="users")
 
 urlpatterns = [
     path("registry/", RegisrtyView.as_view(), name="registry"),
+    path(
+        "verify-registration/",
+        VerificationView.as_view(),
+        name="veryfy_registration",
+    ),
     path("users/avatar/<int:pk>/", AdAvatarView.as_view(), name="avatar"),
     re_path(
         r"^password_reset/",

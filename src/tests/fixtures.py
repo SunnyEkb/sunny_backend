@@ -75,6 +75,9 @@ class TestUserFixtures(BaseTestCase):
         cls.user_2 = factories.CustomUserFactory(password=cls.password)
         cls.user_3 = factories.CustomUserFactory()
         cls.user_4 = factories.CustomUserFactory(password=cls.password)
+        cls.unverified_user = factories.CustomUserFactory(
+            password=cls.password, is_active=False
+        )
 
         cls.client_1 = APIClient()
         cls.client_1.force_authenticate(cls.user_1)
