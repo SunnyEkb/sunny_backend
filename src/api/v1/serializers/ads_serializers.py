@@ -3,6 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
 
 from ads.models import Ad, AdImage, Category
+from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
 from users.models import Favorites
 
@@ -29,9 +30,9 @@ class CategorySerializer(serializers.ModelSerializer):
 class AdImageCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания фото к объявлению."""
 
-    image = serializers.ImageField(
+    image = Base64ImageField(
         required=True,
-        allow_null=False,
+        allow_null=True,
         validators=[validate_file_size],
     )
 
@@ -47,10 +48,7 @@ class AdImageRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AdImage
-        fields = (
-            "id",
-            "image",
-        )
+        fields = ("id", "image")
 
 
 class AdRetrieveSerializer(serializers.ModelSerializer):
