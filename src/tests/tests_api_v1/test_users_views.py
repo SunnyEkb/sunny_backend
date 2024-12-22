@@ -8,6 +8,7 @@ from django.urls import reverse
 
 from core.choices import APIResponses
 from tests.fixtures import TestUserFixtures
+from users.models import VerificationToken
 
 User = get_user_model()
 
@@ -36,6 +37,24 @@ class TestUser(TestUserFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertTrue(User.objects.filter(email=email).exists())
+        self.assertEqual(
+            User.objects.filter(email=email).first().is_active, False
+        )
+
+    def test_user_verification(self):
+        body = {
+            "token": self.unverified_user.verification_token.token,
+        }
+        response = self.anon_client.post(
+            reverse("veryfy_registration"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertTrue(User.objects.get(id=self.unverified_user.id).is_active)
+        self.assertFalse(
+            VerificationToken.objects.filter(
+                id=self.unverified_user.verification_token.id
+            ).exists()
+        )
 
     def test_user_registry_password_validation(self):
         body = {
@@ -117,6 +136,36 @@ class TestUser(TestUserFixtures):
             },
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_password_change_by_the_same_password(self):
+        response = self.client_2.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.password,
+                "new_password": self.password,
+                "confirmation": self.password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.data["password"][0], APIResponses.NOT_SAME_PASSWORD.value
+        )
+
+    def test_password_change_by_wrong_password(self):
+        response = self.client_2.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.new_password,
+                "new_password": self.new_password,
+                "confirmation": self.new_password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.data["password"][0], APIResponses.WRONG_PASSWORD.value
+        )
 
     def test_password_change(self):
         response = self.client_4.post(

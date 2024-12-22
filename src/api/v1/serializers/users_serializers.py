@@ -1,5 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth import password_validation
+from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework.serializers import (
     CharField,
     EmailField,
@@ -12,8 +14,9 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from api.v1.serializers.image_fields import Base64ImageField
-from api.v1.validators import validate_file_size
+from api.v1.validators import validate_file_size, validate_username
 from core.choices import APIResponses
+from users.models import VerificationToken
 
 User = get_user_model()
 
@@ -44,7 +47,9 @@ class UserCreateSerializer(ModelSerializer):
     Сериализатор для создания пользователя.
     """
 
+    phone = PhoneNumberField(required=False, region="RU")
     confirmation = CharField(write_only=True, required=True)
+    username = CharField(required=True, validators=[validate_username])
 
     class Meta:
         model = User
@@ -62,6 +67,22 @@ class UserCreateSerializer(ModelSerializer):
     def validate(self, attrs):
         if attrs["password"] != attrs["confirmation"]:
             raise ValidationError(APIResponses.PASSWORD_DO_NOT_MATCH.value)
+
+        data = attrs.copy()
+        del data["confirmation"]
+
+        errors = dict()
+        user = User(**data)
+
+        try:
+            password_validation.validate_password(
+                password=attrs["password"], user=user
+            )
+        except ValidationError as e:
+            errors["password"] = list(e.messages)
+
+        if errors:
+            raise ValidationError(errors)
         return attrs
 
     def create(self, validated_data):
@@ -106,9 +127,7 @@ class UserAdAvatarSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
-            "avatar",
-        ]
+        fields = ["avatar"]
 
     def to_representation(self, instance):
         serializer = UserReadSerializer(instance)
@@ -167,4 +186,32 @@ class PasswordChangeSerializer(Serializer):
             raise ValidationError(
                 {"password": APIResponses.PASSWORD_DO_NOT_MATCH.value}
             )
+        if (
+            self.initial_data["new_password"]
+            == self.initial_data["current_password"]
+        ):
+            raise ValidationError(
+                {"password": APIResponses.NOT_SAME_PASSWORD.value}
+            )
+
+        errors = dict()
+        try:
+            password_validation.validate_password(
+                password=attrs["new_password"], user=user
+            )
+        except ValidationError as e:
+            errors["password"] = list(e.messages)
+
+        if errors:
+            raise ValidationError(errors)
         return attrs
+
+
+class VerificationTokenSerialiser(ModelSerializer):
+    """
+    Сериализатор для подтверждения регистрации.
+    """
+
+    class Meta:
+        model = VerificationToken
+        fields = ["token"]

@@ -22,6 +22,8 @@ if "test" in sys.argv:
 else:
     ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(", ")
 
+DOMAIN = os.getenv("DOMAIN", default="127.0.0.1")
+
 INSTALLED_APPS = [
     "daphne",
     "django.contrib.admin",
@@ -124,6 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": (
             "django.contrib.auth.password_validation.MinimumLengthValidator"
         ),
+        "OPTIONS": {
+            "min_length": 8,
+        },
     },
     {
         "NAME": (

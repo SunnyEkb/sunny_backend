@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiExample
 
@@ -18,6 +20,21 @@ USER_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "password": "your-password",
         "confirmation": "your-password",
     },
+)
+
+REGISTRY_VERIFICATION_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Подтверждение регистрации",
+    value={"token": uuid4()},
+)
+
+VERIFICATION_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Регистрация подтверждена",
+    value={"datail": APIResponses.VERIFICATION_SUCCESS.value},
+)
+
+VERIFICATION_FAILED_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Регистрация не подтверждена",
+    value={"datail": APIResponses.VERIFICATION_FAILED.value},
 )
 
 USER_CREATED_EXAMPLE = OpenApiExample(
@@ -93,6 +110,20 @@ UNAUTHORIZED_EXAMPLE: OpenApiExample = OpenApiExample(
 PASSWORD_DO_NOT_MATCH_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Пароль не соответствует подтверждению",
     value={"non_field_errors": [APIResponses.PASSWORD_DO_NOT_MATCH.value]},
+)
+
+PASSWORD_ERRORS: OpenApiExample = OpenApiExample(
+    name="Пароль не соответствует требованиям безопасности.",
+    value={
+        "non_field_errors": [
+            (
+                "Введённый пароль слишком короткий. "
+                "Он должен содержать как минимум 8 символов."
+            ),
+            "Введённый пароль слишком широко распространён.",
+            "Введённый пароль состоит только из цифр.",
+        ]
+    },
 )
 
 WRONG_EMAIL_EXAMPLE: OpenApiExample = OpenApiExample(

@@ -37,6 +37,7 @@ class APIResponses(models.TextChoices):
     INVALID_CREDENTIALS = "Invalid email or password"
     PASSWORD_DO_NOT_MATCH = "Password and confirmation do not match"
     PASSWORD_CHANGED = "Password changed successfully"
+    NOT_SAME_PASSWORD = "New password is the same as old one"
     SUCCESS_LOGIN = "Login successfully"
     SUCCESS_LOGOUT = "Logout successfully"
     SUCCESS_TOKEN_REFRESH = "Token refreshed"
@@ -72,6 +73,13 @@ class APIResponses(models.TextChoices):
         "Лицо, оказывающее услуги не может оставлять комментарий."
     )
     INVALID_PARAMETR = "Параметр должен быть положительным числом."
+    VERIFICATION_SUCCESS = "Регистрация подтверждена."
+    VERIFICATION_FAILED = "Пользователь не найден."
+    WRONG_USERNAME = (
+        "Псевдоним должен состоять из следующих символов: кириллица, латиница,"
+        " цифры, разделители, в верхнем или нижнем регистре. "
+        "Минимальный размер - 2 символа, максимальный - 25."
+    )
 
 
 class SystemMessages(models.TextChoices):
