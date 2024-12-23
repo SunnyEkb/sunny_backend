@@ -5,8 +5,8 @@ from users.utils import delete_expired_tokens
 
 
 @shared_task
-def send_welcome_email_task(instance, token, email):
-    send_welcome_email(instance, token, email)
+def send_welcome_email_task(username, token, email):
+    send_welcome_email(username, token, email)
 
 
 @shared_task

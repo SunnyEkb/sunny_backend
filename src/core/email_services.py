@@ -47,7 +47,7 @@ def send_password_reset_token(instance, reset_password_token):
     send_email(html_template, text_template, mail_to, context, subject)
 
 
-def send_welcome_email(instance, token, email):
+def send_welcome_email(username, token, email):
     """
     Отправка приветственного сообщения на email.
     """
@@ -55,7 +55,7 @@ def send_welcome_email(instance, token, email):
     domain = settings.DOMAIN
     verification_url = f"https://{domain}/registry-activate?token={token}"
     context = {
-        "username": instance.username,
+        "username": username,
         "verification_url": verification_url,
     }
     html_template = "email/welcome.html"
