@@ -58,13 +58,13 @@ def send_welcome_email_signal(sender, instance, created, **kwargs):
         ver_token.save()
         if "test" not in sys.argv and settings.PROD_DB is True:
             send_welcome_email_task.delay(
-                instance=instance,
+                username=instance.username,
                 token=ver_token.token,
                 email=instance.email,
             )
         else:
             send_welcome_email(
-                instance=instance,
+                username=instance.username,
                 token=ver_token.token,
                 email=instance.email,
             )
