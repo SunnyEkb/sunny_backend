@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  es:
+      image: elasticsearch:7.8.1
+      container_name: es
+      restart: always
+      environment:
+        - discovery.type=single-node
+      ports:
+        - "9200:9200"
+      volumes:
+        - elasticsearch_data:/usr/share/elasticsearch/data
+
   db:
     image: postgres:16.1-alpine
     container_name: db
@@ -75,6 +86,7 @@ services:
       - sunny_media_value:/app/media/
     depends_on:
       - db
+      - es
       - redis
     ports:
       - "8000:8000"
@@ -93,3 +105,4 @@ volumes:
   sunny_static_value:
   sunny_media_value:
   sunny_ekb_data:
+  elasticsearch_data:
