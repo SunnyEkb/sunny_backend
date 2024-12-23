@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "drf_spectacular",
+    "django_elasticsearch_dsl",
     "django_rest_passwordreset",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
@@ -112,6 +113,14 @@ else:
             "NAME": BASE_DIR / "sunny.sqlite3",
         }
     }
+
+ELASTICSEARCH_DSL_HOSTS = os.getenv(
+    "ELASTICSEARCH_DSL_HOSTS", default="localhost:9200"
+).split(", ")
+
+ELASTICSEARCH_DSL = {
+    "default": {"hosts": (ELASTICSEARCH_DSL_HOSTS)},
+}
 
 AUTH_USER_MODEL = "users.CustomUser"
 
