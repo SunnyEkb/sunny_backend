@@ -10,8 +10,8 @@ def send_welcome_email_task(username, token, email):
 
 
 @shared_task
-def send_password_reset_token_task(instance, reset_password_token):
-    send_password_reset_token(instance, reset_password_token)
+def send_password_reset_token_task(domain, username, mail_to, key):
+    send_password_reset_token(domain, username, mail_to, key)
 
 
 @shared_task
