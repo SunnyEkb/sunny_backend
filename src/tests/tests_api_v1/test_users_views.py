@@ -72,6 +72,22 @@ class TestUser(TestUserFixtures):
             [APIResponses.PASSWORD_DO_NOT_MATCH.value],
         )
 
+    def user_registry_with_existing_username(self):
+        body = {
+            "username": self.user_1.username,
+            "email": self.email_2,
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("non_field_errors", None),
+            [APIResponses.USERNAME_EXISTS.value],
+        )
+
     def test_user_login(self):
         data = {"email": self.user_2.email, "password": self.password}
         response = self.client_1.post(reverse("login"), data=data)

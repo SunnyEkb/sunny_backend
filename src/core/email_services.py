@@ -1,6 +1,5 @@
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 
 from core.choices import EmailSubjects
@@ -26,23 +25,18 @@ def send_email(
     message.send()
 
 
-def send_password_reset_token(instance, reset_password_token):
+def send_password_reset_token(domain, username, mail_to, key):
     """
     Отправка токена для смены пароля от ЛК на email.
     """
 
-    domain = get_current_site(instance.request).domain
     context = {
-        "username": reset_password_token.user.username,
-        "reset_password_url": "https://{}/password-forget?token={}".format(
-            domain,
-            reset_password_token.key,
-        ),
+        "username": username,
+        "reset_password_url": f"https://{domain}/password-forget?token={key}",
     }
     html_template = "email/reset_password.html"
     text_template = "email/reset_password.txt"
     subject = EmailSubjects.PASSWORD_CHANGE.value
-    mail_to = reset_password_token.user.email
 
     send_email(html_template, text_template, mail_to, context, subject)
 
