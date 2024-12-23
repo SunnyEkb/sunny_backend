@@ -10,18 +10,6 @@ User = get_user_model()
 
 @registry.register_document
 class ServiceDocument(Document):
-    title = fields.TextField(
-        attr="title",
-        fields={
-            "suggest": fields.Completion(),
-        },
-    )
-    description = fields.TextField(
-        attr="description",
-        fields={
-            "suggest": fields.Completion(),
-        },
-    )
     provider = fields.ObjectField(
         properties={
             "email": fields.TextField(),
