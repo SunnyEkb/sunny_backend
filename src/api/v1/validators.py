@@ -1,7 +1,11 @@
+from django.contrib.auth import get_user_model
 from rest_framework.serializers import ValidationError
 
 from core.choices import APIResponses
 from core.enums import Limits
+
+
+User = get_user_model()
 
 
 def validate_file_size(temp_file):
@@ -20,3 +24,5 @@ def validate_username(value):
         or " " in value
     ):
         raise ValidationError(APIResponses.WRONG_USERNAME.value)
+    if User.objects.filter(username=value).exists():
+        raise ValidationError(APIResponses.USERNAME_EXISTS.value)

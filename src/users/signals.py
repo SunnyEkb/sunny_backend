@@ -38,9 +38,7 @@ def password_reset_token_created(
     domain = get_current_site(instance.request).domain
 
     if "test" not in sys.argv and settings.PROD_DB is True:
-        send_password_reset_token_task.delay(
-            domain, username, mail_to, key
-        )
+        send_password_reset_token_task.delay(domain, username, mail_to, key)
     else:
         send_password_reset_token(domain, username, mail_to, key)
 
