@@ -3,6 +3,7 @@ import sys
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.sites.shortcuts import get_current_site
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_rest_passwordreset.signals import reset_password_token_created
@@ -11,7 +12,7 @@ from core.choices import Notifications
 from core.email_services import send_password_reset_token, send_welcome_email
 from notifications.models import Notification
 from users.models import VerificationToken
-from users.tasks import send_welcome_email_task
+from users.tasks import send_welcome_email_task, send_password_reset_token_task
 
 User = get_user_model()
 
@@ -31,12 +32,17 @@ def password_reset_token_created(
     :return:
     """
 
-    #    if "test" not in sys.argv:
-    #        send_password_reset_token_task.delay(
-    #            instance=instance, reset_password_token=reset_password_token
-    #        )
-    #    else:
-    send_password_reset_token(instance, reset_password_token)
+    key = reset_password_token.key
+    mail_to = reset_password_token.user.email
+    username = reset_password_token.user.username
+    domain = get_current_site(instance.request).domain
+
+    if "test" not in sys.argv and settings.PROD_DB is True:
+        send_password_reset_token_task.delay(
+            domain, username, mail_to, key
+        )
+    else:
+        send_password_reset_token(domain, username, mail_to, key)
 
 
 @receiver(post_save, sender=User)
