@@ -78,7 +78,7 @@ class LoginView(APIView):
             response = Response()
             email = serializer.validated_data.get("email", None)
             password = serializer.validated_data.get("password", None)
-            user = authenticate(email=email, password=password)
+            user = authenticate(email=email.lower(), password=password)
             if user is not None:
                 if user.is_active:
                     data = get_tokens_for_user(user)
