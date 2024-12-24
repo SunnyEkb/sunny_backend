@@ -81,6 +81,7 @@ class APIResponses(models.TextChoices):
         "Минимальный размер - 2 символа, максимальный - 25."
     )
     USERNAME_EXISTS = "Пользователь с таким username уже существует."
+    EMAIL_EXISTS = "Пользователь с таким email уже существует."
 
 
 class SystemMessages(models.TextChoices):

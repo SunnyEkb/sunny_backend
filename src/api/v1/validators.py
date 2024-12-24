@@ -26,3 +26,10 @@ def validate_username(value):
         raise ValidationError(APIResponses.WRONG_USERNAME.value)
     if User.objects.filter(username=value).exists():
         raise ValidationError(APIResponses.USERNAME_EXISTS.value)
+
+
+def validate_email(value: str):
+    """Валидация email."""
+
+    if User.objects.filter(email=value.lower()).exists():
+        raise ValidationError(APIResponses.EMAIL_EXISTS.value)
