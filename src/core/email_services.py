@@ -28,7 +28,7 @@ def send_email(
         message.attach_alternative(html_body, "text/html")
         message.send()
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
 
 
 def send_password_reset_token(domain, username, mail_to, key):

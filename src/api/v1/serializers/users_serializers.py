@@ -14,7 +14,11 @@ from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 
 from api.v1.serializers.image_fields import Base64ImageField
-from api.v1.validators import validate_file_size, validate_username
+from api.v1.validators import (
+    validate_email,
+    validate_file_size,
+    validate_username,
+)
 from core.choices import APIResponses
 from users.models import VerificationToken
 
@@ -50,6 +54,7 @@ class UserCreateSerializer(ModelSerializer):
     phone = PhoneNumberField(required=False, region="RU")
     confirmation = CharField(write_only=True, required=True)
     username = CharField(required=True, validators=[validate_username])
+    email = EmailField(validators=[validate_email])
 
     class Meta:
         model = User
