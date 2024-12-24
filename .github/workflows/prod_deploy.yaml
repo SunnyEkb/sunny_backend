@@ -17,6 +17,7 @@ jobs:
           envkey_DEBUG: False
           envkey_PROD_DB: True
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          envkey_DOMAIN: ${{ secrets.DOMAIN }}
           envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
           envkey_CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS }}
           envkey_CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
