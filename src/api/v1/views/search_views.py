@@ -1,11 +1,12 @@
 import abc
 
 from django.http import HttpResponse
+from drf_spectacular.utils import extend_schema
 from elasticsearch_dsl import Q
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
 
-from api.v1.serializers import ServiceRetrieveSerializer
+from api.v1.serializers import ServiceListSerializer
 from services.documents import ServiceDocument
 
 
@@ -30,8 +31,12 @@ class PaginatedElasticSearchAPIView(APIView, LimitOffsetPagination):
             return HttpResponse(e, status=500)
 
 
+@extend_schema(
+    summary="Поиск по услугам.",
+    tags=["Search"],
+)
 class SearchServices(PaginatedElasticSearchAPIView):
-    serializer_class = ServiceRetrieveSerializer
+    serializer_class = ServiceListSerializer
     document_class = ServiceDocument
 
     def generate_q_expression(self, query):
