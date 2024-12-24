@@ -1,8 +1,12 @@
+import logging
+
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.template.loader import render_to_string
 
 from core.choices import EmailSubjects
+
+logger = logging.getLogger("django")
 
 
 def send_email(
@@ -15,14 +19,16 @@ def send_email(
     """
     Отправка e-mail.
     """
-
-    html_body = render_to_string(html_template, context)
-    message_text = render_to_string(text_template, context)
-    message = EmailMultiAlternatives(
-        subject=subject, to=[mail_to], body=message_text
-    )
-    message.attach_alternative(html_body, "text/html")
-    message.send()
+    try:
+        html_body = render_to_string(html_template, context)
+        message_text = render_to_string(text_template, context)
+        message = EmailMultiAlternatives(
+            subject=subject, to=[mail_to], body=message_text
+        )
+        message.attach_alternative(html_body, "text/html")
+        message.send()
+    except Exception as e:
+        logger.error(e)
 
 
 def send_password_reset_token(domain, username, mail_to, key):
