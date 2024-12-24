@@ -80,8 +80,8 @@ class APIResponses(models.TextChoices):
         " цифры, разделители, в верхнем или нижнем регистре. "
         "Минимальный размер - 2 символа, максимальный - 25."
     )
-    USERNAME_EXISTS = "Пользователь с таким username уже существует."
-    EMAIL_EXISTS = "Пользователь с таким email уже существует."
+    USERNAME_EXISTS = "Пользователь с таким именем уже существует."
+    EMAIL_EXISTS = "Пользователь с таким адресом электронной почты существует."
 
 
 class SystemMessages(models.TextChoices):
