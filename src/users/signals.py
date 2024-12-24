@@ -13,7 +13,6 @@ from core.email_services import send_password_reset_token, send_welcome_email
 from notifications.models import Notification
 from users.models import VerificationToken
 from users.tasks import send_welcome_email_task, send_password_reset_token_task
-from core.utils import send_telegram_message
 
 User = get_user_model()
 
@@ -62,18 +61,15 @@ def send_welcome_email_signal(sender, instance, created, **kwargs):
             user=instance, token=token
         )
         ver_token.save()
-        #        if "test" not in sys.argv and settings.PROD_DB is True:
-        #            send_welcome_email_task.delay(
-        #                username=instance.username,
-        #                token=token,
-        #                email=instance.email,
-        #            )
-        #        else:
-        try:
+        if "test" not in sys.argv and settings.PROD_DB is True:
+            send_welcome_email_task.delay(
+                username=instance.username,
+                token=token,
+                email=instance.email,
+            )
+        else:
             send_welcome_email(
                 username=instance.username,
                 token=token,
                 email=instance.email,
             )
-        except Exception as e:
-            send_telegram_message(str(e))
