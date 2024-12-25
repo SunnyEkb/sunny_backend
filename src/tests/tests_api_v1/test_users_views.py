@@ -1,5 +1,6 @@
 import re
 from http import HTTPStatus
+from uuid import uuid4
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -55,6 +56,18 @@ class TestUser(TestUserFixtures):
                 id=self.unverified_user.verification_token.id
             ).exists()
         )
+
+    def test_user_verification_with_wrong_token(self):
+        body = {"token": uuid4()}
+        response = self.anon_client.post(
+            reverse("veryfy_registration"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response.data, APIResponses.VERIFICATION_FAILED)
+
+    def test_user_verification_without_token(self):
+        response = self.anon_client.post(reverse("veryfy_registration"))
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_user_registry_password_validation(self):
         body = {

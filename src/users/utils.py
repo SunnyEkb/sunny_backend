@@ -12,18 +12,18 @@ User = get_user_model()
 
 
 def verify_user(token: UUID):
-    ver_token = VerificationToken.cstm_mng.get(token=token)
-    if ver_token is not None:
-        if ver_token.created_at > datetime.now(timezone.utc) - timedelta(
-            hours=Limits.REGISTRY_TOKEN_LIFETIME.value
-        ):
-            with transaction.atomic():
-                user = ver_token.user
-                user.is_active = True
-                user.save()
-                ver_token.delete()
-    else:
+    ver_token = VerificationToken.cstm_mng.filter(token=token)
+    if ver_token.exists() is False:
         raise TokenDoesNotExists()
+    ver_token = ver_token.first()
+    if ver_token.created_at > datetime.now(timezone.utc) - timedelta(
+        hours=Limits.REGISTRY_TOKEN_LIFETIME.value
+    ):
+        with transaction.atomic():
+            user = ver_token.user
+            user.is_active = True
+            user.save()
+            ver_token.delete()
 
 
 def delete_expired_tokens():
