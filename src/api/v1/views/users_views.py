@@ -333,3 +333,4 @@ class VerificationView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                     data=APIResponses.VERIFICATION_FAILED.value,
                 )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
