@@ -37,7 +37,7 @@ class APIResponses(models.TextChoices):
     INVALID_CREDENTIALS = "Invalid email or password"
     PASSWORD_DO_NOT_MATCH = "Password and confirmation do not match"
     PASSWORD_CHANGED = "Password changed successfully"
-    NOT_SAME_PASSWORD = "New password is the same as old one"
+    NOT_SAME_PASSWORD = "New password is the same as the latest"
     SUCCESS_LOGIN = "Login successfully"
     SUCCESS_LOGOUT = "Logout successfully"
     SUCCESS_TOKEN_REFRESH = "Token refreshed"
