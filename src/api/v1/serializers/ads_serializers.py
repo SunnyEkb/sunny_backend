@@ -1,8 +1,11 @@
-from django.shortcuts import get_object_or_404
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from ads.models import Ad, AdImage, Category
+from api.v1.serializers.comments_serializers import CommentReadSerializer
+from api.v1.serializers.users_serializers import UserReadSerializer
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
 from users.models import Favorites
@@ -51,12 +54,14 @@ class AdImageRetrieveSerializer(serializers.ModelSerializer):
         fields = ("id", "image")
 
 
-class AdRetrieveSerializer(serializers.ModelSerializer):
+class AdListSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра объявления."""
 
-    provider = serializers.StringRelatedField(read_only=True)
+    provider = UserReadSerializer(read_only=True)
     images = AdImageRetrieveSerializer(many=True, read_only=True)
     is_favorited = serializers.SerializerMethodField()
+    comments_quantity = serializers.SerializerMethodField()
+    avg_rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Ad
@@ -71,6 +76,9 @@ class AdRetrieveSerializer(serializers.ModelSerializer):
             "condition",
             "category",
             "is_favorited",
+            "avg_rating",
+            "comments_quantity",
+            "created_at",
         )
 
     def get_is_favorited(self, obj):
@@ -87,6 +95,16 @@ class AdRetrieveSerializer(serializers.ModelSerializer):
                     object_id=obj.id,
                 ).exists()
         return False
+
+    def get_comments_quantity(self, obj):
+        return obj.comments.count()
+
+    def get_avg_rating(self, obj):
+        rating = obj.comments.aggregate(Avg("rating"))
+        rating = rating["rating__avg"]
+        if rating is None:
+            return None
+        return round(rating, 1)
 
 
 class AdCreateUpdateSerializer(serializers.ModelSerializer):
@@ -134,5 +152,14 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
             self.__ad_category(ad, category.parent)
 
     def to_representation(self, instance):
-        serializer = AdRetrieveSerializer(instance)
+        serializer = AdListSerializer(instance)
         return serializer.data
+
+
+class AdRetrieveSerializer(AdListSerializer):
+    """Сериализатор для получения данных о конкретной услуге."""
+
+    comments = CommentReadSerializer(many=True)
+
+    class Meta(AdListSerializer.Meta):
+        fields = AdListSerializer.Meta.fields + ("comments",)
