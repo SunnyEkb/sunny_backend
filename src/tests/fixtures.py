@@ -236,7 +236,7 @@ class TestAdsFixtures(TestUserFixtures):
             provider=cls.user_for_deletion,
             status=AdvertisementStatus.PUBLISHED.value,
         )
-        cls.ad_to_del_del_image = AdImage.objects.create(
+        cls.ad_to_del_image = AdImage.objects.create(
             ad=cls.ad_to_del, image=cls.uploaded_2
         )
         cls.ad_to_del.category.set([cls.category_2])

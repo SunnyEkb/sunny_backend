@@ -258,3 +258,12 @@ class TestUser(TestUserFixtures):
             reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_user_delete(self):
+        response = self.client_for_deletion.delete(
+            reverse("users-detail", kwargs={"pk": self.user_for_deletion.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+        self.assertFalse(
+            User.objects.filter(id=self.user_for_deletion.id).exists()
+        )
