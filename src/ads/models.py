@@ -9,7 +9,7 @@ from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.managers import TypeCategoryManager
 from core.models import AbstractAdvertisement
-from services.tasks import delete_image_files_task
+from services.tasks import delete_image_files_task, delete_images_dir_task
 
 
 class Category(models.Model):
@@ -71,6 +71,15 @@ class Ad(AbstractAdvertisement):
         verbose_name = "Объявление"
         verbose_name_plural = "Объявления"
         ordering = ["-created_at"]
+
+    def delete_ads_images(self):
+        """Удаление фото к объявлению."""
+
+        images = self.images.all()
+        if images:
+            for image in images:
+                image.delete()
+            delete_images_dir_task.delay(f"ads/{self.id}")
 
 
 class AdImage(models.Model):
