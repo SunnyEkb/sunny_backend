@@ -8,7 +8,11 @@ from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed, ParseError
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import (
+    DestroyModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -231,8 +235,17 @@ class ChangePassowrdView(GenericAPIView):
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
     ),
+    destroy=extend_schema(
+        summary="Удаление пользователя.",
+        responses={
+            status.HTTP_204_NO_CONTENT: None,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+        },
+    ),
 )
-class UserViewSet(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+class UserViewSet(
+    DestroyModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet
+):
     """
     Изменение и получение данных о пользователе.
     """

@@ -62,7 +62,6 @@ USER_UPDATE_AVATAR_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"avatar": "string"},
 )
 
-
 USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Данные пользователя",
     value={
