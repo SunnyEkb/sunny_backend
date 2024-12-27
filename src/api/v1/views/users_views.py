@@ -270,6 +270,8 @@ class UserViewSet(
             # удаляем фото для услуг, объявлений и комментариев пользователя
             user = self.get_object()
 
+            user.delete_avatar_image()
+
             services = Service.objects.filter(provider=user)
             for service in services:
                 service.delete_service_images()
