@@ -85,7 +85,7 @@ class TestUser(TestUserFixtures):
             [APIResponses.PASSWORD_DO_NOT_MATCH.value],
         )
 
-    def user_registry_with_existing_username(self):
+    def test_user_registry_with_existing_username(self):
         body = {
             "username": self.user_1.username,
             "email": self.email_2,
@@ -97,7 +97,7 @@ class TestUser(TestUserFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
-            response.json().get("non_field_errors", None),
+            response.json().get("username"),
             [APIResponses.USERNAME_EXISTS.value],
         )
 
