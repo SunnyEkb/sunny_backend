@@ -1,36 +1,15 @@
+
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
 
+from core.abstract_models import TimeCreateUpdateModel
 from core.choices import AdvertisementStatus
 from core.enums import Limits
+from comments.models import Comment
 
 User = get_user_model()
-
-
-class TimeCreateModel(models.Model):
-    """Абстрактная модель с полем "Время создания"."""
-
-    created_at = models.DateTimeField(
-        "Время создания",
-        auto_now_add=True,
-        null=True,
-        db_index=True,
-    )
-
-    class Meta:
-        abstract = True
-
-
-class TimeCreateUpdateModel(TimeCreateModel):
-    """
-    Абстрактная модель с полями "Время создания" и "Время изменения".
-    """
-
-    updated_at = models.DateTimeField("Время изменения", auto_now=True)
-
-    class Meta:
-        abstract = True
 
 
 class AbstractAdvertisement(TimeCreateUpdateModel):
@@ -52,6 +31,7 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
         choices=AdvertisementStatus.choices,
         default=AdvertisementStatus.DRAFT.value,
     )
+    comments = GenericRelation(Comment)
 
     class Meta:
         abstract = True

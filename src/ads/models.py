@@ -4,11 +4,11 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from ads.managers import AdManager
+from core.base_models import AbstractAdvertisement
 from core.choices import AdState
 from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.managers import TypeCategoryManager
-from core.models import AbstractAdvertisement
 from services.tasks import delete_image_files_task, delete_images_dir_task
 
 
