@@ -1,4 +1,3 @@
-
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -8,6 +7,7 @@ from core.abstract_models import TimeCreateUpdateModel
 from core.choices import AdvertisementStatus
 from core.enums import Limits
 from comments.models import Comment
+from services.tasks import delete_images_dir_task
 
 User = get_user_model()
 
@@ -86,3 +86,13 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
         return "".join(
             ["https://", domain, f"/admin/{app_name}/{name}/{self.id}/change/"]
         )
+
+    def delete_images(self):
+        """Удаление файлов с фото."""
+
+        images = self.images.all()
+        name: str = self.__class__.__name__.lower()
+        if images:
+            for image in images:
+                image.delete()
+            delete_images_dir_task.delay(f"{name}/{self.id}")

@@ -72,15 +72,6 @@ class Ad(AbstractAdvertisement):
         verbose_name_plural = "Объявления"
         ordering = ["-created_at"]
 
-    def delete_ads_images(self):
-        """Удаление фото к объявлению."""
-
-        images = self.images.all()
-        if images:
-            for image in images:
-                image.delete()
-            delete_images_dir_task.delay(f"ads/{self.id}")
-
 
 class AdImage(models.Model):
     """Фото к объявлению."""

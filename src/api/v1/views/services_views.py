@@ -235,7 +235,7 @@ class ServiceViewSet(
     def destroy(self, request, *args, **kwargs):
         instance: Service = self.get_object()
         if instance.status == AdvertisementStatus.DRAFT:
-            instance.delete_service_images()
+            instance.delete_images()
             return super().destroy(request, *args, **kwargs)
         return response.Response(
             APIResponses.CAN_NOT_DELETE_SEVICE.value,

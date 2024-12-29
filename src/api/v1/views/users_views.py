@@ -274,11 +274,11 @@ class UserViewSet(
 
             services = Service.objects.filter(provider=user)
             for service in services:
-                service.delete_service_images()
+                service.delete_images()
 
             ads = Ad.objects.filter(provider=user)
             for ad in ads:
-                ad.delete_ads_images()
+                ad.delete_images()
 
             comments = Comment.objects.filter(author=user)
             for comment in comments:

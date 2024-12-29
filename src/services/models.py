@@ -86,15 +86,6 @@ class Service(AbstractAdvertisement):
     def __str__(self) -> str:
         return self.title
 
-    def delete_service_images(self):
-        """Удаление фото к услуге."""
-
-        images = self.images.all()
-        if images:
-            for image in images:
-                image.delete()
-            delete_images_dir_task.delay(f"services/{self.id}")
-
 
 class ServiceImage(models.Model):
     """Фото к услуге."""
