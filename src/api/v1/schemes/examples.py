@@ -385,13 +385,31 @@ AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "price": "500.00",
         "status": AdvertisementStatus.DRAFT.value,
         "images": [{"id": 1, "image": "string"}],
-        "created_at": timezone.now(),
         "is_favorited": False,
+        "avg_rating": 4.1,
+        "comments_quantity": 15,
+        "created_at": timezone.now(),
+        "comments": COMMENT_LIST_EXAMPLE.value,
     },
 )
 
 AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Список объявлений", value=AD_RETRIEVE_EXAMPLE.value
+    name="Список объявлений",
+    value={
+        "id": 1,
+        "provider": USER_INFO_EXAMPLE.value,
+        "title": "string",
+        "description": "string",
+        "category": [1, 2, 3],
+        "condition": AdState.USED.value,
+        "price": "500.00",
+        "status": AdvertisementStatus.DRAFT.value,
+        "images": [{"id": 1, "image": "string"}],
+        "is_favorited": False,
+        "avg_rating": 4.1,
+        "comments_quantity": 15,
+        "created_at": timezone.now(),
+    },
 )
 
 AD_CATEGORIES_EXAMPLE: OpenApiExample = OpenApiExample(
