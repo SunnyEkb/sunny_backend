@@ -1,6 +1,5 @@
 from decimal import Decimal
 
-from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -64,7 +63,6 @@ class Ad(AbstractAdvertisement):
         verbose_name="Kатегории",
         related_name="ads",
     )
-    comments = GenericRelation(Comment)
 
     objects = models.Manager()
     cstm_mng = AdManager()
