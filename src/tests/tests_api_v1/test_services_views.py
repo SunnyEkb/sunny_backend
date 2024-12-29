@@ -452,3 +452,21 @@ class TestServivecesView(TestServiceFixtures):
         self.assertFalse(
             ServiceImage.objects.filter(id=self.service_2_image.id).exists()
         )
+
+    def test_service_deletion_when_provider_is_deleted(self):
+        self.assertTrue(
+            Service.objects.filter(id=self.service_del.id).exists()
+        )
+        self.assertTrue(
+            ServiceImage.objects.filter(id=self.service_del_image.id).exists()
+        )
+        response = self.client_for_deletion.delete(
+            reverse("users-detail", kwargs={"pk": self.user_for_deletion.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+        self.assertFalse(
+            Service.objects.filter(id=self.service_del.id).exists()
+        )
+        self.assertFalse(
+            ServiceImage.objects.filter(id=self.service_del_image.id).exists()
+        )
