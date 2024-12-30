@@ -85,7 +85,7 @@ class TestUser(TestUserFixtures):
             [APIResponses.PASSWORD_DO_NOT_MATCH.value],
         )
 
-    def user_registry_with_existing_username(self):
+    def test_user_registry_with_existing_username(self):
         body = {
             "username": self.user_1.username,
             "email": self.email_2,
@@ -97,7 +97,7 @@ class TestUser(TestUserFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
-            response.json().get("non_field_errors", None),
+            response.json().get("username"),
             [APIResponses.USERNAME_EXISTS.value],
         )
 
@@ -258,3 +258,12 @@ class TestUser(TestUserFixtures):
             reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_user_delete(self):
+        response = self.client_for_deletion.delete(
+            reverse("users-detail", kwargs={"pk": self.user_for_deletion.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+        self.assertFalse(
+            User.objects.filter(id=self.user_for_deletion.id).exists()
+        )

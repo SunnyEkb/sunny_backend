@@ -10,6 +10,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 from core.choices import Role
 from core.db_utils import user_photo_path, validate_image
 from core.enums import Limits
+from services.tasks import delete_images_dir_task
 from users.managers import UserManager, VerificationTokenManager
 
 
@@ -80,6 +81,12 @@ class CustomUser(AbstractUser):
 
     def get_group_id(self):
         return "user_{0}_notifications".format(self.id)
+
+    def delete_avatar_image(self):
+        """Удаление файла аватара."""
+
+        if self.avatar is not None:
+            delete_images_dir_task.delay(f"users/{self.id}")
 
 
 class Favorites(models.Model):
