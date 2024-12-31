@@ -276,3 +276,17 @@ class TestAdView(TestAdsFixtures):
         self.assertFalse(
             AdImage.objects.filter(id=self.ad_2_image.id).exists()
         )
+
+    def test_ad_deletion_when_provider_is_deleted(self):
+        self.assertTrue(Ad.objects.filter(id=self.ad_to_del.id).exists())
+        self.assertTrue(
+            AdImage.objects.filter(id=self.ad_to_del_image.id).exists()
+        )
+        response = self.client_for_deletion.delete(
+            reverse("users-detail", kwargs={"pk": self.user_for_deletion.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
+        self.assertFalse(Ad.objects.filter(id=self.ad_to_del.id).exists())
+        self.assertFalse(
+            AdImage.objects.filter(id=self.ad_to_del_image.id).exists()
+        )
