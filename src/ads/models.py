@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -9,7 +10,8 @@ from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.managers import TypeCategoryManager
 from core.models import AbstractAdvertisement
-from services.tasks import delete_image_files_task, delete_images_dir_task
+from comments.models import Comment
+from services.tasks import delete_image_files_task
 
 
 class Category(models.Model):
@@ -63,6 +65,7 @@ class Ad(AbstractAdvertisement):
         verbose_name="Kатегории",
         related_name="ads",
     )
+    comments = GenericRelation(Comment)
 
     objects = models.Manager()
     cstm_mng = AdManager()
