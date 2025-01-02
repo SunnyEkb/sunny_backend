@@ -117,7 +117,7 @@ class AdViewSet(
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):
-            return api_serializers.AdRetrieveSerializer
+            return api_serializers.AdListSerializer
         return api_serializers.AdCreateUpdateSerializer
 
     def get_queryset(self):
@@ -436,7 +436,7 @@ class AdViewSet(
         if img_serializer.is_valid():
             img_serializer.save(ad=ad)
             ad: Ad = self.get_object()
-            ad_serializer = api_serializers.AdRetrieveSerializer(ad)
+            ad_serializer = api_serializers.AdListSerializer(ad)
             return response.Response(ad_serializer.data)
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
