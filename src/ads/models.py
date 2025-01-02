@@ -11,7 +11,7 @@ from core.enums import Limits
 from core.managers import TypeCategoryManager
 from core.models import AbstractAdvertisement
 from comments.models import Comment
-from services.tasks import delete_image_files_task
+from services.tasks import delete_image_files_task, delete_images_dir_task
 
 
 class Category(models.Model):
