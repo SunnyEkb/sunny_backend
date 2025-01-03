@@ -6,8 +6,9 @@ from django.db import models
 from core.abstract_models import TimeCreateUpdateModel
 from core.choices import AdvertisementStatus
 from core.enums import Limits
+from core.db_utils import get_path_to_save_image, validate_image
 from comments.models import Comment
-from services.tasks import delete_images_dir_task
+from services.tasks import delete_images_dir_task, delete_image_files_task
 
 User = get_user_model()
 
@@ -96,3 +97,21 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
             for image in images:
                 image.delete()
             delete_images_dir_task.delay(f"{name}/{self.id}")
+
+
+class AbstractImage(models.Model):
+    """Абстрактная модель Изображений."""
+
+    image = models.ImageField(
+        "Фото",
+        upload_to=get_path_to_save_image,
+        validators=[validate_image],
+    )
+
+    class Meta:
+        abstract = True
+
+    def delete_image_files(self):
+        """Удаление файлов изображений."""
+
+        delete_image_files_task.delay(str(self.image))
