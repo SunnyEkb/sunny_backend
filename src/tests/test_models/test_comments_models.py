@@ -27,7 +27,8 @@ class CommentModelsTest(BaseTestCase):
     def test_comment_image_creation(self):
         self.assertEqual(
             self.comment_1_image.image,
-            f"comments/{self.service_1.id}/{self.file_name_1}",
+            f"users/{self.author_1.id}/comments/"
+            f"{self.service_1.id}/{self.file_name_1}",
         )
 
     def test_models_have_correct_object_names(self):

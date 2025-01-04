@@ -4,7 +4,8 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from ads.managers import AdManager
-from core.base_models import AbstractAdvertisement, AbstractImage
+from core.abstract_models import AbstractImage
+from core.base_models import AbstractAdvertisement
 from core.choices import AdState
 from core.enums import Limits
 from core.managers import TypeCategoryManager

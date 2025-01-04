@@ -168,11 +168,6 @@ class TestServivecesView(TestServiceFixtures):
                     status=AdvertisementStatus.PUBLISHED.value
                 ).order_by("experience")
             ),
-            "-experience": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("-experience")
-            ),
             "created_at": (
                 Service.objects.filter(
                     status=AdvertisementStatus.PUBLISHED.value

@@ -1,7 +1,8 @@
 from django.db import models
 from django.core.validators import MaxValueValidator
 
-from core.base_models import AbstractAdvertisement, AbstractImage
+from core.base_models import AbstractAdvertisement
+from core.abstract_models import AbstractImage
 from core.choices import ServicePlace
 from core.enums import Limits
 from core.managers import TypeCategoryManager
