@@ -4,12 +4,10 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from ads.managers import AdManager
-from core.base_models import AbstractAdvertisement
+from core.base_models import AbstractAdvertisement, AbstractImage
 from core.choices import AdState
-from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.managers import TypeCategoryManager
-from services.tasks import delete_image_files_task, delete_images_dir_task
 
 
 class Category(models.Model):
@@ -73,14 +71,9 @@ class Ad(AbstractAdvertisement):
         ordering = ["-created_at"]
 
 
-class AdImage(models.Model):
+class AdImage(AbstractImage):
     """Фото к объявлению."""
 
-    image = models.ImageField(
-        "Фото к объявлению",
-        upload_to=ad_image_path,
-        validators=[validate_image],
-    )
     ad = models.ForeignKey(
         Ad,
         on_delete=models.CASCADE,
@@ -94,8 +87,3 @@ class AdImage(models.Model):
 
     def __str__(self) -> str:
         return self.ad.title
-
-    def delete_image_files(self):
-        """Удаление файлов изображений."""
-
-        delete_image_files_task.delay(str(self.image))

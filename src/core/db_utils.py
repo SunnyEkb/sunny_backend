@@ -1,9 +1,6 @@
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 from core.enums import Limits
-
-User = get_user_model()
 
 
 def validate_image(fieldfile_obj):
@@ -44,17 +41,18 @@ def user_photo_path(instance: object, filename: str) -> str:
 def get_path_to_save_image(instance: object, filename: str) -> str:
     """Возвращает путь для сохранения фйала с изображением."""
 
-    if isinstance(instance, User):
+    model_name = instance.__class__.__name__
+    if model_name == "CustomUser":
         base = f"users/{instance.id}/"
         prefix = ""
-    else:
-        model_name = instance.__class__.__name__
-        prefix = f"{model_name}/{instance.id}/"
-        if model_name == "ads":
-            base = f"users/{instance.ad.provider.id}/"
-        elif model_name == "services":
-            base = f"users/{instance.service.provider.id}/"
-        elif model_name == "comments":
-            base = f"users/{instance.comment.author.id}/"
+    elif model_name == "AdImage":
+        prefix = f"ads/{instance.ad.id}/"
+        base = f"users/{instance.ad.provider.id}/"
+    elif model_name == "ServiceImage":
+        prefix = f"services/{instance.service.id}/"
+        base = f"users/{instance.service.provider.id}/"
+    elif model_name == "CommentImage":
+        prefix = f"comments/{instance.comment.id}/"
+        base = f"users/{instance.comment.author.id}/"
 
     return base + prefix + filename
