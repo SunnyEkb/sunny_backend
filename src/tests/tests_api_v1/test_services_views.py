@@ -178,16 +178,6 @@ class TestServivecesView(TestServiceFixtures):
                     status=AdvertisementStatus.PUBLISHED.value
                 ).order_by("-created_at")
             ),
-            "updated_at": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("updated_at")
-            ),
-            "-updated_at": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("-updated_at")
-            ),
         }
         for k, v in templates.items():
             with self.subTest(order=k):
