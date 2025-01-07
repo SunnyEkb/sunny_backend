@@ -2,6 +2,7 @@ import sys
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
@@ -17,11 +18,8 @@ from rest_framework import (
 from ads.models import Ad, AdImage, Category
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from api.v1.paginators import CustomPaginator
-from api.v1.permissions import (
-    PhotoOwnerOrReadOnly,
-    PhotoReadOnly,
-)
+from api.v1.filters import AdFilter
+from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1.views.base_views import BaseServiceAdViewSet
 from core.choices import AdvertisementStatus, APIResponses
 
@@ -100,7 +98,8 @@ class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 class AdViewSet(BaseServiceAdViewSet):
     """Вьюсет для объявлений."""
 
-    pagination_class = CustomPaginator
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = AdFilter
 
     def get_serializer_class(self):
         if self.action in ("list", "retrieve"):

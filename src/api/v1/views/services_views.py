@@ -18,10 +18,7 @@ from rest_framework import (
 )
 
 from api.v1.filters import ServiceFilter
-from api.v1.permissions import (
-    PhotoOwnerOrReadOnly,
-    PhotoReadOnly,
-)
+from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from api.v1.views.base_views import BaseServiceAdViewSet
