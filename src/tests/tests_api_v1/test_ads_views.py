@@ -291,7 +291,6 @@ class TestAdView(TestAdsFixtures):
         self.assertFalse(
             AdImage.objects.filter(id=self.ad_to_del_image.id).exists()
         )
-
     def test_ads_filters(self):
         templates = {
             "title": [
