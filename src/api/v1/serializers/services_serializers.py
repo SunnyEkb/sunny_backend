@@ -88,6 +88,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
             "avg_rating",
             "comments_quantity",
             "created_at",
+            "updated_at",
             "is_favorited",
         )
 

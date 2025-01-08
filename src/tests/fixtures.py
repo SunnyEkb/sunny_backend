@@ -78,6 +78,7 @@ class TestUserFixtures(BaseTestCase):
         cls.unverified_user = factories.CustomUserFactory(
             password=cls.password, is_active=False
         )
+        cls.user_for_deletion = factories.CustomUserFactory()
 
         cls.client_1 = APIClient()
         cls.client_1.force_authenticate(cls.user_1)
@@ -88,6 +89,8 @@ class TestUserFixtures(BaseTestCase):
         cls.client_4 = APIClient()
         cls.client_4.force_authenticate(cls.user_4)
         cls.anon_client = APIClient()
+        cls.client_for_deletion = APIClient()
+        cls.client_for_deletion.force_authenticate(cls.user_for_deletion)
 
 
 class TestServiceFixtures(TestUserFixtures):
@@ -136,6 +139,14 @@ class TestServiceFixtures(TestUserFixtures):
         cls.hidden_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.MODERATION.value
         )
+        cls.service_del = factories.ServiceFactory(
+            provider=cls.user_for_deletion,
+            status=AdvertisementStatus.PUBLISHED.value,
+        )
+        cls.service_del_image = ServiceImage.objects.create(
+            service=cls.service_del, image=cls.uploaded_2
+        )
+        cls.service_del.type.set([cls.type_2])
         cls.service_title = "Super_service"
         cls.new_service_title = "New_super_service"
         cls.service_data = {
@@ -221,3 +232,11 @@ class TestAdsFixtures(TestUserFixtures):
             object_id=cls.ad_2.id,
             content_type=ContentType.objects.get(app_label="ads", model="ad"),
         )
+        cls.ad_to_del = factories.AdFactory(
+            provider=cls.user_for_deletion,
+            status=AdvertisementStatus.PUBLISHED.value,
+        )
+        cls.ad_to_del_image = AdImage.objects.create(
+            ad=cls.ad_to_del, image=cls.uploaded_2
+        )
+        cls.ad_to_del.category.set([cls.category_2])
