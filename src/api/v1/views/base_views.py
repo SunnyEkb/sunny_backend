@@ -1,18 +1,21 @@
+import abc
 import sys
 
 from django.contrib.contenttypes.models import ContentType
+from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import (
     exceptions,
     mixins,
+    views,
     viewsets,
+    pagination,
     permissions,
     response,
     status,
 )
 from rest_framework.decorators import action
-
 from ads.models import Ad
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
@@ -410,3 +413,26 @@ class BaseServiceAdViewSet(
             status=status.HTTP_204_NO_CONTENT,
             data=APIResponses.DELETED_FROM_FAVORITES.value,
         )
+
+
+class PaginatedElasticSearchAPIView(
+    views.APIView, pagination.LimitOffsetPagination
+):
+    serializer_class = None
+    document_class = None
+
+    @abc.abstractmethod
+    def generate_q_expression(self, query):
+        """This method should be overridden
+        and return a Q() expression."""
+
+    def get(self, request, query):
+        try:
+            q = self.generate_q_expression(query)
+            search = self.document_class.search().query(q)
+            response = search.execute()
+            results = self.paginate_queryset(response, request, view=self)
+            serializer = self.serializer_class(results, many=True)
+            return self.get_paginated_response(serializer.data)
+        except Exception as e:
+            return HttpResponse(e, status=500)
