@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from django.db.models import Avg
 from django.urls import reverse
 
 from ads.models import Ad, AdImage, Category
@@ -290,3 +291,43 @@ class TestAdView(TestAdsFixtures):
         self.assertFalse(
             AdImage.objects.filter(id=self.ad_to_del_image.id).exists()
         )
+    def test_ads_filters(self):
+        templates = {
+            "title": [
+                self.ad_1.title,
+                (
+                    Ad.objects.filter(
+                        status=AdvertisementStatus.PUBLISHED.value
+                    ).filter(title__icontains=self.ad_1.title)
+                ),
+            ],
+            "description": [
+                self.ad_1.description,
+                (
+                    Ad.objects.filter(
+                        status=AdvertisementStatus.PUBLISHED.value
+                    ).filter(description__icontains=self.ad_1.description)
+                ),
+            ],
+            "my_ads": [
+                True,
+                Ad.objects.filter(provider=self.user_1),
+            ],
+            "rating": [
+                3,
+                (
+                    Ad.cstm_mng.annotate(rating=Avg("comments__rating"))
+                    .filter(
+                        rating__gte=3,
+                        status=AdvertisementStatus.PUBLISHED.value,
+                    )
+                    .order_by("-created_at")
+                ),
+            ],
+        }
+        for k, v in templates.items():
+            with self.subTest(filter=k):
+                response = self.client_1.get(
+                    reverse("ads-list") + f"?{k}={v[0]}"
+                )
+                self.assertEqual(len(response.data["results"]), len(v[1]))

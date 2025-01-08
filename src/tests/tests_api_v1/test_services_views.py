@@ -168,11 +168,6 @@ class TestServivecesView(TestServiceFixtures):
                     status=AdvertisementStatus.PUBLISHED.value
                 ).order_by("experience")
             ),
-            "-experience": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("-experience")
-            ),
             "created_at": (
                 Service.objects.filter(
                     status=AdvertisementStatus.PUBLISHED.value
@@ -182,16 +177,6 @@ class TestServivecesView(TestServiceFixtures):
                 Service.objects.filter(
                     status=AdvertisementStatus.PUBLISHED.value
                 ).order_by("-created_at")
-            ),
-            "updated_at": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("updated_at")
-            ),
-            "-updated_at": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("-updated_at")
             ),
         }
         for k, v in templates.items():

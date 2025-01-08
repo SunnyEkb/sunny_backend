@@ -1,6 +1,6 @@
 from tests.fixtures import BaseTestCase
 from ads.models import Ad, AdImage
-from tests.factories import AdFactory
+from tests.factories import AdFactory, CustomUserFactory
 
 from core.choices import AdvertisementStatus, AdState
 
@@ -11,7 +11,8 @@ class AdModelsTest(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.ad_1 = AdFactory()
+        cls.user = CustomUserFactory()
+        cls.ad_1 = AdFactory(provider=cls.user)
         cls.ad_2 = AdFactory()
         cls.ad_1_image = AdImage.objects.create(
             ad=cls.ad_1, image=cls.uploaded
@@ -23,7 +24,8 @@ class AdModelsTest(BaseTestCase):
 
     def test_ad_image_creation(self):
         self.assertEqual(
-            self.ad_1_image.image, f"ads/{self.ad_1.id}/{self.file_name_1}"
+            self.ad_1_image.image,
+            f"users/{self.user.id}/ads/{self.ad_1.id}/{self.file_name_1}",
         )
 
     def test_models_have_correct_object_names(self):

@@ -5,12 +5,11 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from core.abstract_models import AbstractImage, TimeCreateUpdateModel
 from core.choices import CommentStatus
-from core.db_utils import comment_image_path, validate_image
 from core.enums import Limits
-from core.models import TimeCreateUpdateModel
 from comments.managers import CommentManager
-from services.tasks import delete_image_files_task, delete_images_dir_task
+from services.tasks import delete_images_dir_task
 
 User = get_user_model()
 
@@ -90,14 +89,9 @@ class Comment(TimeCreateUpdateModel):
         )
 
 
-class CommentImage(models.Model):
+class CommentImage(AbstractImage):
     """Фото к комментарию."""
 
-    image = models.ImageField(
-        "Фото к комментарию",
-        upload_to=comment_image_path,
-        validators=[validate_image],
-    )
     comment = models.ForeignKey(
         Comment,
         on_delete=models.CASCADE,
@@ -111,8 +105,3 @@ class CommentImage(models.Model):
 
     def __str__(self) -> str:
         return self.comment.feedback[:30]
-
-    def delete_image_files(self):
-        """Удаление файлов изображений."""
-
-        delete_image_files_task.delay(str(self.image))
