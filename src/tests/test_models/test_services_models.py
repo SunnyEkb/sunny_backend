@@ -11,7 +11,8 @@ class ServiceModelsTest(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.service_1 = factories.ServiceFactory()
+        cls.user = factories.CustomUserFactory()
+        cls.service_1 = factories.ServiceFactory(provider=cls.user)
         cls.service_2 = factories.ServiceFactory()
         cls.type_1 = factories.TypeFactory()
         cls.service_1_image = ServiceImage.objects.create(
@@ -25,7 +26,10 @@ class ServiceModelsTest(BaseTestCase):
     def test_service_image_creation(self):
         self.assertEqual(
             self.service_1_image.image,
-            f"services/{self.service_1.id}/{self.file_name_1}",
+            (
+                f"users/{self.user.id}/services/"
+                f"{self.service_1.id}/{self.file_name_1}"
+            ),
         )
 
     def test_models_have_correct_object_names(self):

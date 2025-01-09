@@ -1,17 +1,14 @@
 from decimal import Decimal
 
-from django.contrib.contenttypes.fields import GenericRelation
 from django.core.validators import MinValueValidator
 from django.db import models
 
 from ads.managers import AdManager
+from core.abstract_models import AbstractImage
+from core.base_models import AbstractAdvertisement
 from core.choices import AdState
-from core.db_utils import ad_image_path, validate_image
 from core.enums import Limits
 from core.managers import TypeCategoryManager
-from core.models import AbstractAdvertisement
-from comments.models import Comment
-from services.tasks import delete_image_files_task, delete_images_dir_task
 
 
 class Category(models.Model):
@@ -65,7 +62,6 @@ class Ad(AbstractAdvertisement):
         verbose_name="Kатегории",
         related_name="ads",
     )
-    comments = GenericRelation(Comment)
 
     objects = models.Manager()
     cstm_mng = AdManager()
@@ -75,24 +71,10 @@ class Ad(AbstractAdvertisement):
         verbose_name_plural = "Объявления"
         ordering = ["-created_at"]
 
-    def delete_ads_images(self):
-        """Удаление фото к объявлению."""
 
-        images = self.images.all()
-        if images:
-            for image in images:
-                image.delete()
-            delete_images_dir_task.delay(f"ads/{self.id}")
-
-
-class AdImage(models.Model):
+class AdImage(AbstractImage):
     """Фото к объявлению."""
 
-    image = models.ImageField(
-        "Фото к объявлению",
-        upload_to=ad_image_path,
-        validators=[validate_image],
-    )
     ad = models.ForeignKey(
         Ad,
         on_delete=models.CASCADE,
@@ -106,8 +88,3 @@ class AdImage(models.Model):
 
     def __str__(self) -> str:
         return self.ad.title
-
-    def delete_image_files(self):
-        """Удаление файлов изображений."""
-
-        delete_image_files_task.delay(str(self.image))
