@@ -272,10 +272,11 @@ class UserViewSet(
             user = self.get_object()
 
             data = user.serialize_data()
-            if "test" not in sys.argv and settings.PROD_DB is True:
-                save_file_with_user_data_task.delay(user.email, data)
-            else:
-                save_file_with_user_data(user.email, data)
+            if "test" not in sys.argv:
+                if settings.PROD_DB is True:
+                    save_file_with_user_data_task.delay(user.email, data)
+                else:
+                    save_file_with_user_data(user.email, data)
 
             user.delete_avatar_image()
 
