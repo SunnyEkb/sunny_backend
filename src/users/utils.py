@@ -1,10 +1,12 @@
+import os
 from datetime import datetime, timedelta, timezone
 from uuid import UUID
 
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.db import transaction
-from core.enums import Limits
 
+from core.enums import Limits
 from users.models import VerificationToken
 from users.exceptions import TokenDoesNotExists
 
@@ -36,3 +38,12 @@ def delete_expired_tokens():
             user = token.user
             user.delete()
             token.delete()
+
+
+def save_file_with_user_data(email, data):
+    file_path = os.path.join(
+        settings.PATH_TO_SAVE_DELETED_USERS_DATA,
+        f"{email}_{datetime.now(timezone.utc)}.json",
+    )
+    with open(file_path) as file:
+        file.write(data)
