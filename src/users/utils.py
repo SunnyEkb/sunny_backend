@@ -53,6 +53,6 @@ def delete_files_after_expiration_date():
     files = os.listdir(settings.PATH_TO_SAVE_DELETED_USERS_DATA)
     for file in files:
         if datetime.now(timezone.utc).date > datetime.strptime(
-            str(file).split("_")[-1], "%Y-%m-%d"
+            str(file).split("_")[-1].replace(".json", ""), "%Y-%m-%d"
         ):
             os.remove(file)
