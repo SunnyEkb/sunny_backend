@@ -43,7 +43,16 @@ def delete_expired_tokens():
 def save_file_with_user_data(email, data):
     file_path = os.path.join(
         settings.PATH_TO_SAVE_DELETED_USERS_DATA,
-        f"{email}_{datetime.now(timezone.utc)}.json",
+        f"{email}_{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json",
     )
     with open(file_path) as file:
         file.write(data)
+
+
+def delete_files_after_expiration_date():
+    files = os.listdir(settings.PATH_TO_SAVE_DELETED_USERS_DATA)
+    for file in files:
+        if datetime.now(timezone.utc).date > datetime.strptime(
+            str(file).split("_")[-1], "%Y-%m-%d"
+        ):
+            os.remove(file)
