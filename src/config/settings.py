@@ -4,6 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
+from django.core.files.storage import FileSystemStorage
 
 from corsheaders.defaults import default_headers
 
@@ -267,6 +268,9 @@ TELEGRAM_MODERATORS_CHAT_TOPIC = str(
     os.getenv("TELEGRAM_MODERATORS_CHAT_TOPIC", "")
 )
 
+PATH_TO_SAVE_DELETED_USERS_DATA = FileSystemStorage(
+    location=os.path.join(BASE_DIR, "data_store")
+)
 PATH_TO_SAVE_DELETED_USERS_DATA = os.path.join(MEDIA_ROOT, "data_store")
 DATA_RETENTION_PERIOD = timedelta(weeks=53 * 5)
 

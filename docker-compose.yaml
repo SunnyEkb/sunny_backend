@@ -73,6 +73,7 @@ services:
     volumes:
       - sunny_static_value:/app/static/
       - sunny_media_value:/app/media/
+      - sunny_data_store_value:/app/data_store/
     depends_on:
       - db
       - redis
@@ -92,4 +93,5 @@ services:
 volumes:
   sunny_static_value:
   sunny_media_value:
+  sunny_data_store_value:
   sunny_ekb_data:
