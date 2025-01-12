@@ -41,9 +41,12 @@ def delete_expired_tokens():
 
 
 def save_file_with_user_data(email, data):
+    date = (
+        datetime.now(timezone.utc) + settings.DATA_RETENTION_PERIOD
+    ).strftime("%Y-%m-%d")
     file_path = os.path.join(
         settings.PATH_TO_SAVE_DELETED_USERS_DATA,
-        f"{email}_{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.json",
+        f"{email}_{date}.json",
     )
     with open(file_path) as file:
         file.write(data)
