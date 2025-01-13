@@ -272,25 +272,24 @@ class UserViewSet(
             user = self.get_object()
 
             data = user.serialize_data()
-            if "test" not in sys.argv:
-                if settings.PROD_DB is True:
-                    save_file_with_user_data_task.delay(user.email, data)
-                else:
-                    save_file_with_user_data(user.email, data)
+            if settings.PROD_DB is True:
+                save_file_with_user_data_task.delay(user.email, data)
 
-            user.delete_avatar_image()
+                user.delete_avatar_image()
 
-            services = Service.objects.filter(provider=user)
-            for service in services:
-                service.delete_images()
+                services = Service.objects.filter(provider=user)
+                for service in services:
+                    service.delete_images()
 
-            ads = Ad.objects.filter(provider=user)
-            for ad in ads:
-                ad.delete_images()
+                ads = Ad.objects.filter(provider=user)
+                for ad in ads:
+                    ad.delete_images()
 
-            comments = Comment.objects.filter(author=user)
-            for comment in comments:
-                comment.delete_images()
+                comments = Comment.objects.filter(author=user)
+                for comment in comments:
+                    comment.delete_images()
+            else:
+                save_file_with_user_data(user.email, data)
 
         return super().destroy(request, *args, **kwargs)
 

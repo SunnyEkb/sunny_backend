@@ -90,7 +90,7 @@ class CustomUser(AbstractUser):
             delete_images_dir_task.delay(f"users/{self.id}")
 
     def serialize_data(self):
-        return serializers.serialize("json", self)
+        return serializers.serialize("json", [self])
 
 
 class Favorites(models.Model):

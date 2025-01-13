@@ -271,7 +271,6 @@ TELEGRAM_MODERATORS_CHAT_TOPIC = str(
 PATH_TO_SAVE_DELETED_USERS_DATA = FileSystemStorage(
     location=os.path.join(BASE_DIR, "data_store")
 )
-PATH_TO_SAVE_DELETED_USERS_DATA = os.path.join(MEDIA_ROOT, "data_store")
 DATA_RETENTION_PERIOD = timedelta(weeks=53 * 5)
 
 REDIS_HOST = os.getenv("REDDIS_HOST", "127.0.0.1")
