@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth import get_user_model
 from rest_framework.serializers import ValidationError
 
@@ -22,6 +24,7 @@ def validate_username(value):
         len(value) < Limits.USERNAME_MIN_LENGTH.value
         or len(value) > Limits.USERNAME_MAX_LENGTH.value
         or " " in value
+        or not re.match(r"^[\w.@+-]+\Z", value)
     ):
         raise ValidationError(APIResponses.WRONG_USERNAME.value)
     if User.objects.filter(username=value).exists():
