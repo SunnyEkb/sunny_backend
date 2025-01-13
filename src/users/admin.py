@@ -60,3 +60,4 @@ class VerificationTokenAdmin(admin.ModelAdmin):
 
     list_display = ["user"]
     search_fields = ["user"]
+    readonly_fields = ["created_at"]
