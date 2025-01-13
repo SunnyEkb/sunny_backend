@@ -33,3 +33,10 @@ def validate_email(value: str):
 
     if User.objects.filter(email=value.lower()).exists():
         raise ValidationError(APIResponses.EMAIL_EXISTS.value)
+
+
+def validate_phone(value: str):
+    """Валидация номера телефона."""
+
+    if User.objects.filter(phone=value).exists():
+        raise ValidationError(APIResponses.PHONE_EXISTS.value)

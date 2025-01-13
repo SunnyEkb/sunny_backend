@@ -101,6 +101,23 @@ class TestUser(TestUserFixtures):
             [APIResponses.USERNAME_EXISTS.value],
         )
 
+    def test_user_registry_with_existing_phone(self):
+        body = {
+            "username": self.username,
+            "email": self.email_2,
+            "phone": str(self.user_1.phone),
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("phone"),
+            [APIResponses.PHONE_EXISTS.value],
+        )
+
     def test_user_login(self):
         data = {"email": self.user_2.email, "password": self.password}
         response = self.client_1.post(reverse("login"), data=data)
