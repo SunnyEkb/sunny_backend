@@ -75,6 +75,7 @@ class APIResponses(models.TextChoices):
     INVALID_PARAMETR = "Параметр должен быть положительным числом."
     VERIFICATION_SUCCESS = "Регистрация подтверждена."
     VERIFICATION_FAILED = "Пользователь не найден."
+    TOKEN_EXPIRED = "Токен просрочен."
     WRONG_USERNAME = (
         "Псевдоним должен содержать от 2 до 25 символов и может состоять из"
         " кириллицы, латиницы, цифр, cимволов:"
@@ -82,6 +83,7 @@ class APIResponses(models.TextChoices):
     )
     USERNAME_EXISTS = "Пользователь с таким именем уже существует."
     EMAIL_EXISTS = "Пользователь с таким адресом электронной почты существует."
+    PHONE_EXISTS = "Пользователь с таким номером телефона существует."
 
 
 class SystemMessages(models.TextChoices):

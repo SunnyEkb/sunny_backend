@@ -17,6 +17,7 @@ class AdAdmin(admin.ModelAdmin):
     search_fields = ["title", "provider__email"]
     list_filter = ["status"]
     ordering = ["-created_at"]
+    readonly_fields = ["created_at"]
 
 
 @admin.register(AdImage)
