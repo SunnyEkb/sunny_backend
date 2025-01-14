@@ -2,6 +2,8 @@ import sys
 
 from django.contrib.contenttypes.models import ContentType
 from django_filters.rest_framework import DjangoFilterBackend
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import extend_schema
 from rest_framework import (
     exceptions,
@@ -16,7 +18,7 @@ from rest_framework.decorators import action
 from ads.models import Ad
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
-from api.v1 import schemes
+from api.v1 import schemes, validators
 from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus, APIResponses
 from core.utils import notify_about_moderation
@@ -410,3 +412,32 @@ class BaseServiceAdViewSet(
             status=status.HTTP_204_NO_CONTENT,
             data=APIResponses.DELETED_FROM_FAVORITES.value,
         )
+
+
+class CategoryTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Базовый вьюсет для типов услуг и объявлений"""
+
+    serializer_class = None
+
+    @method_decorator(cache_page(60 * 2))
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except exceptions.ValidationError:
+            return response.Response(
+                data={"detail": APIResponses.INVALID_PARAMETR.value},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def query_filtration(self, queryset):
+        params = self.request.query_params
+        if "title" in params:
+            title = params.get("title")
+            queryset = queryset.filter(title__icontains=title)
+        elif "id" in params:
+            id = int(params.get("id"))
+            validators.validate_id(id)
+            queryset = queryset.filter(id=id)
+        else:
+            queryset = queryset.filter(parent=None)
+        return queryset
