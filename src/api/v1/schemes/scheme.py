@@ -139,6 +139,15 @@ TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
     ],
 )
 
+CATEGORIES_GET_OK_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.TypeGetSerializer,
+    description="Получение списка категорий объявлений",
+    examples=[
+        examples.CATEGORY_LIST_HIERARCHY_EXAMPLE,
+        examples.CATEGORY_LIST_FLAT_EXAMPLE,
+    ],
+)
+
 SERVICE_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение списка услуг",
