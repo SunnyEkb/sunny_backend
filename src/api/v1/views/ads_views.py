@@ -1,7 +1,5 @@
 import sys
 
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     extend_schema,
@@ -20,7 +18,7 @@ from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from api.v1.filters import AdFilter
 from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
-from api.v1.views.base_views import BaseServiceAdViewSet
+from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
 from core.choices import AdvertisementStatus, APIResponses
 
 
@@ -31,15 +29,18 @@ from core.choices import AdvertisementStatus, APIResponses
         responses={status.HTTP_200_OK: schemes.AD_CATEGORIES_GET_OK_200},
     ),
 )
-class CategoryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class CategoryViewSet(CategoryTypeViewSet):
     """Вьюсет для категорий объявлений."""
 
-    queryset = Category.objects.filter(parent=None)
-    serializer_class = api_serializers.CategorySerializer
+    def get_serializer_class(self):
+        params = self.request.query_params
+        if "title" in params:
+            return api_serializers.CategoryGetWithoutSubCatSerializer
+        return api_serializers.CategorySerializer
 
-    @method_decorator(cache_page(60 * 2))
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+    def get_queryset(self):
+        queryset = Category.objects.all()
+        return self.query_filtration(queryset)
 
 
 @extend_schema(tags=["Ads"])
