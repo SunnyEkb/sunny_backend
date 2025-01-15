@@ -163,3 +163,11 @@ class AdRetrieveSerializer(AdListSerializer):
 
     class Meta(AdListSerializer.Meta):
         fields = AdListSerializer.Meta.fields + ("comments",)
+
+
+class CategoryGetWithoutSubCatSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения категорий объявлений без подкатегорий."""
+
+    class Meta:
+        model = Category
+        fields = ("id", "title")

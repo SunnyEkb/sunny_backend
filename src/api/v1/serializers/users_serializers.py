@@ -1,6 +1,5 @@
 from django.conf import settings
-from django.contrib.auth import get_user_model
-from django.contrib.auth import password_validation
+from django.contrib.auth import get_user_model, password_validation
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework.serializers import (
     CharField,
@@ -17,6 +16,7 @@ from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import (
     validate_email,
     validate_file_size,
+    validate_phone,
     validate_username,
 )
 from core.choices import APIResponses
@@ -51,7 +51,9 @@ class UserCreateSerializer(ModelSerializer):
     Сериализатор для создания пользователя.
     """
 
-    phone = PhoneNumberField(required=False, region="RU")
+    phone = PhoneNumberField(
+        required=False, region="RU", validators=[validate_phone]
+    )
     confirmation = CharField(write_only=True, required=True)
     username = CharField(required=True, validators=[validate_username])
     email = EmailField(validators=[validate_email])
@@ -104,6 +106,10 @@ class UserUpdateSerializer(ModelSerializer):
     """
     Сериализатор для изменения данных о пользователе.
     """
+
+    phone = PhoneNumberField(
+        required=False, region="RU", validators=[validate_phone]
+    )
 
     class Meta:
         model = User

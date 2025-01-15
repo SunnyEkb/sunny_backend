@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 from core.db_utils import get_path_to_save_image, validate_image
+from core.enums import Limits
+from core.managers import TypeCategoryManager
 from services.tasks import delete_image_files_task
 
 User = get_user_model()
@@ -48,3 +50,31 @@ class AbstractImage(models.Model):
         """Удаление файлов изображений."""
 
         delete_image_files_task.delay(str(self.image))
+
+
+class BaseTypeCategory(models.Model):
+    """Абстрактная модель типов и категорий."""
+
+    title = models.CharField(
+        "Название",
+        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY,
+    )
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        verbose_name="Высшая категория",
+        related_name="subcategories",
+        on_delete=models.PROTECT,
+        db_index=True,
+    )
+
+    objects = models.Manager()
+    cstm_mng = TypeCategoryManager()
+
+    class Meta:
+        abstract = True
+        ordering = ["parent_id", "id"]
+
+    def __str__(self) -> str:
+        return self.title

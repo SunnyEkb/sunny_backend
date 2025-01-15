@@ -379,4 +379,9 @@ class VerificationView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                     data=APIResponses.VERIFICATION_FAILED.value,
                 )
+            except TokenExpired:
+                return Response(
+                    status=status.HTTP_403_FORBIDDEN,
+                    data=APIResponses.TOKEN_EXPIRED.value,
+                )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
