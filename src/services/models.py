@@ -1,41 +1,19 @@
 from django.db import models
 from django.core.validators import MaxValueValidator
 
+from core.abstract_models import AbstractImage, BaseTypeCategory
 from core.base_models import AbstractAdvertisement
-from core.abstract_models import AbstractImage
 from core.choices import ServicePlace
 from core.enums import Limits
-from core.managers import TypeCategoryManager
 from services.managers import ServiceManager
 
 
-class Type(models.Model):
+class Type(BaseTypeCategory):
     """Тип услуги."""
-
-    title = models.CharField(
-        "Название",
-        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY,
-    )
-    parent = models.ForeignKey(
-        "self",
-        null=True,
-        blank=True,
-        verbose_name="Высшая категория",
-        related_name="subcategories",
-        on_delete=models.PROTECT,
-        db_index=True,
-    )
-
-    objects = models.Manager()
-    cstm_mng = TypeCategoryManager()
 
     class Meta:
         verbose_name = "Тип услуги"
-        verbose_name_plural = "Тип услуги"
-        ordering = ["parent_id", "id"]
-
-    def __str__(self) -> str:
-        return self.title
+        verbose_name_plural = "Типы услуг"
 
 
 class Service(AbstractAdvertisement):
