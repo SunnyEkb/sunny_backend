@@ -31,6 +31,10 @@ class TestCategoryView(TestAdsFixtures):
                     title__icontains=self.category_1.title
                 ),
             ],
+            "id": [
+                self.category_1.id,
+                Category.objects.filter(id=self.category_1.id),
+            ],
         }
         for k, v in templates.items():
             with self.subTest(filter=k):

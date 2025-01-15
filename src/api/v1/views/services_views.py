@@ -1,8 +1,6 @@
 import sys
 
 from django.contrib.auth import get_user_model
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -13,7 +11,6 @@ from rest_framework import (
     exceptions,
     mixins,
     viewsets,
-    response,
     status,
 )
 
@@ -21,7 +18,7 @@ from api.v1.filters import ServiceFilter
 from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from api.v1.views.base_views import BaseServiceAdViewSet
+from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
 from core.choices import AdvertisementStatus, APIResponses
 from services.models import Service, ServiceImage, Type
 
@@ -42,47 +39,18 @@ User = get_user_model()
 @extend_schema_view(
     list=extend_schema(summary="Список типов услуг."),
 )
-class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class TypeViewSet(CategoryTypeViewSet):
     """Список типов услуг."""
 
     def get_queryset(self):
-        params = self.request.query_params
-        if "title" in params:
-            title = params.get("title")
-            queryset = Type.objects.filter(title__icontains=title)
-        elif "id" in params:
-            try:
-                type_id = int(params.get("id"))
-            except ValueError:
-                raise exceptions.ValidationError(
-                    detail=APIResponses.INVALID_PARAMETR.value,
-                    code=status.HTTP_400_BAD_REQUEST,
-                )
-            if type_id < 0:
-                raise exceptions.ValidationError(
-                    detail=APIResponses.INVALID_PARAMETR.value,
-                    code=status.HTTP_400_BAD_REQUEST,
-                )
-            queryset = Type.objects.filter(id=type_id)
-        else:
-            queryset = Type.objects.filter(parent=None)
-        return queryset
+        queryset = Type.objects.all()
+        return self.query_filtration(queryset)
 
     def get_serializer_class(self):
         params = self.request.query_params
         if "title" in params:
             return api_serializers.TypeGetWithoutSubCatSerializer
         return api_serializers.TypeGetSerializer
-
-    @method_decorator(cache_page(60 * 2))
-    def list(self, request, *args, **kwargs):
-        try:
-            return super().list(request, *args, **kwargs)
-        except exceptions.ValidationError:
-            return response.Response(
-                data={"detail": APIResponses.INVALID_PARAMETR.value},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
 
 @extend_schema(
