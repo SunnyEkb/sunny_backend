@@ -29,6 +29,10 @@ class TestTypeView(TestServiceFixtures):
                 self.type_1.title,
                 Type.objects.filter(title__icontains=self.type_1.title),
             ],
+            "id": [
+                self.type_1.id,
+                Type.objects.filter(id=self.type_1.id),
+            ],
         }
         for k, v in templates.items():
             with self.subTest(filter=k):
