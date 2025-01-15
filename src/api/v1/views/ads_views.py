@@ -22,11 +22,17 @@ from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
 from core.choices import AdvertisementStatus, APIResponses
 
 
-@extend_schema(tags=["Ads categories"])
+@extend_schema(
+    tags=["Ads categories"],
+    responses={status.HTTP_200_OK: schemes.CATEGORIES_GET_OK_200},
+    parameters=[
+        OpenApiParameter("title", str),
+        OpenApiParameter("id", int),
+    ],
+)
 @extend_schema_view(
     list=extend_schema(
         summary="Список категорий объявлений.",
-        responses={status.HTTP_200_OK: schemes.AD_CATEGORIES_GET_OK_200},
     ),
 )
 class CategoryViewSet(CategoryTypeViewSet):

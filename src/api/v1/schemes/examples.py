@@ -178,6 +178,35 @@ TYPE_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
+CATEGORY_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Иерархический список категорий объявлений",
+    value={
+        "id": 1,
+        "title": "Красота и здоровье",
+        "subcategories": [
+            {
+                "id": 3,
+                "title": "Массаж",
+                "subcategories": [
+                    {
+                        "id": 4,
+                        "title": "Массаж спины",
+                        "subcategories": None,
+                    },
+                ],
+            },
+        ],
+    },
+)
+
+CATEGORY_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Cписок категорий объявлений при фильтрации по названию",
+    value={
+        "id": 1,
+        "title": "Красота и здоровье",
+    },
+)
+
 COMMENT_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список комментариев",
     value=[

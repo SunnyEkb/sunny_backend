@@ -1,6 +1,5 @@
 import sys
 
-from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -22,15 +21,10 @@ from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
 from core.choices import AdvertisementStatus, APIResponses
 from services.models import Service, ServiceImage, Type
 
-User = get_user_model()
-
 
 @extend_schema(
     tags=["Services types"],
-    examples=[schemes.TYPE_LIST_FLAT_EXAMPLE],
-    responses={
-        status.HTTP_200_OK: schemes.TYPES_GET_OK_200,
-    },
+    responses={status.HTTP_200_OK: schemes.TYPES_GET_OK_200},
     parameters=[
         OpenApiParameter("title", str),
         OpenApiParameter("id", int),
