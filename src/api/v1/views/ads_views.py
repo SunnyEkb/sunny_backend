@@ -25,28 +25,26 @@ from core.choices import AdvertisementStatus, APIResponses
 @extend_schema(
     tags=["Ads categories"],
     responses={status.HTTP_200_OK: schemes.CATEGORIES_GET_OK_200},
-    parameters=[
-        OpenApiParameter("title", str),
-        OpenApiParameter("id", int),
-    ],
 )
 @extend_schema_view(
     list=extend_schema(
         summary="Список категорий объявлений.",
+        parameters=[OpenApiParameter("title", str)],
     ),
+    retrieve=extend_schema(summary="Категория объявления."),
 )
 class CategoryViewSet(CategoryTypeViewSet):
     """Вьюсет для категорий объявлений."""
 
     def get_serializer_class(self):
         params = self.request.query_params
-        if "title" in params:
+        if self.action == "list" and "title" in params:
             return api_serializers.CategoryGetWithoutSubCatSerializer
         return api_serializers.CategorySerializer
 
     def get_queryset(self):
         queryset = Category.objects.all()
-        return self.query_filtration(queryset)
+        return self.base_get_queryset(queryset)
 
 
 @extend_schema(tags=["Ads"])

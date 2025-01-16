@@ -23,15 +23,22 @@ class TestTypeView(TestServiceFixtures):
             len(Type.objects.filter(parent=None)),
         )
 
+    def test_get_type(self):
+        response_auth_user = self.client_1.get(
+            reverse("types-detail", kwargs={"pk": self.type_1.id})
+        )
+        self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
+
+        response_anon_user = self.client_1.get(
+            reverse("types-detail", kwargs={"pk": self.type_1.id})
+        )
+        self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
+
     def test_types_filters(self):
         templates = {
             "title": [
                 self.type_1.title,
                 Type.objects.filter(title__icontains=self.type_1.title),
-            ],
-            "id": [
-                self.type_1.id,
-                Type.objects.filter(id=self.type_1.id),
             ],
         }
         for k, v in templates.items():

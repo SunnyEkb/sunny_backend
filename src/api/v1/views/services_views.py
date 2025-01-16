@@ -25,20 +25,20 @@ from services.models import Service, ServiceImage, Type
 @extend_schema(
     tags=["Services types"],
     responses={status.HTTP_200_OK: schemes.TYPES_GET_OK_200},
-    parameters=[
-        OpenApiParameter("title", str),
-        OpenApiParameter("id", int),
-    ],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список типов услуг."),
+    list=extend_schema(
+        summary="Список типов услуг.",
+        parameters=[OpenApiParameter("title", str)],
+    ),
+    retrieve=extend_schema(summary="Тип услуги."),
 )
 class TypeViewSet(CategoryTypeViewSet):
     """Список типов услуг."""
 
     def get_queryset(self):
         queryset = Type.objects.all()
-        return self.query_filtration(queryset)
+        return self.base_get_queryset(queryset)
 
     def get_serializer_class(self):
         params = self.request.query_params
