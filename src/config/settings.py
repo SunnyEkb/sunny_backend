@@ -23,6 +23,7 @@ else:
     ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(", ")
 
 DOMAIN = os.getenv("DOMAIN", default="127.0.0.1")
+APPEND_SLASH = False
 
 INSTALLED_APPS = [
     "daphne",
