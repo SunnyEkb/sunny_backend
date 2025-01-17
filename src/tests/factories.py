@@ -1,5 +1,3 @@
-import random
-
 from factory import (
     Faker,
     fuzzy,
@@ -28,7 +26,7 @@ class CustomUserFactory(DjangoModelFactory):
     last_name = Faker("last_name")
     email = Sequence(lambda n: "{}@example.org".format(n))
     is_superuser = False
-    phone = f"+79000{random.randint(100000, 999999)}"
+    phone = Sequence(lambda n: "+79{:09}".format(n))
     is_active = True
     password = PostGenerationMethodCall("set_password", PASSWORD)
 

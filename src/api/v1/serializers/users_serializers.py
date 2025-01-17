@@ -107,9 +107,8 @@ class UserUpdateSerializer(ModelSerializer):
     Сериализатор для изменения данных о пользователе.
     """
 
-    phone = PhoneNumberField(
-        required=False, region="RU", validators=[validate_phone]
-    )
+    phone = PhoneNumberField(region="RU", validators=[validate_phone])
+    username = CharField(validators=[validate_username])
 
     class Meta:
         model = User
