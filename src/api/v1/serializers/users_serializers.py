@@ -52,7 +52,7 @@ class UserCreateSerializer(ModelSerializer):
     """
 
     phone = PhoneNumberField(
-        required=False, region="RU", validators=[validate_phone]
+        required=True, region="RU", validators=[validate_phone]
     )
     confirmation = CharField(write_only=True, required=True)
     username = CharField(required=True, validators=[validate_username])
