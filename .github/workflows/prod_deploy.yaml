@@ -15,6 +15,7 @@ jobs:
         uses: SpicyPizza/create-envfile@v2.0
         with:
           envkey_DEBUG: False
+          envkey_DJANGO_SETTINGS_MODULE: config.settings.prod
           envkey_PROD_DB: True
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           envkey_DOMAIN: ${{ secrets.DOMAIN }}

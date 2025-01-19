@@ -1,28 +1,23 @@
-import os
-import sys
 from datetime import timedelta
+from os import getenv
 from pathlib import Path
 
+from corsheaders.defaults import default_headers
 from dotenv import load_dotenv
 
-from corsheaders.defaults import default_headers
-
 TRUE_VALUES = ["1", "true", "True", "YES", "yes"]
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-dotenv_path = os.path.join(os.path.dirname(__file__), "../../.env")
+dotenv_path = Path(BASE_DIR, ".env")
 load_dotenv(dotenv_path)
 
-SECRET_KEY = os.getenv("SECRET_KEY", default="secret_key")
+SECRET_KEY = getenv("SECRET_KEY")
 
-DEBUG = True if os.getenv("DEBUG") in TRUE_VALUES else False
+DEBUG = True if getenv("DEBUG") in TRUE_VALUES else False
 
-if "test" in sys.argv:
-    ALLOWED_HOSTS = ["testserver"]
-else:
-    ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", default="*").split(", ")
+ALLOWED_HOSTS = getenv("ALLOWED_HOSTS", default="").split(", ")
 
-DOMAIN = os.getenv("DOMAIN", default="127.0.0.1")
+DOMAIN = getenv("DOMAIN", default="127.0.0.1")
 
 INSTALLED_APPS = [
     "daphne",
@@ -64,7 +59,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
+TEMPLATES_DIR = Path(BASE_DIR, "templates")
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -86,32 +81,16 @@ TEMPLATES = [
 ASGI_APPLICATION = "config.asgi.application"
 # WSGI_APPLICATION = "config.wsgi.application"
 
-PROD_DB = os.getenv("PROD_DB") in TRUE_VALUES
-if "test" in sys.argv:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": ":memory:",
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": getenv("DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": getenv("POSTGRES_DB", default="db_test"),
+        "USER": getenv("POSTGRES_USER", default="admin_test"),
+        "PASSWORD": getenv("POSTGRES_PASSWORD", default="postgre_admin"),
+        "HOST": getenv("POSTGRES_HOST", default="db_test"),
+        "PORT": getenv("POSTGRES_PORT", default=5432),
     }
-elif PROD_DB and "test" not in sys.argv:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("DB_NAME"),
-            "USER": os.getenv("POSTGRES_USER"),
-            "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
-            "HOST": os.getenv("DB_HOST"),
-            "PORT": os.getenv("DB_PORT"),
-        }
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "sunny.sqlite3",
-        }
-    }
+}
 
 AUTH_USER_MODEL = "users.CustomUser"
 
@@ -169,13 +148,13 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=int(os.getenv("ACCESS_TOKEN_LIFETIME", 5))
+        minutes=int(getenv("ACCESS_TOKEN_LIFETIME", default=5))
     ),
     "REFRESH_TOKEN_LIFETIME": timedelta(
-        days=int(os.getenv("REFRESH_TOKEN_LIFETIME", 14))
+        days=int(getenv("REFRESH_TOKEN_LIFETIME", default=14))
     ),
-    "AUTH_COOKIE": os.getenv("AUTH_COOKIE", "access"),
-    "AUTH_REFRESH": os.getenv("AUTH_REFRESH", "refresh"),
+    "AUTH_COOKIE": getenv("AUTH_COOKIE", default="access"),
+    "AUTH_REFRESH": getenv("AUTH_REFRESH", default="refresh"),
     "AUTH_COOKIE_DOMAIN": None,
     "AUTH_COOKIE_SECURE": True,
     "AUTH_COOKIE_HTTP_ONLY": True,
@@ -187,21 +166,21 @@ DRFSO2_PROPRIETARY_BACKEND_NAME = "VK.com"
 DRFSO2_URL_NAMESPACE = "social_auth"
 ACTIVATE_JWT = True
 
-SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv("SOCIAL_AUTH_VK_OAUTH2_KEY")
-SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv("SOCIAL_AUTH_VK_OAUTH2_SECRET")
+SOCIAL_AUTH_VK_OAUTH2_KEY = getenv("SOCIAL_AUTH_VK_OAUTH2_KEY")
+SOCIAL_AUTH_VK_OAUTH2_SECRET = getenv("SOCIAL_AUTH_VK_OAUTH2_SECRET")
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = "None"  # "Lax" заменить на проде
-SESSION_COOKIE_SAMESITE = "None"  # "Lax" заменить на проде
-CSRF_TRUSTED_ORIGINS = os.getenv(
-    "CSRF_TRUSTED_ORIGINS", "http://127.0.0.1"
+CSRF_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_SAMESITE = "None"
+CSRF_TRUSTED_ORIGINS = getenv(
+    "CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1"
 ).split(", ")
-CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS", "http://127.0.0.1"
+CORS_ALLOWED_ORIGINS = getenv(
+    "CORS_ALLOWED_ORIGINS", default="http://127.0.0.1"
 ).split(", ")
 CORS_ALLOW_METHODS = (
     "DELETE",
@@ -216,7 +195,6 @@ CORS_ALLOW_HEADERS = (
     *default_headers,
     "X-CSRFToken",
 )
-CORS_ALLOW_ALL_ORIGINS = True  # Удалить
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Sunny Ekb Documentation",
@@ -237,45 +215,37 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = Path(BASE_DIR, "static")
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_ROOT = Path(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-EMAIL_FILE = True if os.getenv("EMAIL_FILE") == "YES" else False
-if EMAIL_FILE:
-    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-    EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_USE_TLS = True if os.getenv("EMAIL_USE_TLS") == "YES" else False
-    EMAIL_USE_SSL = False
-    EMAIL_PORT = os.getenv("EMAIL_PORT")
-    EMAIL_HOST = os.getenv("EMAIL_HOST")
-    EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
-DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST_USER")
-SERVER_EMAIL = os.getenv("EMAIL_HOST_USER")
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True if getenv("EMAIL_USE_TLS") == "YES" else False
+EMAIL_USE_SSL = False
+EMAIL_PORT = getenv("EMAIL_PORT")
+EMAIL_HOST = getenv("EMAIL_HOST")
+EMAIL_HOST_PASSWORD = getenv("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_USER = getenv("EMAIL_HOST_USER")
+DEFAULT_FROM_EMAIL = getenv("EMAIL_HOST_USER")
+SERVER_EMAIL = getenv("EMAIL_HOST_USER")
 
-TELEGRAM_SUPPORT_CHAT_ID = os.getenv("TELEGRAM_SUPPORT_CHAT_ID")
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN")
-TELEGRAM_MODERATORS_CHAT_ID = os.getenv(
-    "TELEGRAM_MODERATORS_CHAT_ID", ""
-).split(", ")
-TELEGRAM_MODERATORS_CHAT_TOPIC = str(
-    os.getenv("TELEGRAM_MODERATORS_CHAT_TOPIC", "")
+TELEGRAM_SUPPORT_CHAT_ID = getenv("TELEGRAM_SUPPORT_CHAT_ID")
+TELEGRAM_TOKEN = getenv("TELEGRAM_TOKEN")
+TELEGRAM_MODERATORS_CHAT_ID = getenv("TELEGRAM_MODERATORS_CHAT_ID", "").split(
+    ", "
 )
+TELEGRAM_MODERATORS_CHAT_TOPIC = getenv("TELEGRAM_MODERATORS_CHAT_TOPIC", "")
 
-REDIS_HOST = os.getenv("REDDIS_HOST", "127.0.0.1")
-REDIS_PORT = str(os.getenv("REDDIS_PORT", 6379))
-CELERY_BROKER_URL = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+REDIS_HOST = getenv("REDDIS_HOST", default="127.0.0.1")
+REDIS_PORT = getenv("REDDIS_PORT", default=6379)
+CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
 CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
-CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
 
-ERROR_LOG_FILENAME = os.path.join(
-    MEDIA_ROOT, os.getenv("ERROR_LOG_FILENAME", "errors.log")
-)
+ERROR_LOG_FILENAME = Path(BASE_DIR, getenv("ERROR_LOG_FILENAME", "errors.log"))
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -294,7 +264,7 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": (
                 ERROR_LOG_FILENAME
-                if os.path.exists(ERROR_LOG_FILENAME)
+                if Path(ERROR_LOG_FILENAME).exists()
                 else "errors.log"
             ),
         },
@@ -327,16 +297,11 @@ LOGGING = {
     },
 }
 
-if "test" in sys.argv or not PROD_DB:
-    CHANNEL_LAYERS = {
-        "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
-    }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [(REDIS_HOST, REDIS_PORT)],
-            },
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
         },
-    }
+    },
+}
