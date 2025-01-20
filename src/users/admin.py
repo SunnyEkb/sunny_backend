@@ -18,6 +18,7 @@ class UserAdmin(UserAdmin):
         "email",
         "first_name",
         "last_name",
+        "phone",
         "is_active",
         "role",
         "date_joined",
