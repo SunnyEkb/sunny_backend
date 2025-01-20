@@ -52,7 +52,7 @@ class UserCreateSerializer(ModelSerializer):
     """
 
     phone = PhoneNumberField(
-        required=False, region="RU", validators=[validate_phone]
+        required=True, region="RU", validators=[validate_phone]
     )
     confirmation = CharField(write_only=True, required=True)
     username = CharField(required=True, validators=[validate_username])
@@ -107,9 +107,8 @@ class UserUpdateSerializer(ModelSerializer):
     Сериализатор для изменения данных о пользователе.
     """
 
-    phone = PhoneNumberField(
-        required=False, region="RU", validators=[validate_phone]
-    )
+    phone = PhoneNumberField(region="RU", validators=[validate_phone])
+    username = CharField(validators=[validate_username])
 
     class Meta:
         model = User
