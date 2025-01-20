@@ -73,6 +73,7 @@ class TestUser(TestUserFixtures):
         body = {
             "username": self.username,
             "email": self.email_2,
+            "phone": self.new_phone,
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
