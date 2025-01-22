@@ -72,6 +72,7 @@ class APIResponses(models.TextChoices):
     COMMENTS_BY_PROVIDER_PROHIBITED = (
         "Лицо, оказывающее услуги не может оставлять комментарий."
     )
+    COMMENT_ADDED = "Комментарий создан."
     INVALID_PARAMETR = "Параметр должен быть положительным числом."
     VERIFICATION_SUCCESS = "Регистрация подтверждена."
     VERIFICATION_FAILED = "Пользователь не найден."

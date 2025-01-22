@@ -1,5 +1,3 @@
-import sys
-
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import (
@@ -13,7 +11,6 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import CommentAuthorOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from bad_word_filter.tasks import moderate_comment
 from comments.models import Comment
 from core.choices import APIResponses, CommentStatus
 
@@ -40,6 +37,8 @@ class CommentViewSet(
     def get_queryset(self):
         obj_id = self.kwargs.get("obj_id", None)
         type = self.kwargs.get("type", None)
+        if type not in ["ad", "service"]:
+            raise ValueError("Wrong type")
         if obj_id and type:
             cont_type_model = get_object_or_404(
                 ContentType, app_label=f"{type}s", model=f"{type}"
@@ -57,14 +56,6 @@ class CommentViewSet(
     tags=["Comments"],
 )
 @extend_schema_view(
-    create=extend_schema(
-        summary="Создать комментарий.",
-        examples=[schemes.COMMENT_CREATE_EXAMPLE],
-        responses={
-            status.HTTP_201_CREATED: schemes.COMMENT_CREATED_201,
-            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-        },
-    ),
     destroy=extend_schema(
         summary="Удалить комментарий.",
         responses={
@@ -75,7 +66,6 @@ class CommentViewSet(
     ),
 )
 class CommentCreateDestroyViewSet(
-    mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
@@ -90,12 +80,6 @@ class CommentCreateDestroyViewSet(
         if self.action == "create":
             return [permissions.IsAuthenticated()]
         return [CommentAuthorOnly()]
-
-    def perform_create(self, serializer):
-        comment: Comment = serializer.save(author=self.request.user)
-        admin_url = comment.get_admin_url(self.request)
-        if "test" not in sys.argv:
-            moderate_comment.delay_on_commit(comment.id, admin_url)
 
     def destroy(self, request, *args, **kwargs):
         instance: Comment = self.get_object()
