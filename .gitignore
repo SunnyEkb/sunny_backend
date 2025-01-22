@@ -166,4 +166,4 @@ src/data_store/
 /nginx.conf
 /docker-compose.yaml
 
-*/tmp[a-zA-Z0-9]*/
+*/tmp[a-zA-Z0-9_]*/

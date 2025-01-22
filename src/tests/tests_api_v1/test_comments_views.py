@@ -56,23 +56,32 @@ class TestCommentsView(TestServiceFixtures):
             ),
         )
 
-    def test_comment_create(self):
+    def test_add_comment_to_service(self):
         response = self.client_4.post(
-            reverse("comments_create-list"),
+            reverse(
+                "services-add_comment",
+                kwargs={"pk": self.published_service.id},
+            ),
             data=self.comment_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
-    def test_user_cant_create_two_comments(self):
+    def test_user_cant_add_two_comments_to_the_same_service(self):
         response = self.client_1.post(
-            reverse("comments_create-list"),
+            reverse(
+                "services-add_comment",
+                kwargs={"pk": self.published_service.id},
+            ),
             data=self.comment_data,
         )
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
-    def test_anon_client_cant_create_comment(self):
+    def test_anon_client_cant_add_comment_to_service(self):
         response = self.anon_client.post(
-            reverse("comments_create-list"),
+            reverse(
+                "services-add_comment",
+                kwargs={"pk": self.published_service.id},
+            ),
             data=self.comment_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)

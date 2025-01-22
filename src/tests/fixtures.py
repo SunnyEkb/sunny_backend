@@ -169,10 +169,6 @@ class TestServiceFixtures(TestUserFixtures):
             status=CommentStatus.PUBLISHED.value,
         )
         cls.comment_data = {
-            "content_type": ContentType.objects.get(
-                app_label="services", model="service"
-            ).id,
-            "object_id": cls.published_service.id,
             "rating": 2,
             "feedback": "Some feadback",
         }

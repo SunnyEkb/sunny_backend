@@ -129,7 +129,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="cancell",
+        url_path="cancell/",
         url_name="cancell",
         permission_classes=(OwnerOrReadOnly,),
     )
@@ -162,7 +162,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="hide",
+        url_path="hide/",
         permission_classes=(OwnerOrReadOnly,),
     )
     def hide(self, request, *args, **kwargs):
@@ -192,7 +192,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="moderate",
+        url_path="moderate/",
         url_name="moderate",
         permission_classes=(OwnerOrReadOnly,),
     )
@@ -227,7 +227,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="publish",
+        url_path="publish/",
         url_name="publish",
         permission_classes=(OwnerOrReadOnly,),
     )
@@ -262,7 +262,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="add-photo",
+        url_path="add-photo/",
         url_name="add_photo",
         permission_classes=(OwnerOrReadOnly,),
     )
@@ -316,7 +316,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="add-to-favorites",
+        url_path="add-to-favorites/",
         url_name="add_to_favorites",
         permission_classes=(permissions.IsAuthenticated),
     )
@@ -377,7 +377,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="add-comment",
+        url_path="add-comment/",
         url_name="add_comment",
         permission_classes=(permissions.IsAuthenticated),
     )
@@ -453,7 +453,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("delete",),
-        url_path="delete-from-favorites",
+        url_path="delete-from-favorites/",
         url_name="delete_from_favorites",
         permission_classes=(permissions.IsAuthenticated),
     )
