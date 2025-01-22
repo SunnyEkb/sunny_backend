@@ -47,15 +47,15 @@ def save_file_with_user_data(email, data):
         datetime.now(timezone.utc) + settings.DATA_RETENTION_PERIOD
     ).strftime("%Y-%m-%d")
     file_path = os.path.join(
-        settings.PATH_TO_SAVE_DELETED_USERS_DATA,
+        settings.PATH_TO_SAVE_DELETED_USERS_DATA.location,
         f"{email}_{date}.json",
-    )
-    with open(file_path) as file:
+    ).replace("\\\\", "/")
+    with open(file_path, "w") as file:
         file.write(data)
 
 
 def delete_files_after_expiration_date():
-    files = os.listdir(settings.PATH_TO_SAVE_DELETED_USERS_DATA)
+    files = os.listdir(settings.PATH_TO_SAVE_DELETED_USERS_DATA.location)
     for file in files:
         if datetime.now(timezone.utc).date > datetime.strptime(
             str(file).split("_")[-1].replace(".json", ""), "%Y-%m-%d"
