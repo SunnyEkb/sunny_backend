@@ -11,6 +11,7 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import CommentAuthorOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from comments.exceptions import WrongObjectType
 from comments.models import Comment
 from core.choices import APIResponses, CommentStatus
 
@@ -25,10 +26,7 @@ from core.choices import APIResponses, CommentStatus
 @extend_schema_view(
     list=extend_schema(summary="Список комментариев."),
 )
-class CommentViewSet(
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet,
-):
+class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список комментариев."""
 
     pagination_class = CustomPaginator
@@ -38,7 +36,7 @@ class CommentViewSet(
         obj_id = self.kwargs.get("obj_id", None)
         type = self.kwargs.get("type", None)
         if type not in ["ad", "service"]:
-            raise ValueError("Wrong type")
+            raise WrongObjectType()
         if obj_id and type:
             cont_type_model = get_object_or_404(
                 ContentType, app_label=f"{type}s", model=f"{type}"
@@ -51,10 +49,17 @@ class CommentViewSet(
             ).order_by("-created_at")
         return Comment.cstm_mng.none()
 
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except WrongObjectType:
+            return response.Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data=APIResponses.WRONG_OBJECT_TYPE,
+            )
 
-@extend_schema(
-    tags=["Comments"],
-)
+
+@extend_schema(tags=["Comments"])
 @extend_schema_view(
     destroy=extend_schema(
         summary="Удалить комментарий.",
@@ -69,9 +74,9 @@ class CommentCreateDestroyViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Создать или удалить комментарий."""
+    """Удалить комментарий и добавить к нему фото."""
 
-    serializer_class = api_serializers.CommentCreateSerializer
+    serializer_class = api_serializers.CommentReadSerializer
 
     def get_queryset(self):
         return Comment.objects.all()

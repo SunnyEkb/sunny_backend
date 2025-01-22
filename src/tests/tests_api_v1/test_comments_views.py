@@ -56,6 +56,18 @@ class TestCommentsView(TestServiceFixtures):
             ),
         )
 
+    def test_get_comments_with_wrong_type(self):
+        response = self.anon_client.get(
+            reverse(
+                "comments-list",
+                kwargs={
+                    "type": "abc",
+                    "obj_id": self.published_service.id,
+                },
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
     def test_not_author_cant_delete_comment(self):
         response = self.client_1.delete(
             reverse(
