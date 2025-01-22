@@ -129,7 +129,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="cancell/",
+        url_path="cancell",
         url_name="cancell",
         permission_classes=(OwnerOrReadOnly,),
     )
@@ -162,7 +162,8 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="hide/",
+        url_path="hide",
+        url_name="hide",
         permission_classes=(OwnerOrReadOnly,),
     )
     def hide(self, request, *args, **kwargs):
@@ -192,7 +193,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="moderate/",
+        url_path="moderate",
         url_name="moderate",
         permission_classes=(OwnerOrReadOnly,),
     )
@@ -227,7 +228,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="publish/",
+        url_path="publish",
         url_name="publish",
         permission_classes=(OwnerOrReadOnly,),
     )
@@ -247,10 +248,7 @@ class BaseServiceAdViewSet(
     @extend_schema(
         summary="Добавить фото к услуге.",
         methods=["POST"],
-        request=[
-            api_serializers.AdImageCreateSerializer,
-            api_serializers.ServiceImageCreateSerializer,
-        ],
+        request=api_serializers.AdImageCreateSerializer,
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
@@ -262,7 +260,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="add-photo/",
+        url_path="add-photo",
         url_name="add_photo",
         permission_classes=(OwnerOrReadOnly,),
     )
@@ -316,7 +314,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="add-to-favorites/",
+        url_path="add-to-favorites",
         url_name="add_to_favorites",
         permission_classes=(permissions.IsAuthenticated),
     )
@@ -377,7 +375,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("post",),
-        url_path="add-comment/",
+        url_path="add-comment",
         url_name="add_comment",
         permission_classes=(permissions.IsAuthenticated),
     )
@@ -440,7 +438,7 @@ class BaseServiceAdViewSet(
 
     @extend_schema(
         summary="Удалить из избранного.",
-        methods=["POST"],
+        methods=["DELETE"],
         request=None,
         responses={
             status.HTTP_204_NO_CONTENT: (schemes.DELETED_FROM_FAVORITES_204),
@@ -453,7 +451,7 @@ class BaseServiceAdViewSet(
     @action(
         detail=True,
         methods=("delete",),
-        url_path="delete-from-favorites/",
+        url_path="delete-from-favorites",
         url_name="delete_from_favorites",
         permission_classes=(permissions.IsAuthenticated),
     )
