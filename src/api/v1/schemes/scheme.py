@@ -214,6 +214,12 @@ CANT_PUBLISH_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
     examples=[examples.CANT_PUBLISH_SERVICE_OR_AD_EXAMPLE],
 )
 
+OBJECT_IS_NOT_PUBLISED_406: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Услуга (объявление) не опубликована",
+    examples=[examples.CANT_ADD_NOT_PUBLISHED_OBJECT_EXAMPLE],
+)
+
 CANT_ADD_PHOTO_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Превышено максимальное количество фотографий",

@@ -370,6 +370,8 @@ class BaseServiceAdViewSet(
         responses={
             status.HTTP_201_CREATED: schemes.COMMENT_CREATED_201,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.OBJECT_IS_NOT_PUBLISED_406,
         },
     )
     @action(
