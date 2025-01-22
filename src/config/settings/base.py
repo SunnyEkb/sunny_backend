@@ -18,6 +18,7 @@ DEBUG = True if getenv("DEBUG") in TRUE_VALUES else False
 ALLOWED_HOSTS = getenv("ALLOWED_HOSTS", default="").split(", ")
 
 DOMAIN = getenv("DOMAIN", default="127.0.0.1")
+APPEND_SLASH = False
 
 INSTALLED_APPS = [
     "daphne",
