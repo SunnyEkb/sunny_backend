@@ -35,9 +35,10 @@ from comments.models import Comment
 from core.choices import APIResponses
 from services.models import Service
 from services.tasks import delete_image_files, delete_image_files_task
-from users.exceptions import TokenDoesNotExists
+from users.exceptions import TokenDoesNotExists, TokenExpired
 from users.utils import verify_user, save_file_with_user_data
 from users.tasks import save_file_with_user_data_task
+
 
 User = get_user_model()
 
@@ -379,5 +380,10 @@ class VerificationView(APIView):
                 return Response(
                     status=status.HTTP_403_FORBIDDEN,
                     data=APIResponses.VERIFICATION_FAILED.value,
+                )
+            except TokenExpired:
+                return Response(
+                    status=status.HTTP_403_FORBIDDEN,
+                    data=APIResponses.TOKEN_EXPIRED.value,
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

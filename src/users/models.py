@@ -40,8 +40,8 @@ class CustomUser(AbstractUser):
     phone = PhoneNumberField(
         verbose_name="Номер телефона",
         max_length=Limits.MAX_LENGTH_PHONE_NUMBER.value,
-        blank=True,
-        null=True,
+        unique=True,
+        region="RU",
     )
     role = models.CharField(
         verbose_name="Роль",

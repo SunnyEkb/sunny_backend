@@ -8,7 +8,7 @@ from django.db import transaction
 
 from core.enums import Limits
 from users.models import VerificationToken
-from users.exceptions import TokenDoesNotExists
+from users.exceptions import TokenDoesNotExists, TokenExpired
 
 User = get_user_model()
 
@@ -26,6 +26,8 @@ def verify_user(token: UUID):
             user.is_active = True
             user.save()
             ver_token.delete()
+    else:
+        raise TokenExpired()
 
 
 def delete_expired_tokens():

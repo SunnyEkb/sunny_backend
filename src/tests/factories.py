@@ -26,7 +26,7 @@ class CustomUserFactory(DjangoModelFactory):
     last_name = Faker("last_name")
     email = Sequence(lambda n: "{}@example.org".format(n))
     is_superuser = False
-    phone = "+79000" + str(fuzzy.FuzzyInteger(low=100000, high=999999))
+    phone = Sequence(lambda n: "+79{:09}".format(n))
     is_active = True
     password = PostGenerationMethodCall("set_password", PASSWORD)
 

@@ -16,7 +16,8 @@ class ServiceAdmin(admin.ModelAdmin):
     ]
     search_fields = ["title", "type__title"]
     list_filter = ["type__title", "status"]
-    ordering = ["created_at"]
+    ordering = ["-created_at"]
+    readonly_fields = ["created_at"]
 
 
 @admin.register(ServiceImage)

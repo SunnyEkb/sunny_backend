@@ -23,7 +23,7 @@ class UserAdmin(UserAdmin):
         "date_joined",
     ]
     fieldsets = [
-        (None, {"fields": ["email", "password"]}),
+        (None, {"fields": ["email", "password", "phone", "username"]}),
         ("Персональная информация", {"fields": ["first_name", "last_name"]}),
         ("Разрешения", {"fields": ["is_active", "role", "is_staff"]}),
     ]
@@ -59,4 +59,5 @@ class VerificationTokenAdmin(admin.ModelAdmin):
     """
 
     list_display = ["user"]
-    search_fields = ["user"]
+    search_fields = ["user__email"]
+    readonly_fields = ["created_at"]

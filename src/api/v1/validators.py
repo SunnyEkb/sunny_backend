@@ -1,4 +1,7 @@
+import re
+
 from django.contrib.auth import get_user_model
+from rest_framework import exceptions, status
 from rest_framework.serializers import ValidationError
 
 from core.choices import APIResponses
@@ -22,6 +25,7 @@ def validate_username(value):
         len(value) < Limits.USERNAME_MIN_LENGTH.value
         or len(value) > Limits.USERNAME_MAX_LENGTH.value
         or " " in value
+        or not re.match(r"^[\w.@+-]+\Z", value)
     ):
         raise ValidationError(APIResponses.WRONG_USERNAME.value)
     if User.objects.filter(username=value).exists():
@@ -33,3 +37,25 @@ def validate_email(value: str):
 
     if User.objects.filter(email=value.lower()).exists():
         raise ValidationError(APIResponses.EMAIL_EXISTS.value)
+
+
+def validate_phone(value: str):
+    """Валидация номера телефона."""
+
+    if User.objects.filter(phone=value).exists():
+        raise ValidationError(APIResponses.PHONE_EXISTS.value)
+
+
+def validate_id(id):
+    try:
+        int(id)
+    except ValueError:
+        raise exceptions.ValidationError(
+            detail=APIResponses.INVALID_PARAMETR.value,
+            code=status.HTTP_400_BAD_REQUEST,
+        )
+    if id < 0:
+        raise exceptions.ValidationError(
+            detail=APIResponses.INVALID_PARAMETR.value,
+            code=status.HTTP_400_BAD_REQUEST,
+        )

@@ -73,6 +73,7 @@ class TestUser(TestUserFixtures):
         body = {
             "username": self.username,
             "email": self.email_2,
+            "phone": self.new_phone,
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
@@ -83,6 +84,54 @@ class TestUser(TestUserFixtures):
         self.assertEqual(
             response.json().get("non_field_errors", None),
             [APIResponses.PASSWORD_DO_NOT_MATCH.value],
+        )
+
+    def test_user_registry_username_validation_long_username(self):
+        body = {
+            "username": 10 * self.username,
+            "email": self.email_2,
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("username"),
+            [APIResponses.WRONG_USERNAME.value],
+        )
+
+    def test_user_registry_username_validation_short_username(self):
+        body = {
+            "username": "q",
+            "email": self.email_2,
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("username"),
+            [APIResponses.WRONG_USERNAME.value],
+        )
+
+    def test_user_registry_username_validation_wrong_symbols(self):
+        body = {
+            "username": "*&^#(*)",
+            "email": self.email_2,
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("username"),
+            [APIResponses.WRONG_USERNAME.value],
         )
 
     def test_user_registry_with_existing_username(self):
@@ -99,6 +148,23 @@ class TestUser(TestUserFixtures):
         self.assertEqual(
             response.json().get("username"),
             [APIResponses.USERNAME_EXISTS.value],
+        )
+
+    def test_user_registry_with_existing_phone(self):
+        body = {
+            "username": self.username,
+            "email": self.email_2,
+            "phone": str(self.user_1.phone),
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("phone"),
+            [APIResponses.PHONE_EXISTS.value],
         )
 
     def test_user_login(self):
