@@ -161,3 +161,17 @@ class TestCommentsToServicesCreationView(TestServiceFixtures):
             data=self.comment_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_comment_data_validation(self):
+        test_data = [-1, 0, 30, 1.1, "abc", True]
+        for value in test_data:
+            data = {"rating": value, "feedback": "feedback"}
+            with self.subTest(Wrong_avlue=value):
+                response = self.client_1.post(
+                    reverse(
+                        "services-add_comment",
+                        kwargs={"pk": self.published_service.id},
+                    ),
+                    data=data,
+                )
+                self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
