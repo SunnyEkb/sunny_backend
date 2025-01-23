@@ -1,7 +1,5 @@
 from uuid import uuid4
-import sys
 
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.models.signals import post_save
@@ -9,10 +7,9 @@ from django.dispatch import receiver
 from django_rest_passwordreset.signals import reset_password_token_created
 
 from core.choices import Notifications
-from core.email_services import send_password_reset_token, send_welcome_email
 from notifications.models import Notification
 from users.models import VerificationToken
-from users.tasks import send_welcome_email_task, send_password_reset_token_task
+from users.tasks import send_password_reset_token_task, send_welcome_email_task
 
 User = get_user_model()
 
@@ -36,11 +33,7 @@ def password_reset_token_created(
     mail_to = reset_password_token.user.email
     username = reset_password_token.user.username
     domain = get_current_site(instance.request).domain
-
-    if "test" not in sys.argv and settings.PROD_DB is True:
-        send_password_reset_token_task.delay(domain, username, mail_to, key)
-    else:
-        send_password_reset_token(domain, username, mail_to, key)
+    send_password_reset_token_task.delay(domain, username, mail_to, key)
 
 
 @receiver(post_save, sender=User)
@@ -61,15 +54,8 @@ def send_welcome_email_signal(sender, instance, created, **kwargs):
             user=instance, token=token
         )
         ver_token.save()
-        if "test" not in sys.argv and settings.PROD_DB is True:
-            send_welcome_email_task.delay(
-                username=instance.username,
-                token=token,
-                email=instance.email,
-            )
-        else:
-            send_welcome_email(
-                username=instance.username,
-                token=token,
-                email=instance.email,
-            )
+        send_welcome_email_task.delay(
+            username=instance.username,
+            token=token,
+            email=instance.email,
+        )
