@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 TRUE_VALUES = ["1", "true", "True", "YES", "yes"]
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-dotenv_path = Path(BASE_DIR, ".env")
+dotenv_path = Path(BASE_DIR, "../.env")
 load_dotenv(dotenv_path)
 
-SECRET_KEY = getenv("SECRET_KEY")
+SECRET_KEY = getenv("SECRET_KEY", default="secret_key")
 
 DEBUG = True if getenv("DEBUG") in TRUE_VALUES else False
 
