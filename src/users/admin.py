@@ -23,7 +23,7 @@ class UserAdmin(UserAdmin):
         "date_joined",
     ]
     fieldsets = [
-        (None, {"fields": ["email", "password"]}),
+        (None, {"fields": ["email", "password", "phone", "username"]}),
         ("Персональная информация", {"fields": ["first_name", "last_name"]}),
         ("Разрешения", {"fields": ["is_active", "role", "is_staff"]}),
     ]
