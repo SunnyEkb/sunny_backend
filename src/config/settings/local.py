@@ -26,3 +26,16 @@ LOGGING["loggers"].update(
         }
     }
 )
+
+CELERY_TASK_ALWAYS_EAGER = (
+    True
+    if (getenv("CELERY_TASK_ALWAYS_EAGER", default="False") == "True")
+    else False
+)
+CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", default=None)
+CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", default="cache")
+CELERY_CACHE_BACKEND = getenv("CELERY_CACHE_BACKEND", default="memory")
+
+CHANNEL_LAYERS = {
+    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
+}
