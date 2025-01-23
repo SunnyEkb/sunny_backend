@@ -7,7 +7,6 @@ from drf_spectacular.utils import (
     extend_schema_view,
 )
 from rest_framework import (
-    exceptions,
     mixins,
     viewsets,
     status,
@@ -17,28 +16,29 @@ from api.v1.filters import ServiceFilter
 from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from api.v1.validators import validate_id
 from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
-from core.choices import AdvertisementStatus, APIResponses
+from core.choices import AdvertisementStatus
 from services.models import Service, ServiceImage, Type
 
 
 @extend_schema(
     tags=["Services types"],
     responses={status.HTTP_200_OK: schemes.TYPES_GET_OK_200},
-    parameters=[
-        OpenApiParameter("title", str),
-        OpenApiParameter("id", int),
-    ],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список типов услуг."),
+    list=extend_schema(
+        summary="Список типов услуг.",
+        parameters=[OpenApiParameter("title", str)],
+    ),
+    retrieve=extend_schema(summary="Тип услуги."),
 )
 class TypeViewSet(CategoryTypeViewSet):
     """Список типов услуг."""
 
     def get_queryset(self):
         queryset = Type.objects.all()
-        return self.query_filtration(queryset)
+        return self.base_get_queryset(queryset)
 
     def get_serializer_class(self):
         params = self.request.query_params
@@ -122,18 +122,8 @@ class ServiceViewSet(BaseServiceAdViewSet):
                 status=AdvertisementStatus.PUBLISHED.value
             )
             if "type_id" in params:
-                try:
-                    type_id = int(params.get("type_id"))
-                except ValueError:
-                    raise exceptions.ValidationError(
-                        detail=APIResponses.INVALID_PARAMETR.value,
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
-                if type_id < 0:
-                    raise exceptions.ValidationError(
-                        detail=APIResponses.INVALID_PARAMETR.value,
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
+                type_id = params.get("type_id")
+                validate_id(type_id)
                 queryset = queryset.filter(type__id=type_id)
         return queryset
 
