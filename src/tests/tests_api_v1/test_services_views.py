@@ -1,11 +1,13 @@
 from http import HTTPStatus
 
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from django.urls import reverse
 
 from core.choices import ServicePlace, AdvertisementStatus
 from services.models import Service, ServiceImage, Type
 from tests.fixtures import TestServiceFixtures
+from users.models import Favorites
 
 
 class TestTypeView(TestServiceFixtures):
@@ -456,4 +458,33 @@ class TestServivecesView(TestServiceFixtures):
         )
         self.assertFalse(
             ServiceImage.objects.filter(id=self.service_del_image.id).exists()
+        )
+
+    def test_service_deletes_from_favorites_when_is_getting_hidden(self):
+        self.client_3.post(
+            reverse("services-hide", kwargs={"pk": self.published_service.id})
+        )
+        self.assertFalse(
+            Favorites.objects.filter(
+                object_id=self.published_service.id,
+                content_type=ContentType.objects.get(
+                    app_label="services", model="service"
+                ),
+            ).exists()
+        )
+
+    def test_service_deletes_from_favorites_when_is_getting_draft(self):
+        self.client_3.put(
+            reverse(
+                "services-detail", kwargs={"pk": self.published_service.pk}
+            ),
+            data=self.service_data,
+        )
+        self.assertFalse(
+            Favorites.objects.filter(
+                object_id=self.published_service.id,
+                content_type=ContentType.objects.get(
+                    app_label="services", model="service"
+                ),
+            ).exists()
         )

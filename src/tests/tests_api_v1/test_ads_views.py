@@ -1,11 +1,13 @@
 from http import HTTPStatus
 
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from django.urls import reverse
 
 from ads.models import Ad, AdImage, Category
 from core.choices import AdvertisementStatus
 from tests.fixtures import TestAdsFixtures
+from users.models import Favorites
 
 
 class TestCategoryView(TestAdsFixtures):
@@ -331,3 +333,28 @@ class TestAdView(TestAdsFixtures):
                     reverse("ads-list") + f"?{k}={v[0]}"
                 )
                 self.assertEqual(len(response.data["results"]), len(v[1]))
+
+    def test_ad_deletes_from_favorites_when_is_getting_hidden(self):
+        self.client_2.post(reverse("ads-hide", kwargs={"pk": self.ad_2.id}))
+        self.assertFalse(
+            Favorites.objects.filter(
+                object_id=self.ad_2.id,
+                content_type=ContentType.objects.get(
+                    app_label="ads", model="ad"
+                ),
+            ).exists()
+        )
+
+    def test_ad_deletes_from_favorites_when_is_getting_draft(self):
+        self.client_2.put(
+            reverse("ads-detail", kwargs={"pk": self.ad_2.pk}),
+            data=self.new_ad_data,
+        )
+        self.assertFalse(
+            Favorites.objects.filter(
+                object_id=self.ad_2.id,
+                content_type=ContentType.objects.get(
+                    app_label="ads", model="ad"
+                ),
+            ).exists()
+        )
