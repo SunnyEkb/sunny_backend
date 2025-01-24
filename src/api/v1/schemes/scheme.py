@@ -159,7 +159,7 @@ AD_SERVICE_SENT_TO_MODERATION: OpenApiResponse = OpenApiResponse(
     description="Получение списка услуг",
     examples=[
         examples.SERVICE_LIST_EXAMPLE,
-        examples.AD_OR_SERVICE_SENT_TO_MODERATION_EXAMPLE
+        examples.AD_OR_SERVICE_SENT_TO_MODERATION_EXAMPLE,
     ],
 )
 

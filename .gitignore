@@ -169,3 +169,5 @@ src/data_store/
 */tmp[a-zA-Z0-9]*/
 certbot/
 .python-version
+
+db.sqlite3

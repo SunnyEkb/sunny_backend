@@ -200,7 +200,7 @@ class TestAdView(TestAdsFixtures):
         )
         self.assertEqual(
             Ad.objects.get(pk=self.ad_2.pk).status,
-            AdvertisementStatus.DRAFT.value
+            AdvertisementStatus.DRAFT.value,
         )
 
     def test_ad_status_changed_to_dratf_after_partial_updation(self):
@@ -211,7 +211,7 @@ class TestAdView(TestAdsFixtures):
         )
         self.assertEqual(
             Ad.objects.get(pk=self.ad_2.pk).status,
-            AdvertisementStatus.DRAFT.value
+            AdvertisementStatus.DRAFT.value,
         )
 
     def test_add_an_ad_to_favorite(self):

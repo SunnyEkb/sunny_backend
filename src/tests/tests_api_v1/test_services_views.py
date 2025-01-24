@@ -264,7 +264,7 @@ class TestServivecesView(TestServiceFixtures):
         )
         self.assertEqual(
             Service.objects.get(pk=self.service_1.pk).status,
-            AdvertisementStatus.DRAFT.value
+            AdvertisementStatus.DRAFT.value,
         )
 
     def test_service_status_changed_to_draft_after_partial_updation(self):
@@ -275,7 +275,7 @@ class TestServivecesView(TestServiceFixtures):
         )
         self.assertEqual(
             Service.objects.get(pk=self.service_1.pk).status,
-            AdvertisementStatus.DRAFT.value
+            AdvertisementStatus.DRAFT.value,
         )
 
     def test_services_methods(self):
