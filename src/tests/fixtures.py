@@ -127,12 +127,6 @@ class TestServiceFixtures(TestUserFixtures):
         cls.published_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.PUBLISHED.value
         )
-        cls.cancelled_service = factories.ServiceFactory(
-            provider=cls.user_3, status=AdvertisementStatus.CANCELLED.value
-        )
-        cls.changed_service = factories.ServiceFactory(
-            provider=cls.user_3, status=AdvertisementStatus.CHANGED.value
-        )
         cls.moderate_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.MODERATION.value
         )

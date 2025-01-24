@@ -1,3 +1,5 @@
+import sys
+
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -7,7 +9,7 @@ from core.abstract_models import TimeCreateUpdateModel
 from core.choices import AdvertisementStatus
 from core.enums import Limits
 from comments.models import Comment
-from services.tasks import delete_images_dir_task
+from services.tasks import delete_images_dir_task, notify_about_moderation_task
 
 User = get_user_model()
 
@@ -44,35 +46,27 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
             self.status = AdvertisementStatus.HIDDEN.value
             self.save()
 
-    def send_to_moderation(self) -> None:
-        if not self.status == AdvertisementStatus.CANCELLED.value:
-            self.status = AdvertisementStatus.MODERATION.value
-            self.save()
-
-    def publish(self) -> None:
+    def publish(self, request) -> None:
         if self.status == AdvertisementStatus.HIDDEN.value:
             self.status = AdvertisementStatus.PUBLISHED.value
             self.save()
-
-    def cancell(self) -> None:
-        if not self.status == AdvertisementStatus.DRAFT.value:
-            self.status = AdvertisementStatus.CANCELLED.value
+        if self.status == AdvertisementStatus.DRAFT.value:
+            self.status = AdvertisementStatus.MODERATION.value
             self.save()
+            url = self.get_admin_url(request)
+            if "test" not in sys.argv:
+                notify_about_moderation_task.delay(url)
 
-    def set_changed(self):
-        if self.status in [
-            AdvertisementStatus.PUBLISHED.value,
-            AdvertisementStatus.HIDDEN.value,
-        ]:
-            self.status = AdvertisementStatus.CHANGED.value
-            self.save()
+    def set_draft(self):
+        self.status = AdvertisementStatus.DRAFT.value
+        self.save()
 
-    def moderate(self) -> None:
+    def approve(self) -> None:
         if self.status == AdvertisementStatus.MODERATION:
             self.status = AdvertisementStatus.PUBLISHED.value
             self.save()
 
-    def refusal_to_publish(self) -> None:
+    def reject(self) -> None:
         if self.status == AdvertisementStatus.MODERATION:
             self.status = AdvertisementStatus.DRAFT.value
             self.save()

@@ -190,18 +190,6 @@ CANT_HIDE_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
     examples=[examples.CANT_HIDE_SERVICE_OR_AD_EXAMPLE],
 )
 
-CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
-    response=serializers.NonErrorFieldSerializer,
-    description="Услуга не может быть удалена",
-    examples=[examples.CANT_DELETE_SERVICE_EXAMPLE],
-)
-
-CANT_CANCELL_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
-    response=serializers.NonErrorFieldSerializer,
-    description="Услуга (объявление) не может быть отменена",
-    examples=[examples.CANT_CANCELL_SERVICE_OR_AD_EXAMPLE],
-)
-
 CANT_MODERATE_SERVICE_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Услуга не может быть отправлена на модерацию",

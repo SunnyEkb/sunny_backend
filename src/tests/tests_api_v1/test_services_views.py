@@ -278,26 +278,6 @@ class TestServivecesView(TestServiceFixtures):
             AdvertisementStatus.PUBLISHED.value,
         )
 
-        # cancell method test
-        response_3 = self.client_2.post(
-            reverse("services-cancell", kwargs={"pk": self.service_3.pk})
-        )
-        self.assertEqual(response_3.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            Service.objects.get(pk=self.service_3.pk).status,
-            AdvertisementStatus.CANCELLED.value,
-        )
-
-        # moderate method test
-        response_4 = self.client_2.post(
-            reverse("services-moderate", kwargs={"pk": self.service_4.pk})
-        )
-        self.assertEqual(response_4.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            Service.objects.get(pk=self.service_4.pk).status,
-            AdvertisementStatus.MODERATION.value,
-        )
-
     def test_service_delete(self):
         response = self.client_2.delete(
             reverse("services-detail", kwargs={"pk": self.service_5.pk})
@@ -305,18 +285,10 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
         self.assertFalse(Service.objects.filter(pk=self.service_5.pk).exists())
 
-    def test_only_draft_status_service_can_be_deleted(self):
-        response = self.client_2.delete(
-            reverse("services-detail", kwargs={"pk": self.service_2.pk})
-        )
-        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
-
     def test_owner_can_get_any_of_his_service(self):
         services = [
             self.draft_service,
             self.moderate_service,
-            self.changed_service,
-            self.cancelled_service,
             self.hidden_service,
             self.published_service,
         ]
@@ -331,8 +303,6 @@ class TestServivecesView(TestServiceFixtures):
         services = [
             self.draft_service,
             self.moderate_service,
-            self.changed_service,
-            self.cancelled_service,
             self.hidden_service,
         ]
         for service in services:

@@ -320,16 +320,6 @@ CANT_HIDE_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE_OR_AD.value},
 )
 
-CANT_DELETE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга не может быть удалена",
-    value={"detail": APIResponses.CAN_NOT_DELETE_SEVICE.value},
-)
-
-CANT_CANCELL_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга(объявление) не может быть отменена",
-    value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE_OR_AD.value},
-)
-
 CANT_ADD_NOT_PUBLISHED_OBJECT_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга(объявление) не опубликована",
     value={"detail": APIResponses.OBJECT_IS_NOT_PUBLISHED.value},
@@ -362,12 +352,14 @@ DELETED_FROM_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
 
 CANT_MODERATE_AD_OR_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга (объявление) не может быть отправлена на модерацию",
-    value={"detail": APIResponses.AD_OR_SERVICE_IS_CANCELLED.value},
+    value={
+        "detail": APIResponses.AD_OR_SERVICE_CANT_BE_SENT_TO_MODERATION.value
+    },
 )
 
 CANT_PUBLISH_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга(объявление) не скрыта",
-    value={"detail": APIResponses.SERVICE_OR_AD_IS_NOT_HIDDEN.value},
+    value={"detail": APIResponses.SERVICE_OR_AD_CANT_BE_PUBLISHED.value},
 )
 
 CANT_ADD_PHOTO_EXAMPLE: OpenApiExample = OpenApiExample(

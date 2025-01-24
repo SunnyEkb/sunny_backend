@@ -104,7 +104,6 @@ class TypeViewSet(CategoryTypeViewSet):
             status.HTTP_204_NO_CONTENT: None,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_DELETE_SERVICE_406,
         },
     ),
 )
