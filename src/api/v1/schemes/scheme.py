@@ -154,6 +154,15 @@ SERVICE_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.SERVICE_LIST_EXAMPLE],
 )
 
+AD_SERVICE_SENT_TO_MODERATION: OpenApiResponse = OpenApiResponse(
+    response=serializers.ServiceListSerializer,
+    description="Получение списка услуг",
+    examples=[
+        examples.SERVICE_LIST_EXAMPLE,
+        examples.AD_OR_SERVICE_SENT_TO_MODERATION_EXAMPLE
+    ],
+)
+
 SERVICE_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение информации об услуге",

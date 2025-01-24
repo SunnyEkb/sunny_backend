@@ -42,7 +42,7 @@ class APIResponses(models.TextChoices):
     WRONG_PASSWORD = "Wrong password"
     UNAUTHORIZED = "Учетные данные не были предоставлены."
     CAN_NOT_HIDE_SERVICE_OR_AD = (
-        "Скрыть можно опубликованную только услугу (объявление)."
+        "Скрыть можно только опубликованную услугу (объявление)."
     )
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
     AD_OR_SERVICE_CANT_BE_SENT_TO_MODERATION = (

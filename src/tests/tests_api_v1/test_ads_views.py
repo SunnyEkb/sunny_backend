@@ -124,14 +124,24 @@ class TestAdView(TestAdsFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
-    def test_owner_publishes_ad(self):
+    def test_owner_publishes_hidden_ad(self):
         response = self.client_2.post(
             reverse("ads-publish", kwargs={"pk": self.ad_hidden.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
-            Ad.objects.get(pk=self.ad_2.pk).status,
+            Ad.objects.get(pk=self.ad_hidden.pk).status,
             AdvertisementStatus.PUBLISHED.value,
+        )
+
+    def test_owner_publishes_draft_ad(self):
+        response = self.client_1.post(
+            reverse("ads-publish", kwargs={"pk": self.ad_1.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_1.pk).status,
+            AdvertisementStatus.MODERATION.value,
         )
 
     def test_not_owner_cant_publish_an_ad(self):
@@ -181,6 +191,27 @@ class TestAdView(TestAdsFixtures):
         self.assertEqual(
             Ad.objects.get(pk=self.ad_1.pk).title,
             self.new_ad_title,
+        )
+
+    def test_ad_status_changed_to_dratf_after_updation(self):
+        self.client_2.put(
+            reverse("ads-detail", kwargs={"pk": self.ad_2.pk}),
+            data=self.new_ad_data,
+        )
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_2.pk).status,
+            AdvertisementStatus.DRAFT.value
+        )
+
+    def test_ad_status_changed_to_dratf_after_partial_updation(self):
+        new_data = {"title": self.new_ad_title}
+        self.client_2.patch(
+            reverse("ads-detail", kwargs={"pk": self.ad_2.pk}),
+            data=new_data,
+        )
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_2.pk).status,
+            AdvertisementStatus.DRAFT.value
         )
 
     def test_add_an_ad_to_favorite(self):

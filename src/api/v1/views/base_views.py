@@ -133,10 +133,14 @@ class BaseServiceAdViewSet(
 
     @extend_schema(
         summary="Опубликовать услугу или объявление.",
+        description=(
+            "Если услуга (объявление) имеет статус 'HIDDEN', она публикуется.",
+            "Если статус 'DRAFT', она на модерацию.",
+        ),
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_200_OK: schemes.AD_SERVICE_SENT_TO_MODERATION,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: (
@@ -151,7 +155,7 @@ class BaseServiceAdViewSet(
         url_name="publish",
         permission_classes=(OwnerOrReadOnly,),
     )
-    def publish_hidden_object(self, request, *args, **kwargs):
+    def publish_object(self, request, *args, **kwargs):
         """Опубликовать услугу или объявление."""
 
         object = self.get_object()
