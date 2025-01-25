@@ -16,12 +16,24 @@ class TestCategoryView(TestAdsFixtures):
             len(response_auth_user.json()),
             len(Category.objects.filter(parent=None)),
         )
+
         response_anon_user = self.client_1.get(reverse("categories-list"))
         self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response_anon_user.json()),
             len(Category.objects.filter(parent=None)),
         )
+
+    def test_get_type(self):
+        response_auth_user = self.client_1.get(
+            reverse("categories-detail", kwargs={"pk": self.category_1.id})
+        )
+        self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
+
+        response_anon_user = self.client_1.get(
+            reverse("categories-detail", kwargs={"pk": self.category_1.id})
+        )
+        self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
 
     def test_types_filters(self):
         templates = {
@@ -30,10 +42,6 @@ class TestCategoryView(TestAdsFixtures):
                 Category.objects.filter(
                     title__icontains=self.category_1.title
                 ),
-            ],
-            "id": [
-                self.category_1.id,
-                Category.objects.filter(id=self.category_1.id),
             ],
         }
         for k, v in templates.items():

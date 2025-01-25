@@ -18,7 +18,7 @@ from rest_framework.decorators import action
 from ads.models import Ad
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
-from api.v1 import schemes, validators
+from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from core.choices import AdvertisementStatus, APIResponses
 from core.utils import notify_about_moderation
@@ -414,30 +414,27 @@ class BaseServiceAdViewSet(
         )
 
 
-class CategoryTypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class CategoryTypeViewSet(
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+):
     """Базовый вьюсет для типов услуг и объявлений"""
 
     serializer_class = None
 
     @method_decorator(cache_page(60 * 2))
     def list(self, request, *args, **kwargs):
-        try:
-            return super().list(request, *args, **kwargs)
-        except exceptions.ValidationError:
-            return response.Response(
-                data={"detail": APIResponses.INVALID_PARAMETR.value},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        return super().list(request, *args, **kwargs)
 
-    def query_filtration(self, queryset):
-        params = self.request.query_params
-        if "title" in params:
-            title = params.get("title")
-            queryset = queryset.filter(title__icontains=title)
-        elif "id" in params:
-            id = int(params.get("id"))
-            validators.validate_id(id)
-            queryset = queryset.filter(id=id)
-        else:
-            queryset = queryset.filter(parent=None)
+    @method_decorator(cache_page(60 * 2))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    def base_get_queryset(self, queryset):
+        if self.action == "list":
+            params = self.request.query_params
+            if "title" in params:
+                title = params.get("title")
+                queryset = queryset.filter(title__icontains=title)
+            else:
+                queryset = queryset.filter(parent=None)
         return queryset

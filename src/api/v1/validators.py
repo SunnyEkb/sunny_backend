@@ -48,7 +48,7 @@ def validate_phone(value: str):
 
 def validate_id(id):
     try:
-        int(id)
+        id = int(id)
     except ValueError:
         raise exceptions.ValidationError(
             detail=APIResponses.INVALID_PARAMETR.value,

@@ -167,3 +167,5 @@ src/data_store/
 /docker-compose.yaml
 
 */tmp[a-zA-Z0-9]*/
+certbot/
+.python-version
