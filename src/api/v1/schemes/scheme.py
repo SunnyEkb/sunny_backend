@@ -154,6 +154,15 @@ SERVICE_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.SERVICE_LIST_EXAMPLE],
 )
 
+AD_SERVICE_SENT_TO_MODERATION: OpenApiResponse = OpenApiResponse(
+    response=serializers.ServiceListSerializer,
+    description="Получение списка услуг",
+    examples=[
+        examples.SERVICE_LIST_EXAMPLE,
+        examples.AD_OR_SERVICE_SENT_TO_MODERATION_EXAMPLE,
+    ],
+)
+
 SERVICE_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение информации об услуге",
@@ -188,18 +197,6 @@ CANT_HIDE_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Нельзя скрыть услугу/объявление",
     examples=[examples.CANT_HIDE_SERVICE_OR_AD_EXAMPLE],
-)
-
-CANT_DELETE_SERVICE_406: OpenApiResponse = OpenApiResponse(
-    response=serializers.NonErrorFieldSerializer,
-    description="Услуга не может быть удалена",
-    examples=[examples.CANT_DELETE_SERVICE_EXAMPLE],
-)
-
-CANT_CANCELL_SERVICE_OR_AD_406: OpenApiResponse = OpenApiResponse(
-    response=serializers.NonErrorFieldSerializer,
-    description="Услуга (объявление) не может быть отменена",
-    examples=[examples.CANT_CANCELL_SERVICE_OR_AD_EXAMPLE],
 )
 
 CANT_MODERATE_SERVICE_406: OpenApiResponse = OpenApiResponse(

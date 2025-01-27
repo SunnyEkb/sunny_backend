@@ -26,8 +26,6 @@ class AdvertisementStatus(models.IntegerChoices):
     MODERATION = 1
     PUBLISHED = 2
     HIDDEN = 3
-    CANCELLED = 4
-    CHANGED = 5
 
 
 class APIResponses(models.TextChoices):
@@ -43,16 +41,17 @@ class APIResponses(models.TextChoices):
     SUCCESS_TOKEN_REFRESH = "Token refreshed"
     WRONG_PASSWORD = "Wrong password"
     UNAUTHORIZED = "Учетные данные не были предоставлены."
-    CAN_NOT_DELETE_SEVICE = "Невозможно удалить опубликованную заявку."
     CAN_NOT_HIDE_SERVICE_OR_AD = (
-        "Скрыть можно опубликованную только услугу (объявление)."
-    )
-    CAN_NOT_CANCELL_SERVICE_OR_AD = (
-        "Услуга(объявление) не была опубликована. Удалите её."
+        "Скрыть можно только опубликованную услугу (объявление)."
     )
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
-    AD_OR_SERVICE_IS_CANCELLED = "Данная услуга (объявление) отменена."
-    SERVICE_OR_AD_IS_NOT_HIDDEN = "Данная услуга (объявление) не скрыта."
+    AD_OR_SERVICE_CANT_BE_SENT_TO_MODERATION = (
+        "Данная услуга (объявление) уже на модерации."
+    )
+    AD_OR_SERVICE_SENT_MODERATION = (
+        "Услуга (объявление) отправлены на модерацию."
+    )
+    SERVICE_OR_AD_CANT_BE_PUBLISHED = "Данная услуга (объявление) не скрыта."
     OBJECT_IS_NOT_PUBLISHED = "Данная услуга (объявление) не опубликована."
     OBJECT_ALREADY_IN_FAVORITES = "Данная услуга (объявление) уже в избраном."
     OBJECT_NOT_IN_FAVORITES = "Данная услуга (объявление) не в избраном."

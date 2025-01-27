@@ -7,11 +7,7 @@ from comments.models import Comment, CommentImage
 class CommentAdmin(admin.ModelAdmin):
     """Отображение модели комментариев в админке."""
 
-    list_display = [
-        "author",
-        "created_at",
-        "updated_at",
-    ]
+    list_display = ["author", "created_at", "updated_at"]
     search_fields = ["author"]
     ordering = ["created_at"]
 
