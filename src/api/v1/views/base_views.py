@@ -18,8 +18,10 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from comments.models import Comment
 from core.choices import AdvertisementStatus, APIResponses
 from services.models import Service
+from bad_word_filter.tasks import moderate_comment
 from users.models import Favorites
 
 
@@ -63,7 +65,11 @@ class BaseServiceAdViewSet(
     def get_permissions(self):
         if self.action == "retrieve":
             return (ReadOnly(),)
-        if self.action in ["add_to_favorites", "delete_from_favorites"]:
+        if self.action in [
+            "add_to_favorites",
+            "delete_from_favorites",
+            "add_comment",
+        ]:
             return (permissions.IsAuthenticated(),)
         return (OwnerOrReadOnly(),)
 
@@ -116,6 +122,7 @@ class BaseServiceAdViewSet(
         detail=True,
         methods=("post",),
         url_path="hide",
+        url_name="hide",
         permission_classes=(OwnerOrReadOnly,),
     )
     def hide(self, request, *args, **kwargs):
@@ -179,10 +186,7 @@ class BaseServiceAdViewSet(
     @extend_schema(
         summary="Добавить фото к услуге.",
         methods=["POST"],
-        request=[
-            api_serializers.AdImageCreateSerializer,
-            api_serializers.ServiceImageCreateSerializer,
-        ],
+        request=api_serializers.AdImageCreateSerializer,
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
@@ -298,8 +302,83 @@ class BaseServiceAdViewSet(
         )
 
     @extend_schema(
-        summary="Удалить из избранного.",
+        summary="Добавить комментарий.",
         methods=["POST"],
+        request=api_serializers.CommentCreateSerializer,
+        responses={
+            status.HTTP_201_CREATED: schemes.COMMENT_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.OBJECT_IS_NOT_PUBLISED_406,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="add-comment",
+        url_name="add_comment",
+        permission_classes=(permissions.IsAuthenticated),
+    )
+    def add_comment(self, request, *args, **kwargs):
+        """Добавить комментарий."""
+
+        serializer = api_serializers.CommentCreateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        object = self.get_object()
+        if object.status != AdvertisementStatus.PUBLISHED.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.OBJECT_IS_NOT_PUBLISHED.value,
+            )
+
+        if isinstance(object, Service):
+            app_label = "services"
+            model = "service"
+        else:
+            app_label = "ads"
+            model = "ad"
+
+        if Comment.objects.filter(
+            content_type=ContentType.objects.get(
+                app_label=app_label, model=model
+            ),
+            object_id=object.id,
+            author=request.user,
+        ).exists():
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.COMMENT_ALREADY_EXISTS.value,
+            )
+
+        if object.provider == request.user:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.COMMENTS_BY_PROVIDER_PROHIBITED.value,
+            )
+
+        comment = serializer.save(
+            content_type=ContentType.objects.get(
+                app_label=app_label, model=model
+            ),
+            object_id=object.id,
+            author=request.user,
+        )
+        admin_url = comment.get_admin_url(self.request)
+        if "test" not in sys.argv:
+            moderate_comment.delay_on_commit(comment.id, admin_url)
+
+        return response.Response(
+            status=status.HTTP_201_CREATED,
+            data=APIResponses.COMMENT_ADDED.value,
+        )
+
+    @extend_schema(
+        summary="Удалить из избранного.",
+        methods=["DELETE"],
         request=None,
         responses={
             status.HTTP_204_NO_CONTENT: (schemes.DELETED_FROM_FAVORITES_204),

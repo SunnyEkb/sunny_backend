@@ -163,10 +163,6 @@ class TestServiceFixtures(TestUserFixtures):
             status=CommentStatus.PUBLISHED.value,
         )
         cls.comment_data = {
-            "content_type": ContentType.objects.get(
-                app_label="services", model="service"
-            ).id,
-            "object_id": cls.published_service.id,
             "rating": 2,
             "feedback": "Some feadback",
         }
@@ -234,3 +230,16 @@ class TestAdsFixtures(TestUserFixtures):
             ad=cls.ad_to_del, image=cls.uploaded_2
         )
         cls.ad_to_del.category.set([cls.category_2])
+        cls.comment_data = {
+            "rating": 2,
+            "feedback": "Some feadback",
+        }
+        cls.comment_1 = factories.CommentFactory(
+            subject=cls.ad_2,
+            author=cls.user_1,
+            status=CommentStatus.PUBLISHED.value,
+        )
+        cls.comment_2 = factories.CommentFactory(
+            subject=cls.ad_1,
+            author=cls.user_1,
+        )

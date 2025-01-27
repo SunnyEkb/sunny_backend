@@ -71,6 +71,7 @@ class APIResponses(models.TextChoices):
     COMMENTS_BY_PROVIDER_PROHIBITED = (
         "Лицо, оказывающее услуги не может оставлять комментарий."
     )
+    COMMENT_ADDED = "Комментарий создан."
     INVALID_PARAMETR = "Параметр должен быть положительным числом."
     VERIFICATION_SUCCESS = "Регистрация подтверждена."
     VERIFICATION_FAILED = "Пользователь не найден."
@@ -80,6 +81,7 @@ class APIResponses(models.TextChoices):
         " кириллицы, латиницы, цифр, cимволов:"
         " '@', '.', '+', '-', '_' в верхнем или нижнем регистре."
     )
+    WRONG_OBJECT_TYPE = "Неверный тип объекта."
     USERNAME_EXISTS = "Пользователь с таким именем уже существует."
     EMAIL_EXISTS = "Пользователь с таким адресом электронной почты существует."
     PHONE_EXISTS = "Пользователь с таким номером телефона существует."
