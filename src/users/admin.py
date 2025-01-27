@@ -16,6 +16,7 @@ class UserAdmin(UserAdmin):
 
     list_display = [
         "email",
+        "username",
         "first_name",
         "last_name",
         "phone",
@@ -33,7 +34,7 @@ class UserAdmin(UserAdmin):
             None,
             {
                 "classes": ["wide"],
-                "fields": ["email", "password1", "password2"],
+                "fields": ["email", "username", "password1", "password2"],
             },
         ),
     ]

@@ -57,6 +57,17 @@ services:
       - backend
       - redis
 
+  celery-beat:
+    image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
+    container_name: beat
+    restart: always
+    command: celery -A config beat -l INFO
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+
   flower:
     image: mher/flower
     container_name: flower
@@ -65,6 +76,7 @@ services:
       - "5555:5555"
     depends_on:
       - celery
+      - celery-beat
 
   backend:
     image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
@@ -73,6 +85,7 @@ services:
     volumes:
       - sunny_static_value:/app/static/
       - sunny_media_value:/app/media/
+      - sunny_data_store_value:/app/data_store/
     depends_on:
       - db
       - redis
@@ -92,4 +105,5 @@ services:
 volumes:
   sunny_static_value:
   sunny_media_value:
+  sunny_data_store_value:
   sunny_ekb_data:

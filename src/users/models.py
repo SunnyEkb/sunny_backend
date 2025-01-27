@@ -4,11 +4,12 @@ from django.contrib.contenttypes.fields import (
     GenericRelation,
 )
 from django.contrib.contenttypes.models import ContentType
+from django.core import serializers
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
 from core.choices import Role
-from core.db_utils import user_photo_path, validate_image
+from core.db_utils import get_path_to_save_image, validate_image
 from core.enums import Limits
 from services.tasks import delete_images_dir_task
 from users.managers import UserManager, VerificationTokenManager
@@ -50,7 +51,7 @@ class CustomUser(AbstractUser):
     )
     avatar = models.ImageField(
         "Фото",
-        upload_to=user_photo_path,
+        upload_to=get_path_to_save_image,
         blank=True,
         null=True,
         validators=[validate_image],
@@ -88,6 +89,9 @@ class CustomUser(AbstractUser):
         if self.avatar is not None:
             delete_images_dir_task.delay(f"users/{self.id}")
 
+    def serialize_data(self):
+        return serializers.serialize("json", [self])
+
 
 class Favorites(models.Model):
     """Избранное."""
@@ -118,6 +122,13 @@ class Favorites(models.Model):
 
     def __str__(self) -> str:
         return f"Избранное {self.user}"
+
+    @staticmethod
+    def clear_favorites(instance):
+        Favorites.objects.filter(
+            content_type=ContentType.objects.get_for_model(instance).id,
+            object_id=instance.id,
+        ).delete()
 
 
 class VerificationToken(models.Model):

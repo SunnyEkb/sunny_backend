@@ -5,7 +5,6 @@ from django.contrib.auth import authenticate, get_user_model
 from django.middleware import csrf
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
-
 from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed, ParseError
@@ -34,9 +33,11 @@ from api.v1.permissions import SelfOnly
 from comments.models import Comment
 from core.choices import APIResponses
 from services.models import Service
-from services.tasks import delete_image_files, delete_image_files_task
+from services.tasks import delete_image_files_task
 from users.exceptions import TokenDoesNotExists, TokenExpired
 from users.utils import verify_user
+from users.tasks import save_file_with_user_data_task
+
 
 User = get_user_model()
 
@@ -270,6 +271,9 @@ class UserViewSet(
             # удаляем фото для услуг, объявлений и комментариев пользователя
             user = self.get_object()
 
+            data = user.serialize_data()
+            save_file_with_user_data_task.delay(user.email, data)
+
             user.delete_avatar_image()
 
             services = Service.objects.filter(provider=user)
@@ -333,10 +337,7 @@ class AdAvatarView(generics.UpdateAPIView):
         instance = self.get_object()
         if instance.avatar:
             old_image = instance.avatar
-            if settings.PROD_DB:
-                delete_image_files_task.delay(str(old_image))
-            else:
-                delete_image_files(str(old_image))
+            delete_image_files_task.delay(str(old_image))
         return super().update(request, *args, **kwargs)
 
 
