@@ -1,5 +1,3 @@
-import sys
-
 from django.contrib.contenttypes.models import ContentType
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
@@ -20,9 +18,10 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from comments.models import Comment
 from core.choices import AdvertisementStatus, APIResponses
-from core.utils import notify_about_moderation
 from services.models import Service
+from bad_word_filter.tasks import moderate_comment
 from users.models import Favorites
 
 
@@ -66,7 +65,11 @@ class BaseServiceAdViewSet(
     def get_permissions(self):
         if self.action == "retrieve":
             return (ReadOnly(),)
-        if self.action in ["add_to_favorites", "delete_from_favorites"]:
+        if self.action in [
+            "add_to_favorites",
+            "delete_from_favorites",
+            "add_comment",
+        ]:
             return (permissions.IsAuthenticated(),)
         return (OwnerOrReadOnly(),)
 
@@ -93,52 +96,14 @@ class BaseServiceAdViewSet(
         if getattr(instance, "_prefetched_objects_cache", None):
             instance._prefetched_objects_cache = {}
 
-        # смена статуса на CHANGED для повторной модерации
-        instance.set_changed()
+        # смена статуса на DRAFT для повторной модерации
+        instance.set_draft()
         return response.Response(serializer.data)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        if instance.status == AdvertisementStatus.DRAFT:
-            instance.delete_images()
-            return super().destroy(request, *args, **kwargs)
-        return response.Response(
-            APIResponses.CAN_NOT_DELETE_SEVICE.value,
-            status=status.HTTP_406_NOT_ACCEPTABLE,
-        )
-
-    @extend_schema(
-        summary="Отменить услугу или объявление.",
-        methods=["POST"],
-        request=None,
-        responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
-            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_CANCELL_SERVICE_OR_AD_406
-            ),
-        },
-    )
-    @action(
-        detail=True,
-        methods=("post",),
-        url_path="cancell",
-        url_name="cancell",
-        permission_classes=(OwnerOrReadOnly,),
-    )
-    def cancell(self, request, *args, **kwargs):
-        """Отменить услугу или объявление."""
-
-        object = self.get_object()
-        if object.status == AdvertisementStatus.DRAFT.value:
-            return response.Response(
-                status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.CAN_NOT_CANCELL_SERVICE_OR_AD.value,
-            )
-        object.cancell()
-        serializer = self.get_serializer(object)
-        return response.Response(serializer.data)
+        instance.delete_images()
+        return super().destroy(request, *args, **kwargs)
 
     @extend_schema(
         summary="Скрыть услугу или объявление.",
@@ -157,6 +122,7 @@ class BaseServiceAdViewSet(
         detail=True,
         methods=("post",),
         url_path="hide",
+        url_name="hide",
         permission_classes=(OwnerOrReadOnly,),
     )
     def hide(self, request, *args, **kwargs):
@@ -173,44 +139,15 @@ class BaseServiceAdViewSet(
         return response.Response(serializer.data)
 
     @extend_schema(
-        summary="Отправить на модерацию.",
+        summary="Опубликовать услугу или объявление.",
+        description=(
+            "Если услуга (объявление) имеет статус 'HIDDEN', она публикуется.",
+            "Если статус 'DRAFT', она на модерацию.",
+        ),
         methods=["POST"],
         request=None,
         responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
-            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_MODERATE_SERVICE_406,
-        },
-    )
-    @action(
-        detail=True,
-        methods=("post",),
-        url_path="moderate",
-        url_name="moderate",
-        permission_classes=(OwnerOrReadOnly,),
-    )
-    def moderate(self, request, *args, **kwargs):
-        """Отправить на модерацию."""
-
-        object = self.get_object()
-        if object.status == AdvertisementStatus.CANCELLED.value:
-            return response.Response(
-                status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.AD_OR_SERVICE_IS_CANCELLED.value,
-            )
-        object.send_to_moderation()
-        if "test" not in sys.argv:
-            notify_about_moderation(object.get_admin_url(request))
-        serializer = self.get_serializer(object)
-        return response.Response(serializer.data)
-
-    @extend_schema(
-        summary="Опубликовать скрытую услугу или объявление.",
-        methods=["POST"],
-        request=None,
-        responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_200_OK: schemes.AD_SERVICE_SENT_TO_MODERATION,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: (
@@ -225,26 +162,31 @@ class BaseServiceAdViewSet(
         url_name="publish",
         permission_classes=(OwnerOrReadOnly,),
     )
-    def publish_hidden_object(self, request, *args, **kwargs):
-        """Опубликовать скрытую услугу или объявление."""
+    def publish_object(self, request, *args, **kwargs):
+        """Опубликовать услугу или объявление."""
 
         object = self.get_object()
-        if not object.status == AdvertisementStatus.HIDDEN.value:
+        obj_status = object.status
+        if obj_status not in [
+            AdvertisementStatus.DRAFT.value,
+            AdvertisementStatus.HIDDEN.value,
+        ]:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_OR_AD_IS_NOT_HIDDEN.value,
+                data=APIResponses.SERVICE_OR_AD_CANT_BE_PUBLISHED.value,
             )
-        object.publish()
-        serializer = self.get_serializer(object)
-        return response.Response(serializer.data)
+        object.publish(request)
+        if obj_status == AdvertisementStatus.HIDDEN.value:
+            serializer = self.get_serializer(object)
+            return response.Response(serializer.data)
+        return response.Response(
+            APIResponses.AD_OR_SERVICE_SENT_MODERATION.value
+        )
 
     @extend_schema(
         summary="Добавить фото к услуге.",
         methods=["POST"],
-        request=[
-            api_serializers.AdImageCreateSerializer,
-            api_serializers.ServiceImageCreateSerializer,
-        ],
+        request=api_serializers.AdImageCreateSerializer,
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
@@ -360,8 +302,83 @@ class BaseServiceAdViewSet(
         )
 
     @extend_schema(
-        summary="Удалить из избранного.",
+        summary="Добавить комментарий.",
         methods=["POST"],
+        request=api_serializers.CommentCreateSerializer,
+        responses={
+            status.HTTP_201_CREATED: schemes.COMMENT_CREATED_201,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.OBJECT_IS_NOT_PUBLISED_406,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="add-comment",
+        url_name="add_comment",
+        permission_classes=(permissions.IsAuthenticated),
+    )
+    def add_comment(self, request, *args, **kwargs):
+        """Добавить комментарий."""
+
+        serializer = api_serializers.CommentCreateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return response.Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        object = self.get_object()
+        if object.status != AdvertisementStatus.PUBLISHED.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.OBJECT_IS_NOT_PUBLISHED.value,
+            )
+
+        if isinstance(object, Service):
+            app_label = "services"
+            model = "service"
+        else:
+            app_label = "ads"
+            model = "ad"
+
+        if Comment.objects.filter(
+            content_type=ContentType.objects.get(
+                app_label=app_label, model=model
+            ),
+            object_id=object.id,
+            author=request.user,
+        ).exists():
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.COMMENT_ALREADY_EXISTS.value,
+            )
+
+        if object.provider == request.user:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.COMMENTS_BY_PROVIDER_PROHIBITED.value,
+            )
+
+        comment = serializer.save(
+            content_type=ContentType.objects.get(
+                app_label=app_label, model=model
+            ),
+            object_id=object.id,
+            author=request.user,
+        )
+        admin_url = comment.get_admin_url(self.request)
+        if "test" not in sys.argv:
+            moderate_comment.delay_on_commit(comment.id, admin_url)
+
+        return response.Response(
+            status=status.HTTP_201_CREATED,
+            data=APIResponses.COMMENT_ADDED.value,
+        )
+
+    @extend_schema(
+        summary="Удалить из избранного.",
+        methods=["DELETE"],
         request=None,
         responses={
             status.HTTP_204_NO_CONTENT: (schemes.DELETED_FROM_FAVORITES_204),

@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from comments.models import Comment
 from core.choices import CommentStatus
-from tests.fixtures import TestServiceFixtures
+from tests.fixtures import TestAdsFixtures, TestServiceFixtures
 
 
 class TestCommentsView(TestServiceFixtures):
@@ -56,26 +56,17 @@ class TestCommentsView(TestServiceFixtures):
             ),
         )
 
-    def test_comment_create(self):
-        response = self.client_4.post(
-            reverse("comments_create-list"),
-            data=self.comment_data,
-        )
-        self.assertEqual(response.status_code, HTTPStatus.CREATED)
-
-    def test_user_cant_create_two_comments(self):
-        response = self.client_1.post(
-            reverse("comments_create-list"),
-            data=self.comment_data,
+    def test_get_comments_with_wrong_type(self):
+        response = self.anon_client.get(
+            reverse(
+                "comments-list",
+                kwargs={
+                    "type": "abc",
+                    "obj_id": self.published_service.id,
+                },
+            )
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-
-    def test_anon_client_cant_create_comment(self):
-        response = self.anon_client.post(
-            reverse("comments_create-list"),
-            data=self.comment_data,
-        )
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
     def test_not_author_cant_delete_comment(self):
         response = self.client_1.delete(
@@ -127,3 +118,72 @@ class TestCommentsView(TestServiceFixtures):
             data=self.image_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+
+class TestCommentsToAdsCreationView(TestAdsFixtures):
+    def test_add_comment_to_an_ad(self):
+        response = self.client_4.post(
+            reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_user_cant_add_two_comments_to_the_same_ad(self):
+        response = self.client_1.post(
+            reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_anon_client_cant_add_comment_to_an_ad(self):
+        response = self.anon_client.post(
+            reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+
+class TestCommentsToServicesCreationView(TestServiceFixtures):
+    def test_add_comment_to_service(self):
+        response = self.client_4.post(
+            reverse(
+                "services-add_comment",
+                kwargs={"pk": self.published_service.id},
+            ),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_user_cant_add_two_comments_to_the_same_service(self):
+        response = self.client_1.post(
+            reverse(
+                "services-add_comment",
+                kwargs={"pk": self.published_service.id},
+            ),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_anon_client_cant_add_comment_to_service(self):
+        response = self.anon_client.post(
+            reverse(
+                "services-add_comment",
+                kwargs={"pk": self.published_service.id},
+            ),
+            data=self.comment_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_comment_data_validation(self):
+        test_data = [-1, 0, 30, 1.1, "abc", True]
+        for value in test_data:
+            data = {"rating": value, "feedback": "feedback"}
+            with self.subTest(Wrong_avlue=value):
+                response = self.client_1.post(
+                    reverse(
+                        "services-add_comment",
+                        kwargs={"pk": self.published_service.id},
+                    ),
+                    data=data,
+                )
+                self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)

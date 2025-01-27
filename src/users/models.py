@@ -123,6 +123,13 @@ class Favorites(models.Model):
     def __str__(self) -> str:
         return f"Избранное {self.user}"
 
+    @staticmethod
+    def clear_favorites(instance):
+        Favorites.objects.filter(
+            content_type=ContentType.objects.get_for_model(instance).id,
+            object_id=instance.id,
+        ).delete()
+
 
 class VerificationToken(models.Model):
     """
