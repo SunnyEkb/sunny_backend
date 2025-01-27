@@ -35,7 +35,7 @@ from core.choices import APIResponses
 from services.models import Service
 from services.tasks import delete_image_files_task
 from users.exceptions import TokenDoesNotExists, TokenExpired
-from users.utils import verify_user, save_file_with_user_data
+from users.utils import verify_user
 from users.tasks import save_file_with_user_data_task
 
 
@@ -272,24 +272,21 @@ class UserViewSet(
             user = self.get_object()
 
             data = user.serialize_data()
-            if settings.PROD_DB is True:
-                save_file_with_user_data_task.delay(user.email, data)
+            save_file_with_user_data_task.delay(user.email, data)
 
-                user.delete_avatar_image()
+            user.delete_avatar_image()
 
-                services = Service.objects.filter(provider=user)
-                for service in services:
-                    service.delete_images()
+            services = Service.objects.filter(provider=user)
+            for service in services:
+                service.delete_images()
 
-                ads = Ad.objects.filter(provider=user)
-                for ad in ads:
-                    ad.delete_images()
+            ads = Ad.objects.filter(provider=user)
+            for ad in ads:
+                ad.delete_images()
 
-                comments = Comment.objects.filter(author=user)
-                for comment in comments:
-                    comment.delete_images()
-            else:
-                save_file_with_user_data(user.email, data)
+            comments = Comment.objects.filter(author=user)
+            for comment in comments:
+                comment.delete_images()
 
         return super().destroy(request, *args, **kwargs)
 

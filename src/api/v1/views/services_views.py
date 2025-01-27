@@ -1,5 +1,3 @@
-import sys
-
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -165,7 +163,6 @@ class ServiceImageViewSet(
         instance: ServiceImage = self.get_object()
 
         # удаляем файл
-        if "test" not in sys.argv:
-            instance.delete_image_files()
+        instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)
