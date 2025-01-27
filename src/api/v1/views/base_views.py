@@ -368,8 +368,7 @@ class BaseServiceAdViewSet(
             author=request.user,
         )
         admin_url = comment.get_admin_url(self.request)
-        if "test" not in sys.argv:
-            moderate_comment.delay_on_commit(comment.id, admin_url)
+        moderate_comment.delay_on_commit(comment.id, admin_url)
 
         return response.Response(
             status=status.HTTP_201_CREATED,

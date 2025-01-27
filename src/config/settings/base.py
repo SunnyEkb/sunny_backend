@@ -3,6 +3,7 @@ from os import getenv
 from pathlib import Path
 
 from corsheaders.defaults import default_headers
+from django.core.files.storage import FileSystemStorage
 from dotenv import load_dotenv
 
 TRUE_VALUES = ["1", "true", "True", "YES", "yes"]
@@ -219,6 +220,10 @@ STATIC_URL = "static/"
 STATIC_ROOT = Path(BASE_DIR, "static")
 MEDIA_URL = "media/"
 MEDIA_ROOT = Path(BASE_DIR, "media")
+PATH_TO_SAVE_DELETED_USERS_DATA = FileSystemStorage(
+    location=Path(BASE_DIR, "data_store")
+)
+DATA_RETENTION_PERIOD = timedelta(weeks=53 * 5)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

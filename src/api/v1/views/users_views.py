@@ -36,6 +36,8 @@ from services.models import Service
 from services.tasks import delete_image_files_task
 from users.exceptions import TokenDoesNotExists, TokenExpired
 from users.utils import verify_user
+from users.tasks import save_file_with_user_data_task
+
 
 User = get_user_model()
 
@@ -268,6 +270,9 @@ class UserViewSet(
         if "test" not in sys.argv:
             # удаляем фото для услуг, объявлений и комментариев пользователя
             user = self.get_object()
+
+            data = user.serialize_data()
+            save_file_with_user_data_task.delay(user.email, data)
 
             user.delete_avatar_image()
 
