@@ -97,7 +97,7 @@ class TestCommentsView(TestServiceFixtures):
             reverse(
                 "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
             ),
-            data=self.image_data,
+            data={"image": self.base64_image},
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 

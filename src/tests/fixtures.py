@@ -41,6 +41,11 @@ class BaseTestCase(APITestCase):
         cls.uploaded_2 = SimpleUploadedFile(
             name=cls.file_name_2, content=small_gif, content_type="image/gif"
         )
+        cls.base64_image = (
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD"
+            "+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNp"
+            "btEAAAAASUVORK5CYII="
+        )
 
     @classmethod
     def tearDownClass(cls):

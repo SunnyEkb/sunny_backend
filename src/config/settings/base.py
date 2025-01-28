@@ -311,3 +311,5 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+ALLOWED_IMAGE_FILE_EXTENTIONS = ["jpg", "png"]
