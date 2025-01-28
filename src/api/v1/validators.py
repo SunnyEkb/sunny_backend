@@ -63,9 +63,9 @@ def validate_id(id):
 
 
 def validate_base64_field(value):
-    if not re.match(
+    if not isinstance(value, str) or not re.match(
         r"data:image\/[a-z]{3,4};base64,[a-zA-Z0-9\/=\+]+=",
-        value,
+        str(value),
     ):
         raise exceptions.ValidationError(APIResponses.WRONG_CONTENT.value)
 

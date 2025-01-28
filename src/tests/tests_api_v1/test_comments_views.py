@@ -101,6 +101,33 @@ class TestCommentsView(TestServiceFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
+    def test_add_image_file(self):
+        response = self.client_2.post(
+            reverse(
+                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
+            ),
+            data={"image": self.uploaded_2},
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_add_image_wrong_value(self):
+        response = self.client_2.post(
+            reverse(
+                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
+            ),
+            data={"image": self.wrong_base64_image},
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_add_image_wrong_extention(self):
+        response = self.client_2.post(
+            reverse(
+                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
+            ),
+            data={"image": "some_string"},
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
     def test_anon_user_cant_add_image(self):
         response = self.anon_client.post(
             reverse(

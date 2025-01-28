@@ -46,6 +46,11 @@ class BaseTestCase(APITestCase):
             "+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNp"
             "btEAAAAASUVORK5CYII="
         )
+        cls.wrong_base64_image = (
+            "data:image/txt;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD"
+            "+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNp"
+            "btEAAAAASUVORK5CYII="
+        )
 
     @classmethod
     def tearDownClass(cls):
