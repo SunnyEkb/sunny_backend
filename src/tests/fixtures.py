@@ -2,16 +2,16 @@ import shutil
 import tempfile
 
 from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
-from core.choices import AdvertisementStatus, AdState, CommentStatus
 from ads.models import AdImage
+from core.choices import AdState, AdvertisementStatus, CommentStatus
 from services.models import ServiceImage
-from users.models import Favorites
 from tests import factories
+from users.models import Favorites
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
