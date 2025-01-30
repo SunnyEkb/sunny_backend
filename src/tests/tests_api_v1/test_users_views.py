@@ -288,10 +288,42 @@ class TestUser(TestUserFixtures):
         self.assertEqual(user.first_name, self.first_name)
         self.assertEqual(user.last_name, self.last_name)
 
+    def test_change_user_info_unique_fields_validation(self):
+        data = {
+            "username": self.user_1.username,
+            "last_name": "some_new_last_name",
+            "first_name": "some_new_first_name",
+            "phone": str(self.user_1.phone),
+        }
+        response = self.client_1.put(
+            reverse("users-detail", kwargs={"pk": self.user_1.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        user = User.objects.get(id=self.user_1.id)
+        self.assertEqual(user.first_name, "some_new_first_name")
+        self.assertEqual(user.last_name, "some_new_last_name")
+
     def test_part_change_user_info(self):
         response = self.client_2.patch(
             reverse("users-detail", kwargs={"pk": self.user_2.id}),
             data=self.part_change_user_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        user = User.objects.get(id=self.user_2.id)
+        self.assertEqual(user.last_name, self.last_name)
+
+    def test_part_change_user_info_unique_fields_validation(self):
+        data = {
+            "last_name": self.last_name,
+            "phone": str(self.user_2.phone),
+            "username": self.user_2.username,
+        }
+        response = self.client_2.patch(
+            reverse("users-detail", kwargs={"pk": self.user_2.id}),
+            data=data,
             format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
