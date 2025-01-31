@@ -330,6 +330,19 @@ class TestUser(TestUserFixtures):
         user = User.objects.get(id=self.user_2.id)
         self.assertEqual(user.last_name, self.last_name)
 
+    def test_change_user_info_existing_phone(self):
+        data = {
+            "last_name": self.last_name,
+            "phone": str(self.user_1.phone),
+            "username": self.user_2.username,
+        }
+        response = self.client_2.patch(
+            reverse("users-detail", kwargs={"pk": self.user_2.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
     def test_anon_client_can_not_change_user_info(self):
         response_1 = self.anon_client.patch(
             reverse("users-detail", kwargs={"pk": self.user_2.id}),
