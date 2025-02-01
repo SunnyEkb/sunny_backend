@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import exceptions, status
 from rest_framework.serializers import ValidationError
 
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from core.choices import APIResponses
 from core.enums import Limits
 
@@ -58,4 +59,19 @@ def validate_id(id):
         raise exceptions.ValidationError(
             detail=APIResponses.INVALID_PARAMETR.value,
             code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+def validate_base64_field(value):
+    if not isinstance(value, str) or not re.match(
+        r"data:image\/[a-z]{3,4};base64,[a-zA-Z0-9\/=\+]+=",
+        str(value),
+    ):
+        raise exceptions.ValidationError(APIResponses.WRONG_CONTENT.value)
+
+
+def validate_extention(value: str):
+    if value.lower() not in ALLOWED_IMAGE_FILE_EXTENTIONS:
+        raise exceptions.ValidationError(
+            APIResponses.WRONG_EXTENTION.value.format(value)
         )

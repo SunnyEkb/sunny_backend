@@ -1,6 +1,7 @@
 from django.db import models
 
 from core.enums import Limits
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 
 
 class Role(models.TextChoices):
@@ -85,6 +86,14 @@ class APIResponses(models.TextChoices):
     USERNAME_EXISTS = "Пользователь с таким именем уже существует."
     EMAIL_EXISTS = "Пользователь с таким адресом электронной почты существует."
     PHONE_EXISTS = "Пользователь с таким номером телефона существует."
+    WRONG_CONTENT = (
+        "Изображение должно быть передано в формате base64: "
+        "data:<MIME-type>;base64,<data>"
+    )
+    WRONG_EXTENTION = (
+        "Расширение файлов {0} не поддерживается. Разрешенные"
+        f" расширения: {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}"
+    )
 
 
 class SystemMessages(models.TextChoices):

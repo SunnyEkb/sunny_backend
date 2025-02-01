@@ -59,7 +59,12 @@ USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
 
 USER_UPDATE_AVATAR_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Изменение аватара пользователя",
-    value={"avatar": "string"},
+    value={"avatar": "data:<MIME-type>;base64,<data>"},
+)
+
+UPLOAD_FILE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Загрузка изображения.",
+    value={"image": "data:<MIME-type>;base64,<data>"},
 )
 
 USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(

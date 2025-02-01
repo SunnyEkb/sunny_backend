@@ -18,6 +18,7 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
 from core.choices import AdvertisementStatus, APIResponses
 from services.models import Service
@@ -194,6 +195,11 @@ class BaseServiceAdViewSet(
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
         },
+        examples=[schemes.UPLOAD_FILE_EXAMPLE],
+        description=(
+            "Файл принимается строкой, закодированной в base64. Допустимые "
+            f"расширения файла - {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}."
+        ),
     )
     @action(
         detail=True,

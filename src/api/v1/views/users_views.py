@@ -30,6 +30,7 @@ from api.v1.auth_utils import (
     set_refresh_cookie,
 )
 from api.v1.permissions import SelfOnly
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
 from core.choices import APIResponses
 from services.models import Service
@@ -321,6 +322,10 @@ class UserViewSet(
         status.HTTP_200_OK: schemes.USER_GET_OK_200,
         status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
+    description=(
+        "Файл принимается строкой, закодированной в base64. Допустимые "
+        f"расширения файла - {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}."
+    ),
 )
 class AdAvatarView(generics.UpdateAPIView):
     """

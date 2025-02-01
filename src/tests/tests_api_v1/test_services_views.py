@@ -412,12 +412,36 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
     def test_add_serviceimage(self):
-        data = {"image": self.uploaded}
+        data = {"image": self.base64_image}
         response = self.client_1.post(
             reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
             data=data,
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_add_serviceimage_file(self):
+        data = {"image": self.uploaded_2}
+        response = self.client_1.post(
+            reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
+            data=data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_add_serviceimage_wrong_value(self):
+        data = {"image": "some_string"}
+        response = self.client_1.post(
+            reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
+            data=data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_add_serviceimage_wrong_extention(self):
+        data = {"image": self.wrong_base64_image}
+        response = self.client_1.post(
+            reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
+            data=data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_get_service_image(self):
         response = self.client_3.get(
