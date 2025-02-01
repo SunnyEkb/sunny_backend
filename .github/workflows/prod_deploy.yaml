@@ -89,6 +89,7 @@ jobs:
             docker-compose stop &&
             docker-compose rm -f backend &&
             docker-compose rm -f celery &&
+            docker-compose rm -f beat &&
             docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/sunny_ekb &&
             docker-compose up -d &&
             docker-compose exec -T backend python manage.py migrate --settings config.settings.dev
