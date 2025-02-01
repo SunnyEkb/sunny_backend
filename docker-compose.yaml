@@ -24,6 +24,7 @@ services:
       - ./certbot/www:/var/www/letsencrypt:ro
     depends_on:
       - backend
+      - flower
 
   certbot:
     image: nbraun1/certbot
