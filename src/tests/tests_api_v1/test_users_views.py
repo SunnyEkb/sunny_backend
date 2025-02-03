@@ -377,11 +377,32 @@ class TestUser(TestUserFixtures):
         self.assertEqual(response.data["id"], self.user_1.id)
 
     def test_add_avatar(self):
-        data = {"avatar": self.uploaded}
+        data = {"avatar": self.base64_image}
         response = self.client_1.patch(
             reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_add_avatar_file(self):
+        data = {"avatar": self.uploaded}
+        response = self.client_1.patch(
+            reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_add_avatar_wrong_value(self):
+        data = {"avatar": "some string"}
+        response = self.client_1.patch(
+            reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_add_avatar_wrong_extention(self):
+        data = {"avatar": self.wrong_base64_image}
+        response = self.client_1.patch(
+            reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_user_delete(self):
         response = self.client_for_deletion.delete(
