@@ -225,6 +225,15 @@ class TestServivecesView(TestServiceFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
+    def test_cant_update_service_under_moderation(self):
+        response = self.client_3.put(
+            reverse(
+                "services-detail", kwargs={"pk": self.moderate_service.pk}
+            ),
+            data=self.service_data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
     def test_only_provider_can_update_service(self):
         response = self.client_2.put(
             reverse("services-detail", kwargs={"pk": self.service_1.pk}),
@@ -418,6 +427,27 @@ class TestServivecesView(TestServiceFixtures):
             data=data,
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_service_status_set_to_draft_after_add_image(self):
+        data = {"image": self.base64_image}
+        self.client_3.post(
+            reverse("services-add_photo", kwargs={"pk": self.service_2.id}),
+            data=data,
+        )
+        self.assertEqual(
+            Service.objects.get(id=self.moderate_service.id).status,
+            AdvertisementStatus.DRAFT.value,
+        )
+
+    def test_cant_add_photo_to_service_under_moderation(self):
+        data = {"image": self.base64_image}
+        response = self.client_3.post(
+            reverse(
+                "services-add_photo", kwargs={"pk": self.moderate_service.id}
+            ),
+            data=data,
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
     def test_add_serviceimage_file(self):
         data = {"image": self.uploaded_2}

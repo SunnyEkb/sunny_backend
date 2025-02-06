@@ -181,6 +181,12 @@ SERVICE_AD_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     examples=[examples.SERVICE_AD_NO_PERMISSION_EXAMPLE],
 )
 
+SERVICE_AD_NOT_ACCEPT_406: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Услуга (объявление) находятся на модерации",
+    examples=[examples.AD_OR_SERVICE_IS_UNDER_MODERATION_EXAMPLE],
+)
+
 WRONG_PARAMETR_400: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Неверно указан параметр",
@@ -219,8 +225,11 @@ OBJECT_IS_NOT_PUBLISED_406: OpenApiResponse = OpenApiResponse(
 
 CANT_ADD_PHOTO_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Превышено максимальное количество фотографий",
-    examples=[examples.CANT_ADD_PHOTO_EXAMPLE],
+    description="Нельзя добавить фото.",
+    examples=[
+        examples.CANT_ADD_PHOTO_EXAMPLE,
+        examples.AD_OR_SERVICE_IS_UNDER_MODERATION_EXAMPLE,
+    ],
 )
 
 CANT_ADD_PHOTO_400: OpenApiResponse = OpenApiResponse(
