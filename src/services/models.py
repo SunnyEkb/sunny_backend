@@ -1,15 +1,12 @@
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.core.validators import MaxValueValidator
 
-from comments.models import Comment
+from core.base_models import AbstractAdvertisement
+from core.abstract_models import AbstractImage
 from core.choices import ServicePlace
-from core.db_utils import service_image_path, validate_image
 from core.enums import Limits
 from core.managers import TypeCategoryManager
-from core.models import AbstractAdvertisement
 from services.managers import ServiceManager
-from services.tasks import delete_image_files_task, delete_images_dir_task
 
 
 class Type(models.Model):
@@ -73,7 +70,6 @@ class Service(AbstractAdvertisement):
         null=True,
         blank=True,
     )
-    comments = GenericRelation(Comment)
 
     objects = models.Manager()
     cstm_mng = ServiceManager()
@@ -88,24 +84,10 @@ class Service(AbstractAdvertisement):
     def __str__(self) -> str:
         return self.title
 
-    def delete_service_images(self):
-        """Удаление фото к услуге."""
 
-        images = self.images.all()
-        if images:
-            for image in images:
-                image.delete()
-            delete_images_dir_task.delay(f"services/{self.id}")
-
-
-class ServiceImage(models.Model):
+class ServiceImage(AbstractImage):
     """Фото к услуге."""
 
-    image = models.ImageField(
-        "Фото к услуге",
-        upload_to=service_image_path,
-        validators=[validate_image],
-    )
     service = models.ForeignKey(
         Service,
         on_delete=models.CASCADE,
@@ -123,8 +105,3 @@ class ServiceImage(models.Model):
 
     def __str__(self) -> str:
         return self.service.title
-
-    def delete_image_files(self):
-        """Удаление файлов изображений."""
-
-        delete_image_files_task.delay(str(self.image))

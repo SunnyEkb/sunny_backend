@@ -2,9 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
+from core.abstract_models import TimeCreateUpdateModel
 from core.enums import Limits
-from core.models import TimeCreateUpdateModel
-
 
 User = get_user_model()
 

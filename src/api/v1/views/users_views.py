@@ -1,3 +1,5 @@
+import sys
+
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.middleware import csrf
@@ -8,7 +10,11 @@ from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed, ParseError
 from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
+from rest_framework.mixins import (
+    DestroyModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,6 +22,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenRefreshView
 
+from ads.models import Ad
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from api.v1.auth_utils import (
@@ -24,7 +31,9 @@ from api.v1.auth_utils import (
     set_refresh_cookie,
 )
 from api.v1.permissions import SelfOnly
+from comments.models import Comment
 from core.choices import APIResponses
+from services.models import Service
 from services.tasks import delete_image_files, delete_image_files_task
 from users.exceptions import TokenDoesNotExists
 from users.utils import verify_user
@@ -231,8 +240,17 @@ class ChangePassowrdView(GenericAPIView):
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
         },
     ),
+    destroy=extend_schema(
+        summary="Удаление пользователя.",
+        responses={
+            status.HTTP_204_NO_CONTENT: None,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+        },
+    ),
 )
-class UserViewSet(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+class UserViewSet(
+    DestroyModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet
+):
     """
     Изменение и получение данных о пользователе.
     """
@@ -246,6 +264,27 @@ class UserViewSet(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
         if self.request.method in ["PUT", "PATCH"]:
             return api_serializers.UserUpdateSerializer
         return api_serializers.UserReadSerializer
+
+    def destroy(self, request, *args, **kwargs):
+        if "test" not in sys.argv:
+            # удаляем фото для услуг, объявлений и комментариев пользователя
+            user = self.get_object()
+
+            user.delete_avatar_image()
+
+            services = Service.objects.filter(provider=user)
+            for service in services:
+                service.delete_images()
+
+            ads = Ad.objects.filter(provider=user)
+            for ad in ads:
+                ad.delete_images()
+
+            comments = Comment.objects.filter(author=user)
+            for comment in comments:
+                comment.delete_images()
+
+        return super().destroy(request, *args, **kwargs)
 
     @extend_schema(
         request=None,
@@ -333,3 +372,4 @@ class VerificationView(APIView):
                     status=status.HTTP_403_FORBIDDEN,
                     data=APIResponses.VERIFICATION_FAILED.value,
                 )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
