@@ -1,5 +1,3 @@
-import sys
-
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import (
@@ -13,7 +11,8 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import CommentAuthorOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from bad_word_filter.tasks import moderate_comment
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
+from comments.exceptions import WrongObjectType
 from comments.models import Comment
 from core.choices import APIResponses, CommentStatus
 
@@ -28,10 +27,7 @@ from core.choices import APIResponses, CommentStatus
 @extend_schema_view(
     list=extend_schema(summary="Список комментариев."),
 )
-class CommentViewSet(
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet,
-):
+class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список комментариев."""
 
     pagination_class = CustomPaginator
@@ -40,6 +36,8 @@ class CommentViewSet(
     def get_queryset(self):
         obj_id = self.kwargs.get("obj_id", None)
         type = self.kwargs.get("type", None)
+        if type not in ["ad", "service"]:
+            raise WrongObjectType()
         if obj_id and type:
             cont_type_model = get_object_or_404(
                 ContentType, app_label=f"{type}s", model=f"{type}"
@@ -52,19 +50,18 @@ class CommentViewSet(
             ).order_by("-created_at")
         return Comment.cstm_mng.none()
 
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except WrongObjectType:
+            return response.Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data=APIResponses.WRONG_OBJECT_TYPE,
+            )
 
-@extend_schema(
-    tags=["Comments"],
-)
+
+@extend_schema(tags=["Comments"])
 @extend_schema_view(
-    create=extend_schema(
-        summary="Создать комментарий.",
-        examples=[schemes.COMMENT_CREATE_EXAMPLE],
-        responses={
-            status.HTTP_201_CREATED: schemes.COMMENT_CREATED_201,
-            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-        },
-    ),
     destroy=extend_schema(
         summary="Удалить комментарий.",
         responses={
@@ -75,13 +72,12 @@ class CommentViewSet(
     ),
 )
 class CommentCreateDestroyViewSet(
-    mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Создать или удалить комментарий."""
+    """Удалить комментарий и добавить к нему фото."""
 
-    serializer_class = api_serializers.CommentCreateSerializer
+    serializer_class = api_serializers.CommentReadSerializer
 
     def get_queryset(self):
         return Comment.objects.all()
@@ -90,12 +86,6 @@ class CommentCreateDestroyViewSet(
         if self.action == "create":
             return [permissions.IsAuthenticated()]
         return [CommentAuthorOnly()]
-
-    def perform_create(self, serializer):
-        comment: Comment = serializer.save(author=self.request.user)
-        admin_url = comment.get_admin_url(self.request)
-        if "test" not in sys.argv:
-            moderate_comment.delay_on_commit(comment.id, admin_url)
 
     def destroy(self, request, *args, **kwargs):
         instance: Comment = self.get_object()
@@ -113,6 +103,11 @@ class CommentCreateDestroyViewSet(
             status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
         },
+        examples=[schemes.UPLOAD_FILE_EXAMPLE],
+        description=(
+            "Файл принимается строкой, закодированной в base64. Допустимые "
+            f"расширения файла - {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}."
+        ),
     )
     @action(
         detail=True,

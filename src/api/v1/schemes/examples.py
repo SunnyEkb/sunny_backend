@@ -59,7 +59,12 @@ USER_PART_CHANGE_EXAMPLE: OpenApiExample = OpenApiExample(
 
 USER_UPDATE_AVATAR_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Изменение аватара пользователя",
-    value={"avatar": "string"},
+    value={"avatar": "data:<MIME-type>;base64,<data>"},
+)
+
+UPLOAD_FILE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Загрузка изображения.",
+    value={"image": "data:<MIME-type>;base64,<data>"},
 )
 
 USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(
@@ -178,6 +183,35 @@ TYPE_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
+CATEGORY_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Иерархический список категорий объявлений",
+    value={
+        "id": 1,
+        "title": "Красота и здоровье",
+        "subcategories": [
+            {
+                "id": 3,
+                "title": "Массаж",
+                "subcategories": [
+                    {
+                        "id": 4,
+                        "title": "Массаж спины",
+                        "subcategories": None,
+                    },
+                ],
+            },
+        ],
+    },
+)
+
+CATEGORY_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Cписок категорий объявлений при фильтрации по названию",
+    value={
+        "id": 1,
+        "title": "Красота и здоровье",
+    },
+)
+
 COMMENT_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список комментариев",
     value=[
@@ -196,8 +230,6 @@ COMMENT_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
 COMMENT_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Создать комментарий",
     value={
-        "content_type": 23,
-        "object_id": 2,
         "rating": 5,
         "feedback": "Супер",
     },
@@ -291,16 +323,6 @@ CANT_HIDE_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE_OR_AD.value},
 )
 
-CANT_DELETE_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга не может быть удалена",
-    value={"detail": APIResponses.CAN_NOT_DELETE_SEVICE.value},
-)
-
-CANT_CANCELL_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Услуга(объявление) не может быть отменена",
-    value={"detail": APIResponses.CAN_NOT_CANCELL_SERVICE_OR_AD.value},
-)
-
 CANT_ADD_NOT_PUBLISHED_OBJECT_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга(объявление) не опубликована",
     value={"detail": APIResponses.OBJECT_IS_NOT_PUBLISHED.value},
@@ -333,12 +355,19 @@ DELETED_FROM_FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
 
 CANT_MODERATE_AD_OR_SERVICE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга (объявление) не может быть отправлена на модерацию",
-    value={"detail": APIResponses.AD_OR_SERVICE_IS_CANCELLED.value},
+    value={
+        "detail": APIResponses.AD_OR_SERVICE_CANT_BE_SENT_TO_MODERATION.value
+    },
+)
+
+AD_OR_SERVICE_SENT_TO_MODERATION_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Услуга (объявление) отправлена на модерацию",
+    value={"detail": APIResponses.AD_OR_SERVICE_SENT_MODERATION.value},
 )
 
 CANT_PUBLISH_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга(объявление) не скрыта",
-    value={"detail": APIResponses.SERVICE_OR_AD_IS_NOT_HIDDEN.value},
+    value={"detail": APIResponses.SERVICE_OR_AD_CANT_BE_PUBLISHED.value},
 )
 
 CANT_ADD_PHOTO_EXAMPLE: OpenApiExample = OpenApiExample(

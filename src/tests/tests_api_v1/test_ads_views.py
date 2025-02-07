@@ -1,11 +1,13 @@
 from http import HTTPStatus
 
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from django.urls import reverse
 
 from ads.models import Ad, AdImage, Category
 from core.choices import AdvertisementStatus
 from tests.fixtures import TestAdsFixtures
+from users.models import Favorites
 
 
 class TestCategoryView(TestAdsFixtures):
@@ -16,12 +18,24 @@ class TestCategoryView(TestAdsFixtures):
             len(response_auth_user.json()),
             len(Category.objects.filter(parent=None)),
         )
+
         response_anon_user = self.client_1.get(reverse("categories-list"))
         self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response_anon_user.json()),
             len(Category.objects.filter(parent=None)),
         )
+
+    def test_get_type(self):
+        response_auth_user = self.client_1.get(
+            reverse("categories-detail", kwargs={"pk": self.category_1.id})
+        )
+        self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
+
+        response_anon_user = self.client_1.get(
+            reverse("categories-detail", kwargs={"pk": self.category_1.id})
+        )
+        self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
 
     def test_types_filters(self):
         templates = {
@@ -90,28 +104,6 @@ class TestAdView(TestAdsFixtures):
             ),
         )
 
-    def test_send_ad_to_moderation_by_owner(self):
-        response = self.client_2.post(
-            reverse("ads-moderate", kwargs={"pk": self.ad_draft.id})
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            Ad.objects.get(pk=self.ad_draft.pk).status,
-            AdvertisementStatus.MODERATION.value,
-        )
-
-    def test_not_owner_cant_send_ad_to_moderation(self):
-        response = self.client_1.post(
-            reverse("ads-moderate", kwargs={"pk": self.ad_draft.id})
-        )
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
-    def test_anon_user_cant_send_ad_to_moderation(self):
-        response = self.anon_client.post(
-            reverse("ads-moderate", kwargs={"pk": self.ad_draft.id})
-        )
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-
     def test_owner_hides_ad(self):
         response = self.client_2.post(
             reverse("ads-hide", kwargs={"pk": self.ad_2.id})
@@ -134,36 +126,24 @@ class TestAdView(TestAdsFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
-    def test_owner_cancells_ad(self):
-        response = self.client_2.post(
-            reverse("ads-cancell", kwargs={"pk": self.ad_2.id})
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            Ad.objects.get(pk=self.ad_2.pk).status,
-            AdvertisementStatus.CANCELLED.value,
-        )
-
-    def test_not_owner_cant_cancell_an_ad(self):
-        response = self.client_1.post(
-            reverse("ads-cancell", kwargs={"pk": self.ad_2.id})
-        )
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-
-    def test_anon_user_cant_cancell_an_ad(self):
-        response = self.anon_client.post(
-            reverse("ads-cancell", kwargs={"pk": self.ad_2.id})
-        )
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-
-    def test_owner_publishes_ad(self):
+    def test_owner_publishes_hidden_ad(self):
         response = self.client_2.post(
             reverse("ads-publish", kwargs={"pk": self.ad_hidden.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
-            Ad.objects.get(pk=self.ad_2.pk).status,
+            Ad.objects.get(pk=self.ad_hidden.pk).status,
             AdvertisementStatus.PUBLISHED.value,
+        )
+
+    def test_owner_publishes_draft_ad(self):
+        response = self.client_1.post(
+            reverse("ads-publish", kwargs={"pk": self.ad_1.id})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_1.pk).status,
+            AdvertisementStatus.MODERATION.value,
         )
 
     def test_not_owner_cant_publish_an_ad(self):
@@ -213,6 +193,27 @@ class TestAdView(TestAdsFixtures):
         self.assertEqual(
             Ad.objects.get(pk=self.ad_1.pk).title,
             self.new_ad_title,
+        )
+
+    def test_ad_status_changed_to_dratf_after_updation(self):
+        self.client_2.put(
+            reverse("ads-detail", kwargs={"pk": self.ad_2.pk}),
+            data=self.new_ad_data,
+        )
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_2.pk).status,
+            AdvertisementStatus.DRAFT.value,
+        )
+
+    def test_ad_status_changed_to_dratf_after_partial_updation(self):
+        new_data = {"title": self.new_ad_title}
+        self.client_2.patch(
+            reverse("ads-detail", kwargs={"pk": self.ad_2.pk}),
+            data=new_data,
+        )
+        self.assertEqual(
+            Ad.objects.get(pk=self.ad_2.pk).status,
+            AdvertisementStatus.DRAFT.value,
         )
 
     def test_add_an_ad_to_favorite(self):
@@ -332,3 +333,28 @@ class TestAdView(TestAdsFixtures):
                     reverse("ads-list") + f"?{k}={v[0]}"
                 )
                 self.assertEqual(len(response.data["results"]), len(v[1]))
+
+    def test_ad_deletes_from_favorites_when_is_getting_hidden(self):
+        self.client_2.post(reverse("ads-hide", kwargs={"pk": self.ad_2.id}))
+        self.assertFalse(
+            Favorites.objects.filter(
+                object_id=self.ad_2.id,
+                content_type=ContentType.objects.get(
+                    app_label="ads", model="ad"
+                ),
+            ).exists()
+        )
+
+    def test_ad_deletes_from_favorites_when_is_getting_draft(self):
+        self.client_2.put(
+            reverse("ads-detail", kwargs={"pk": self.ad_2.pk}),
+            data=self.new_ad_data,
+        )
+        self.assertFalse(
+            Favorites.objects.filter(
+                object_id=self.ad_2.id,
+                content_type=ContentType.objects.get(
+                    app_label="ads", model="ad"
+                ),
+            ).exists()
+        )

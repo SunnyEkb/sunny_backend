@@ -23,4 +23,4 @@ jobs:
       - name: Test with django tests
         run: |
           cd src
-          python manage.py test
+          python manage.py test --settings config.settings.test

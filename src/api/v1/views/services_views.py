@@ -1,8 +1,3 @@
-import sys
-
-from django.contrib.auth import get_user_model
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -10,10 +5,8 @@ from drf_spectacular.utils import (
     extend_schema_view,
 )
 from rest_framework import (
-    exceptions,
     mixins,
     viewsets,
-    response,
     status,
 )
 
@@ -21,68 +14,35 @@ from api.v1.filters import ServiceFilter
 from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from api.v1.views.base_views import BaseServiceAdViewSet
-from core.choices import AdvertisementStatus, APIResponses
+from api.v1.validators import validate_id
+from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
+from core.choices import AdvertisementStatus
 from services.models import Service, ServiceImage, Type
-
-User = get_user_model()
 
 
 @extend_schema(
     tags=["Services types"],
-    examples=[schemes.TYPE_LIST_FLAT_EXAMPLE],
-    responses={
-        status.HTTP_200_OK: schemes.TYPES_GET_OK_200,
-    },
-    parameters=[
-        OpenApiParameter("title", str),
-        OpenApiParameter("id", int),
-    ],
+    responses={status.HTTP_200_OK: schemes.TYPES_GET_OK_200},
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список типов услуг."),
+    list=extend_schema(
+        summary="Список типов услуг.",
+        parameters=[OpenApiParameter("title", str)],
+    ),
+    retrieve=extend_schema(summary="Тип услуги."),
 )
-class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class TypeViewSet(CategoryTypeViewSet):
     """Список типов услуг."""
 
     def get_queryset(self):
-        params = self.request.query_params
-        if "title" in params:
-            title = params.get("title")
-            queryset = Type.objects.filter(title__icontains=title)
-        elif "id" in params:
-            try:
-                type_id = int(params.get("id"))
-            except ValueError:
-                raise exceptions.ValidationError(
-                    detail=APIResponses.INVALID_PARAMETR.value,
-                    code=status.HTTP_400_BAD_REQUEST,
-                )
-            if type_id < 0:
-                raise exceptions.ValidationError(
-                    detail=APIResponses.INVALID_PARAMETR.value,
-                    code=status.HTTP_400_BAD_REQUEST,
-                )
-            queryset = Type.objects.filter(id=type_id)
-        else:
-            queryset = Type.objects.filter(parent=None)
-        return queryset
+        queryset = Type.objects.all()
+        return self.base_get_queryset(queryset)
 
     def get_serializer_class(self):
         params = self.request.query_params
         if "title" in params:
             return api_serializers.TypeGetWithoutSubCatSerializer
         return api_serializers.TypeGetSerializer
-
-    @method_decorator(cache_page(60 * 2))
-    def list(self, request, *args, **kwargs):
-        try:
-            return super().list(request, *args, **kwargs)
-        except exceptions.ValidationError:
-            return response.Response(
-                data={"detail": APIResponses.INVALID_PARAMETR.value},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
 
 @extend_schema(
@@ -142,7 +102,6 @@ class TypeViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             status.HTTP_204_NO_CONTENT: None,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_DELETE_SERVICE_406,
         },
     ),
 )
@@ -160,18 +119,8 @@ class ServiceViewSet(BaseServiceAdViewSet):
                 status=AdvertisementStatus.PUBLISHED.value
             )
             if "type_id" in params:
-                try:
-                    type_id = int(params.get("type_id"))
-                except ValueError:
-                    raise exceptions.ValidationError(
-                        detail=APIResponses.INVALID_PARAMETR.value,
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
-                if type_id < 0:
-                    raise exceptions.ValidationError(
-                        detail=APIResponses.INVALID_PARAMETR.value,
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
+                type_id = params.get("type_id")
+                validate_id(type_id)
                 queryset = queryset.filter(type__id=type_id)
         return queryset
 
@@ -214,7 +163,6 @@ class ServiceImageViewSet(
         instance: ServiceImage = self.get_object()
 
         # удаляем файл
-        if "test" not in sys.argv:
-            instance.delete_image_files()
+        instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)

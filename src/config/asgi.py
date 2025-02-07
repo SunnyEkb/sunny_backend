@@ -1,16 +1,16 @@
 import os
+
 import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.prod")
 django.setup()
 
 from channels.routing import ProtocolTypeRouter, URLRouter  # noqa
 from channels.security.websocket import AllowedHostsOriginValidator  # noqa
 from django.core.asgi import get_asgi_application  # noqa
 
-from notifications.routing import websocket_urlpatterns  # noqa
 from core.middleware import CookieAuthMiddleware  # noqa
-
+from notifications.routing import websocket_urlpatterns  # noqa
 
 django_asgi_app = get_asgi_application()
 

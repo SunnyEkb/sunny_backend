@@ -2,16 +2,16 @@ import shutil
 import tempfile
 
 from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.contenttypes.models import ContentType
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
-from core.choices import AdvertisementStatus, AdState, CommentStatus
 from ads.models import AdImage
+from core.choices import AdState, AdvertisementStatus, CommentStatus
 from services.models import ServiceImage
-from users.models import Favorites
 from tests import factories
+from users.models import Favorites
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -28,10 +28,10 @@ class BaseTestCase(APITestCase):
         small_gif = (
             b"\x47\x49\x46\x38\x39\x61\x02\x00"
             b"\x01\x00\x80\x00\x00\x00\x00\x00"
-            b"\xFF\xFF\xFF\x21\xF9\x04\x00\x00"
-            b"\x00\x00\x00\x2C\x00\x00\x00\x00"
-            b"\x02\x00\x01\x00\x00\x02\x02\x0C"
-            b"\x0A\x00\x3B"
+            b"\xff\xff\xff\x21\xf9\x04\x00\x00"
+            b"\x00\x00\x00\x2c\x00\x00\x00\x00"
+            b"\x02\x00\x01\x00\x00\x02\x02\x0c"
+            b"\x0a\x00\x3b"
         )
         cls.file_name_1 = "small_1.gif"
         cls.file_name_2 = "small_2.gif"
@@ -40,6 +40,16 @@ class BaseTestCase(APITestCase):
         )
         cls.uploaded_2 = SimpleUploadedFile(
             name=cls.file_name_2, content=small_gif, content_type="image/gif"
+        )
+        cls.base64_image = (
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD"
+            "+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNp"
+            "btEAAAAASUVORK5CYII="
+        )
+        cls.wrong_base64_image = (
+            "data:image/txt;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD"
+            "+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNp"
+            "btEAAAAASUVORK5CYII="
         )
 
     @classmethod
@@ -127,12 +137,6 @@ class TestServiceFixtures(TestUserFixtures):
         cls.published_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.PUBLISHED.value
         )
-        cls.cancelled_service = factories.ServiceFactory(
-            provider=cls.user_3, status=AdvertisementStatus.CANCELLED.value
-        )
-        cls.changed_service = factories.ServiceFactory(
-            provider=cls.user_3, status=AdvertisementStatus.CHANGED.value
-        )
         cls.moderate_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.MODERATION.value
         )
@@ -169,10 +173,6 @@ class TestServiceFixtures(TestUserFixtures):
             status=CommentStatus.PUBLISHED.value,
         )
         cls.comment_data = {
-            "content_type": ContentType.objects.get(
-                app_label="services", model="service"
-            ).id,
-            "object_id": cls.published_service.id,
             "rating": 2,
             "feedback": "Some feadback",
         }
@@ -240,3 +240,16 @@ class TestAdsFixtures(TestUserFixtures):
             ad=cls.ad_to_del, image=cls.uploaded_2
         )
         cls.ad_to_del.category.set([cls.category_2])
+        cls.comment_data = {
+            "rating": 2,
+            "feedback": "Some feadback",
+        }
+        cls.comment_1 = factories.CommentFactory(
+            subject=cls.ad_2,
+            author=cls.user_1,
+            status=CommentStatus.PUBLISHED.value,
+        )
+        cls.comment_2 = factories.CommentFactory(
+            subject=cls.ad_1,
+            author=cls.user_1,
+        )

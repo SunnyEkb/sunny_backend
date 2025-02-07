@@ -16,14 +16,16 @@ class UserAdmin(UserAdmin):
 
     list_display = [
         "email",
+        "username",
         "first_name",
         "last_name",
+        "phone",
         "is_active",
         "role",
         "date_joined",
     ]
     fieldsets = [
-        (None, {"fields": ["email", "password"]}),
+        (None, {"fields": ["email", "password", "phone", "username"]}),
         ("Персональная информация", {"fields": ["first_name", "last_name"]}),
         ("Разрешения", {"fields": ["is_active", "role", "is_staff"]}),
     ]
@@ -32,7 +34,7 @@ class UserAdmin(UserAdmin):
             None,
             {
                 "classes": ["wide"],
-                "fields": ["email", "password1", "password2"],
+                "fields": ["email", "username", "password1", "password2"],
             },
         ),
     ]
@@ -59,4 +61,5 @@ class VerificationTokenAdmin(admin.ModelAdmin):
     """
 
     list_display = ["user"]
-    search_fields = ["user"]
+    search_fields = ["user__email"]
+    readonly_fields = ["created_at"]

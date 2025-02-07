@@ -1,6 +1,7 @@
 from django.db import models
 
 from core.enums import Limits
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 
 
 class Role(models.TextChoices):
@@ -26,8 +27,6 @@ class AdvertisementStatus(models.IntegerChoices):
     MODERATION = 1
     PUBLISHED = 2
     HIDDEN = 3
-    CANCELLED = 4
-    CHANGED = 5
 
 
 class APIResponses(models.TextChoices):
@@ -43,16 +42,17 @@ class APIResponses(models.TextChoices):
     SUCCESS_TOKEN_REFRESH = "Token refreshed"
     WRONG_PASSWORD = "Wrong password"
     UNAUTHORIZED = "Учетные данные не были предоставлены."
-    CAN_NOT_DELETE_SEVICE = "Невозможно удалить опубликованную заявку."
     CAN_NOT_HIDE_SERVICE_OR_AD = (
-        "Скрыть можно опубликованную только услугу (объявление)."
-    )
-    CAN_NOT_CANCELL_SERVICE_OR_AD = (
-        "Услуга(объявление) не была опубликована. Удалите её."
+        "Скрыть можно только опубликованную услугу (объявление)."
     )
     NO_PERMISSION = "У вас недостаточно прав для выполнения данного действия."
-    AD_OR_SERVICE_IS_CANCELLED = "Данная услуга (объявление) отменена."
-    SERVICE_OR_AD_IS_NOT_HIDDEN = "Данная услуга (объявление) не скрыта."
+    AD_OR_SERVICE_CANT_BE_SENT_TO_MODERATION = (
+        "Данная услуга (объявление) уже на модерации."
+    )
+    AD_OR_SERVICE_SENT_MODERATION = (
+        "Услуга (объявление) отправлены на модерацию."
+    )
+    SERVICE_OR_AD_CANT_BE_PUBLISHED = "Данная услуга (объявление) не скрыта."
     OBJECT_IS_NOT_PUBLISHED = "Данная услуга (объявление) не опубликована."
     OBJECT_ALREADY_IN_FAVORITES = "Данная услуга (объявление) уже в избраном."
     OBJECT_NOT_IN_FAVORITES = "Данная услуга (объявление) не в избраном."
@@ -72,16 +72,28 @@ class APIResponses(models.TextChoices):
     COMMENTS_BY_PROVIDER_PROHIBITED = (
         "Лицо, оказывающее услуги не может оставлять комментарий."
     )
+    COMMENT_ADDED = "Комментарий создан."
     INVALID_PARAMETR = "Параметр должен быть положительным числом."
     VERIFICATION_SUCCESS = "Регистрация подтверждена."
     VERIFICATION_FAILED = "Пользователь не найден."
+    TOKEN_EXPIRED = "Токен просрочен."
     WRONG_USERNAME = (
-        "Псевдоним должен состоять из следующих символов: кириллица, латиница,"
-        " цифры, разделители, в верхнем или нижнем регистре. "
-        "Минимальный размер - 2 символа, максимальный - 25."
+        "Псевдоним должен содержать от 2 до 25 символов и может состоять из"
+        " кириллицы, латиницы, цифр, cимволов:"
+        " '@', '.', '+', '-', '_' в верхнем или нижнем регистре."
     )
+    WRONG_OBJECT_TYPE = "Неверный тип объекта."
     USERNAME_EXISTS = "Пользователь с таким именем уже существует."
     EMAIL_EXISTS = "Пользователь с таким адресом электронной почты существует."
+    PHONE_EXISTS = "Пользователь с таким номером телефона существует."
+    WRONG_CONTENT = (
+        "Изображение должно быть передано в формате base64: "
+        "data:<MIME-type>;base64,<data>"
+    )
+    WRONG_EXTENTION = (
+        "Расширение файлов {0} не поддерживается. Разрешенные"
+        f" расширения: {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}"
+    )
 
 
 class SystemMessages(models.TextChoices):

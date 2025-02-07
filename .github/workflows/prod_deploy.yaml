@@ -15,7 +15,7 @@ jobs:
         uses: SpicyPizza/create-envfile@v2.0
         with:
           envkey_DEBUG: False
-          envkey_PROD_DB: True
+          envkey_DJANGO_SETTINGS_MODULE: config.settings.dev
           envkey_SECRET_KEY: ${{ secrets.SECRET_KEY }}
           envkey_DOMAIN: ${{ secrets.DOMAIN }}
           envkey_ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
@@ -26,11 +26,11 @@ jobs:
           envkey_REFRESH_TOKEN_LIFETIME: ${{ secrets.REFRESH_TOKEN_LIFETIME }}
           envkey_AUTH_COOKIE: ${{ secrets.AUTH_COOKIE }}
           envkey_AUTH_REFRESH: ${{ secrets.AUTH_REFRESH }}
-          envkey_DB_NAME: ${{ secrets.DB_NAME }}
+          envkey_POSTGRES_DB: ${{ secrets.DB_NAME }}
           envkey_POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           envkey_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          envkey_DB_PORT: ${{ secrets.DB_PORT }}
-          envkey_DB_HOST: ${{ secrets.DB_HOST }}
+          envkey_POSTGRES_PORT: ${{ secrets.DB_PORT }}
+          envkey_POSTGRES_HOST: ${{ secrets.DB_HOST }}
           envkey_DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           envkey_EMAIL_FILE: ${{ secrets.EMAIL_FILE }}
           envkey_EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
@@ -84,11 +84,12 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            cd ${{ secrets.TARGET_SERVER_PATH }}
-            docker-compose exec -T backend python3 manage.py dumpdata --indent 2 --exclude admin.logentry --exclude sessions.session > dump_$(date +%Y%m%d_%H%M).json
-            docker-compose stop
-            docker-compose rm -f backend
-            docker-compose rm -f celery
-            docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/sunny_ekb
-            docker-compose up -d
-            docker-compose exec -T backend python manage.py migrate
+            cd ${{ secrets.TARGET_SERVER_PATH }} &&
+            docker-compose exec -T backend python3 manage.py dumpdata --settings config.settings.dev --indent 2 --exclude admin.logentry --exclude sessions.session > dump_$(date +%Y%m%d_%H%M).json &&
+            docker-compose stop &&
+            docker-compose rm -f backend &&
+            docker-compose rm -f celery &&
+            docker-compose rm -f celery-beat &&
+            docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/sunny_ekb &&
+            docker-compose up -d &&
+            docker-compose exec -T backend python manage.py migrate --settings config.settings.dev

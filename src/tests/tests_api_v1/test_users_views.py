@@ -73,6 +73,7 @@ class TestUser(TestUserFixtures):
         body = {
             "username": self.username,
             "email": self.email_2,
+            "phone": self.new_phone,
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
@@ -83,6 +84,54 @@ class TestUser(TestUserFixtures):
         self.assertEqual(
             response.json().get("non_field_errors", None),
             [APIResponses.PASSWORD_DO_NOT_MATCH.value],
+        )
+
+    def test_user_registry_username_validation_long_username(self):
+        body = {
+            "username": 10 * self.username,
+            "email": self.email_2,
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("username"),
+            [APIResponses.WRONG_USERNAME.value],
+        )
+
+    def test_user_registry_username_validation_short_username(self):
+        body = {
+            "username": "q",
+            "email": self.email_2,
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("username"),
+            [APIResponses.WRONG_USERNAME.value],
+        )
+
+    def test_user_registry_username_validation_wrong_symbols(self):
+        body = {
+            "username": "*&^#(*)",
+            "email": self.email_2,
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("username"),
+            [APIResponses.WRONG_USERNAME.value],
         )
 
     def test_user_registry_with_existing_username(self):
@@ -99,6 +148,23 @@ class TestUser(TestUserFixtures):
         self.assertEqual(
             response.json().get("username"),
             [APIResponses.USERNAME_EXISTS.value],
+        )
+
+    def test_user_registry_with_existing_phone(self):
+        body = {
+            "username": self.username,
+            "email": self.email_2,
+            "phone": str(self.user_1.phone),
+            "password": self.password,
+            "confirmation": f"{self.password}wrong",
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("phone"),
+            [APIResponses.PHONE_EXISTS.value],
         )
 
     def test_user_login(self):
@@ -222,6 +288,23 @@ class TestUser(TestUserFixtures):
         self.assertEqual(user.first_name, self.first_name)
         self.assertEqual(user.last_name, self.last_name)
 
+    def test_change_user_info_unique_fields_validation(self):
+        data = {
+            "username": self.user_1.username,
+            "last_name": "some_new_last_name",
+            "first_name": "some_new_first_name",
+            "phone": str(self.user_1.phone),
+        }
+        response = self.client_1.put(
+            reverse("users-detail", kwargs={"pk": self.user_1.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        user = User.objects.get(id=self.user_1.id)
+        self.assertEqual(user.first_name, "some_new_first_name")
+        self.assertEqual(user.last_name, "some_new_last_name")
+
     def test_part_change_user_info(self):
         response = self.client_2.patch(
             reverse("users-detail", kwargs={"pk": self.user_2.id}),
@@ -231,6 +314,47 @@ class TestUser(TestUserFixtures):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         user = User.objects.get(id=self.user_2.id)
         self.assertEqual(user.last_name, self.last_name)
+
+    def test_part_change_user_info_unique_fields_validation(self):
+        data = {
+            "last_name": self.last_name,
+            "phone": str(self.user_2.phone),
+            "username": self.user_2.username,
+        }
+        response = self.client_2.patch(
+            reverse("users-detail", kwargs={"pk": self.user_2.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        user = User.objects.get(id=self.user_2.id)
+        self.assertEqual(user.last_name, self.last_name)
+
+    def test_change_user_info_existing_phone(self):
+        data = {
+            "last_name": self.last_name,
+            "phone": str(self.user_1.phone),
+            "username": self.user_2.username,
+        }
+        response = self.client_2.patch(
+            reverse("users-detail", kwargs={"pk": self.user_2.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_change_user_info_existing_username(self):
+        data = {
+            "last_name": self.last_name,
+            "phone": str(self.user_2.phone),
+            "username": self.user_1.username,
+        }
+        response = self.client_2.patch(
+            reverse("users-detail", kwargs={"pk": self.user_2.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_anon_client_can_not_change_user_info(self):
         response_1 = self.anon_client.patch(
@@ -253,11 +377,32 @@ class TestUser(TestUserFixtures):
         self.assertEqual(response.data["id"], self.user_1.id)
 
     def test_add_avatar(self):
-        data = {"avatar": self.uploaded}
+        data = {"avatar": self.base64_image}
         response = self.client_1.patch(
             reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_add_avatar_file(self):
+        data = {"avatar": self.uploaded}
+        response = self.client_1.patch(
+            reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_add_avatar_wrong_value(self):
+        data = {"avatar": "some string"}
+        response = self.client_1.patch(
+            reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_add_avatar_wrong_extention(self):
+        data = {"avatar": self.wrong_base64_image}
+        response = self.client_1.patch(
+            reverse("avatar", kwargs={"pk": self.user_1.id}), data=data
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_user_delete(self):
         response = self.client_for_deletion.delete(

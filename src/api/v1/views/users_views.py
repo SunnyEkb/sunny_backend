@@ -5,7 +5,6 @@ from django.contrib.auth import authenticate, get_user_model
 from django.middleware import csrf
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, extend_schema_view
-
 from rest_framework import generics, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import AuthenticationFailed, ParseError
@@ -31,12 +30,19 @@ from api.v1.auth_utils import (
     set_refresh_cookie,
 )
 from api.v1.permissions import SelfOnly
+from api.v1.validators import (
+    validate_phone_updating,
+    validate_username_updating,
+)
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
 from core.choices import APIResponses
 from services.models import Service
-from services.tasks import delete_image_files, delete_image_files_task
-from users.exceptions import TokenDoesNotExists
+from services.tasks import delete_image_files_task
+from users.exceptions import TokenDoesNotExists, TokenExpired
 from users.utils import verify_user
+from users.tasks import save_file_with_user_data_task
+
 
 User = get_user_model()
 
@@ -270,6 +276,9 @@ class UserViewSet(
             # удаляем фото для услуг, объявлений и комментариев пользователя
             user = self.get_object()
 
+            data = user.serialize_data()
+            save_file_with_user_data_task.delay(user.email, data)
+
             user.delete_avatar_image()
 
             services = Service.objects.filter(provider=user)
@@ -285,6 +294,27 @@ class UserViewSet(
                 comment.delete_images()
 
         return super().destroy(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        phone = self.request.data.get("phone", None)
+        if phone is not None:
+            validate_phone_updating(instance, phone)
+        username = self.request.data.get("username", None)
+        if username is not None:
+            validate_username_updating(instance, username)
+
+        self.perform_update(serializer)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
     @extend_schema(
         request=None,
@@ -317,6 +347,10 @@ class UserViewSet(
         status.HTTP_200_OK: schemes.USER_GET_OK_200,
         status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
+    description=(
+        "Файл принимается строкой, закодированной в base64. Допустимые "
+        f"расширения файла - {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}."
+    ),
 )
 class AdAvatarView(generics.UpdateAPIView):
     """
@@ -333,10 +367,7 @@ class AdAvatarView(generics.UpdateAPIView):
         instance = self.get_object()
         if instance.avatar:
             old_image = instance.avatar
-            if settings.PROD_DB:
-                delete_image_files_task.delay(str(old_image))
-            else:
-                delete_image_files(str(old_image))
+            delete_image_files_task.delay(str(old_image))
         return super().update(request, *args, **kwargs)
 
 
@@ -371,5 +402,10 @@ class VerificationView(APIView):
                 return Response(
                     status=status.HTTP_403_FORBIDDEN,
                     data=APIResponses.VERIFICATION_FAILED.value,
+                )
+            except TokenExpired:
+                return Response(
+                    status=status.HTTP_403_FORBIDDEN,
+                    data=APIResponses.TOKEN_EXPIRED.value,
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

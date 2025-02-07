@@ -1,4 +1,4 @@
-from services.models import Service, ServiceImage
+from services.models import ServiceImage
 from tests import factories
 from tests.fixtures import BaseTestCase
 
@@ -46,10 +46,3 @@ class ServiceModelsTest(BaseTestCase):
         self.assertEqual(
             self.service_1.status, AdvertisementStatus.DRAFT.value
         )
-
-    def test_service_model_methods(self):
-        self.service_2.send_to_moderation()
-        service = Service.objects.get(pk=self.service_2.id)
-        self.assertEqual(service.status, AdvertisementStatus.MODERATION.value)
-        service.cancell()
-        self.assertEqual(service.status, AdvertisementStatus.CANCELLED.value)

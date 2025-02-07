@@ -1,5 +1,5 @@
 from tests.fixtures import BaseTestCase
-from ads.models import Ad, AdImage
+from ads.models import AdImage
 from tests.factories import AdFactory, CustomUserFactory
 
 from core.choices import AdvertisementStatus, AdState
@@ -45,10 +45,3 @@ class AdModelsTest(BaseTestCase):
         for field, value in field_default_value.items():
             with self.subTest(field=field):
                 self.assertEqual(field, value)
-
-    def test_ad_model_methods(self):
-        self.ad_2.send_to_moderation()
-        ad = Ad.objects.get(pk=self.ad_2.id)
-        self.assertEqual(ad.status, AdvertisementStatus.MODERATION.value)
-        ad.cancell()
-        self.assertEqual(ad.status, AdvertisementStatus.CANCELLED.value)
