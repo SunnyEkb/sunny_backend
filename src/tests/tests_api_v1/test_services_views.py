@@ -430,12 +430,12 @@ class TestServivecesView(TestServiceFixtures):
 
     def test_service_status_set_to_draft_after_add_image(self):
         data = {"image": self.base64_image}
-        self.client_3.post(
+        self.client_2.post(
             reverse("services-add_photo", kwargs={"pk": self.service_2.id}),
             data=data,
         )
         self.assertEqual(
-            Service.objects.get(id=self.moderate_service.id).status,
+            Service.objects.get(id=self.service_2.id).status,
             AdvertisementStatus.DRAFT.value,
         )
 
