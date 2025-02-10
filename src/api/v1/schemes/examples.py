@@ -365,6 +365,11 @@ AD_OR_SERVICE_SENT_TO_MODERATION_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.AD_OR_SERVICE_SENT_MODERATION.value},
 )
 
+AD_OR_SERVICE_IS_UNDER_MODERATION_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Услуга (объявление) находится на модерации",
+    value={"detail": APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION.value},
+)
+
 CANT_PUBLISH_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга(объявление) не скрыта",
     value={"detail": APIResponses.SERVICE_OR_AD_CANT_BE_PUBLISHED.value},

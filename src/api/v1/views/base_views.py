@@ -89,6 +89,14 @@ class BaseServiceAdViewSet(
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
+
+        # Проверяем, что объект не находится на модерации
+        if instance.status == AdvertisementStatus.MODERATION.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION.value,
+            )
+
         serializer = self.get_serializer(
             instance, data=request.data, partial=partial
         )
@@ -211,7 +219,14 @@ class BaseServiceAdViewSet(
     def add_photo(self, request, *args, **kwargs):
         """Добавить фото к услуге."""
 
-        object: Service = self.get_object()
+        object = self.get_object()
+
+        # Проверяем, что объект не находится на модерации
+        if object.status == AdvertisementStatus.MODERATION.value:
+            return response.Response(
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+                data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION.value,
+            )
 
         # Проверяем, чтобы количество фото было не больше максимума
         images = object.images.all()
@@ -237,6 +252,7 @@ class BaseServiceAdViewSet(
                 img_serializer.save(service=object)
             else:
                 img_serializer.save(ad=object)
+            object.set_draft()
             obj_serializer = self.get_serializer(object)
             return response.Response(obj_serializer.data)
         return response.Response(
