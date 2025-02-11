@@ -87,6 +87,7 @@ class CategoryViewSet(CategoryTypeViewSet):
             status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.SERVICE_AD_NOT_ACCEPT_406,
         },
     ),
     partial_update=extend_schema(
@@ -97,6 +98,7 @@ class CategoryViewSet(CategoryTypeViewSet):
             status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.SERVICE_AD_NOT_ACCEPT_406,
         },
     ),
     destroy=extend_schema(

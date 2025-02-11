@@ -52,6 +52,9 @@ class APIResponses(models.TextChoices):
     AD_OR_SERVICE_SENT_MODERATION = (
         "Услуга (объявление) отправлены на модерацию."
     )
+    AD_OR_SERVICE_IS_UNDER_MODERATION = (
+        "Услуга (объявление) не может быть изменена, т.к. она на модерации."
+    )
     SERVICE_OR_AD_CANT_BE_PUBLISHED = "Данная услуга (объявление) не скрыта."
     OBJECT_IS_NOT_PUBLISHED = "Данная услуга (объявление) не опубликована."
     OBJECT_ALREADY_IN_FAVORITES = "Данная услуга (объявление) уже в избраном."
