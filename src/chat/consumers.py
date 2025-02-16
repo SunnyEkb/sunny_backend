@@ -5,7 +5,7 @@ from channels.exceptions import DenyConnection
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 from chat.models import Message
-from chat.serializers import JSONSerializer
+from chat.serializers import MessageSerializer
 from core.middleware import get_user_from_db
 
 
@@ -15,6 +15,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     room_group_name = None
 
     async def connect(self):
+        """
+        Метод для установки соединения. Создает группу чата и отправляет в нее
+        историю сообщений этой группы.
+        """
         sender_id = self.scope["user"].id
         receiver_id = self.scope["url_route"]["kwargs"]["id"]
 
@@ -33,15 +37,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
         messages = await self.get_messages(
             {"room_group_name": self.room_group_name}
         )
-        await self.send(text_data=messages)
+        await self.send(json.dumps(messages, ensure_ascii=False))
 
     async def disconnect(self, close_code):
+        """
+        Метод для отключения соединения. удаляет участника из группы чата.
+        """
         if getattr(self, "room_group_name"):
             await self.channel_layer.group_discard(
                 self.room_group_name, self.channel_name
             )
 
     async def receive(self, text_data=None, bytes_data=None):
+        """
+        Метод для получения сообщения, сохранения его в БД и отправки его в
+        группу чата.
+        """
         data = json.loads(text_data)
         message = data["message"]
 
@@ -55,43 +66,41 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             {
                 "type": "chat_message",
-                "message_id": message.id,
+                "message": MessageSerializer(message).data,
             },
         )
 
     async def chat_message(self, event):
-        message = await self.get_messages({"id": event["message_id"]})
-        await self.send(text_data=message)
+        """
+        Метод для отправки сообщения другим участникам группы чата.
+        """
+        await self.send(json.dumps(event["message"], ensure_ascii=False))
 
     @database_sync_to_async
     def get_messages(self, filters: dict):
-        messages = JSONSerializer().serialize(
-            Message.objects.select_related()
-            .filter(**filters)
+        """
+        Метод для получения списка сообщений по заданным фильтрам.
+        """
+        messages = MessageSerializer(
+            Message.objects.filter(**filters)
             .select_related("sender")
             .only(
-                "sender__id",
+                "id",
                 "sender__username",
-                "sender__email",
-                "sender__last_login",
                 "message",
+                "room_group_name",
                 "created_at",
                 "updated_at",
             ),
-            fields=(
-                "sender__pk",
-                "sender__username",
-                "sender__email",
-                "sender__last_login",
-                "message",
-                "created_at",
-                "updated_at",
-            ),
-        )
+            many=True,
+        ).data
         return messages
 
     @database_sync_to_async
     def save_message(self, sender, message, room_group_name) -> Message:
+        """
+        Метод для сохранения нового сообщения в базе данных.
+        """
         message = Message.objects.create(
             sender=sender, message=message, room_group_name=room_group_name
         )

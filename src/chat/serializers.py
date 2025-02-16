@@ -1,29 +1,23 @@
-from django.core.serializers.json import Serializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 
-JSON_ALLOWED_OBJECTS = (dict, list, tuple, str, int, bool)
+from chat.models import Message
 
 
-class JSONSerializer(Serializer):
-    def end_object(self, obj):
-        for field in self.selected_fields:
-            if field == "pk":
-                continue
-            elif field in self._current.keys():
-                continue
-            else:
-                try:
-                    if "__" in field:
-                        fields = field.split("__")
-                        value = obj
-                        for f in fields:
-                            value = getattr(value, f)
-                        if (
-                            value != obj
-                            and isinstance(value, JSON_ALLOWED_OBJECTS)
-                            or value is None
-                        ):
-                            self._current[field] = value
+class MessageSerializer(ModelSerializer):
+    """Сериализатор сообщения чата."""
 
-                except AttributeError:
-                    pass
-        super(JSONSerializer, self).end_object(obj)
+    sender_username = SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = (
+            "id",
+            "sender_username",
+            "message",
+            "room_group_name",
+            "created_at",
+            "updated_at",
+        )
+
+    def get_sender_username(self, obj):
+        return obj.sender.username
