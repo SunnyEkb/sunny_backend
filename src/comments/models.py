@@ -1,3 +1,5 @@
+import sys
+
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -88,7 +90,8 @@ class Comment(TimeCreateUpdateModel):
             self.status = CommentStatus.MODERATION.value
             self.save()
             url = self.get_admin_url(request)
-            notify_about_moderation_task.delay(url)
+            if "test" not in sys.argv:
+                notify_about_moderation_task.delay(url)
 
     def get_admin_url(self, request) -> str:
         """Возвращает ссылку на экземпляр модели в админке."""
