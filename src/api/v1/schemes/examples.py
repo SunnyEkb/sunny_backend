@@ -482,7 +482,15 @@ AD_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
 
 FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список избранного",
-    value={
-        "subject": AD_RETRIEVE_EXAMPLE.value,
-    },
+    value={"subject": AD_RETRIEVE_EXAMPLE.value},
+)
+
+OBJ_APPROVED_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Одобрено",
+    value={"subject": APIResponses.OBJECT_APPROOVED.value},
+)
+
+OBJ_REJECTED_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Отклонено",
+    value={"subject": APIResponses.OBJECT_REJECTED.value},
 )

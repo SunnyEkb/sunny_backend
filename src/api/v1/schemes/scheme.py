@@ -303,3 +303,15 @@ FAVORITES_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     description="Получение списка объектов избранного",
     examples=[examples.FAVORITES_EXAMPLE],
 )
+
+OBJ_APPROVED_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Объект одобрен",
+    examples=[examples.OBJ_APPROVED_EXAMPLE],
+)
+
+OBJ_REJECTED_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Объект отклонен",
+    examples=[examples.OBJ_REJECTED_EXAMPLE],
+)

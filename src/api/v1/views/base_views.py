@@ -2,7 +2,7 @@ from django.contrib.contenttypes.models import ContentType
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import (
     exceptions,
     mixins,
@@ -15,7 +15,7 @@ from rest_framework.decorators import action
 
 from ads.models import Ad
 from api.v1.paginators import CustomPaginator
-from api.v1.permissions import OwnerOrReadOnly, ReadOnly
+from api.v1.permissions import ModeratorOnly, OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
@@ -39,29 +39,6 @@ class BaseServiceAdViewSet(
     pagination_class = CustomPaginator
     filter_backends = (DjangoFilterBackend,)
     serializer_class = None
-
-    def get_queryset(self):
-        queryset = Service.cstm_mng.all()
-        if self.action == "list":
-            params = self.request.query_params
-            queryset = queryset.filter(
-                status=AdvertisementStatus.PUBLISHED.value
-            )
-            if "type_id" in params:
-                try:
-                    type_id = int(params.get("type_id"))
-                except ValueError:
-                    raise exceptions.ValidationError(
-                        detail=APIResponses.INVALID_PARAMETR.value,
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
-                if type_id < 0:
-                    raise exceptions.ValidationError(
-                        detail=APIResponses.INVALID_PARAMETR.value,
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
-                queryset = queryset.filter(type__id=type_id)
-        return queryset
 
     def get_permissions(self):
         if self.action == "retrieve":
@@ -476,3 +453,66 @@ class CategoryTypeViewSet(
             else:
                 queryset = queryset.filter(parent=None)
         return queryset
+
+
+@extend_schema(tags=["Moderator"])
+@extend_schema_view(
+    list=extend_schema(summary="Список объектов."),
+    responses={
+        status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_EXAMPLE,
+        status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+    },
+)
+class BaseModeratorViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Базовый вьюсет для модерации комментариев, услуг и объявлений."""
+
+    pagination_class = CustomPaginator
+    serializer_class = None
+    permission_classes = (ModeratorOnly,)
+
+    @extend_schema(
+        summary="Одобрить.",
+        methods=["POST"],
+        responses={
+            status.HTTP_200_OK: schemes.OBJ_APPROVED_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="approve",
+        url_name="approve",
+        permission_classes=(ModeratorOnly),
+    )
+    def approve(self, request, *args, **kwargs):
+        """Одобрить."""
+
+        object = self.get_object()
+        object.approve()
+
+    @extend_schema(
+        summary="Отклонить.",
+        methods=["POST"],
+        responses={
+            status.HTTP_200_OK: schemes.OBJ_REJECTED_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="reject",
+        url_name="reject",
+        permission_classes=(ModeratorOnly),
+    )
+    def reject(self, request, *args, **kwargs):
+        """Отклонить."""
+
+        object = self.get_object()
+        object.reject()

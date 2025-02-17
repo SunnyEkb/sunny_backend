@@ -9,7 +9,7 @@ from core.abstract_models import AbstractImage, TimeCreateUpdateModel
 from core.choices import CommentStatus
 from core.enums import Limits
 from comments.managers import CommentManager
-from services.tasks import delete_images_dir_task
+from services.tasks import delete_images_dir_task, notify_about_moderation_task
 
 User = get_user_model()
 
@@ -73,10 +73,22 @@ class Comment(TimeCreateUpdateModel):
                 image.delete()
             delete_images_dir_task.delay(f"comments/{self.id}")
 
-    def publish(self):
-        if self.status == CommentStatus.DRAFT.value:
+    def approve(self):
+        if self.status == CommentStatus.MODERATION.value:
             self.status = CommentStatus.PUBLISHED.value
             self.save()
+
+    def reject(self) -> None:
+        if self.status == CommentStatus.MODERATION:
+            self.status = CommentStatus.DRAFT.value
+            self.save()
+
+    def publish(self, request) -> None:
+        if self.status == CommentStatus.DRAFT.value:
+            self.status = CommentStatus.MODERATION.value
+            self.save()
+            url = self.get_admin_url(request)
+            notify_about_moderation_task.delay(url)
 
     def get_admin_url(self, request) -> str:
         """Возвращает ссылку на экземпляр модели в админке."""

@@ -20,6 +20,7 @@ class ServicePlace(models.TextChoices):
 class CommentStatus(models.IntegerChoices):
     DRAFT = 0
     PUBLISHED = 1
+    MODERATION = 2
 
 
 class AdvertisementStatus(models.IntegerChoices):
@@ -97,6 +98,8 @@ class APIResponses(models.TextChoices):
         "Расширение файлов {0} не поддерживается. Разрешенные"
         f" расширения: {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}"
     )
+    OBJECT_APPROOVED = "Объект одобрен."
+    OBJECT_REJECTED = "Объект отклонен."
 
 
 class SystemMessages(models.TextChoices):

@@ -1,5 +1,3 @@
-import sys
-
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
@@ -57,8 +55,7 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
             self.status = AdvertisementStatus.MODERATION.value
             self.save()
             url = self.get_admin_url(request)
-            if "test" not in sys.argv:
-                notify_about_moderation_task.delay(url)
+            notify_about_moderation_task.delay(url)
 
     def set_draft(self):
         with transaction.atomic():
