@@ -1,3 +1,4 @@
+from decimal import Decimal
 from enum import IntEnum
 
 
@@ -28,3 +29,7 @@ class Limits(IntEnum):
     REGISTRY_TOKEN_LIFETIME = 24
     USERNAME_MIN_LENGTH = 2
     USERNAME_MAX_LENGTH = 25
+    MAX_DIGITS_PRICE = 10
+    DECIMAL_PLACES_PRICE = 2
+    MAX_LENGTH_SUBSERVICE_TITLE = 255
+    MIN_VALUE_PRICE = Decimal(0.00)

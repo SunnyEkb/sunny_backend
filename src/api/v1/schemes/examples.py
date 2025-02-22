@@ -10,7 +10,6 @@ from core.choices import (
     ServicePlace,
 )
 
-
 USER_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Данные для регистрации",
     value={
@@ -240,6 +239,22 @@ COMMENT_NOT_AUTHOR_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.NO_PERMISSION.value},
 )
 
+PRICE_LIST_ENTRIES_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список подуслуг для создания.",
+    value=[
+        {"title": "Диагностика", "price": "2000.00"},
+        {"title": "Замена деталей", "price": "5000.00"},
+    ],
+)
+
+PRICE_LIST_ENTRIES_READ_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список подуслуг для обновления.",
+    value=[
+        {"id": 1, "title": "Диагностика", "price": "2000.00"},
+        {"id": 2, "title": "Замена деталей", "price": "5000.00"},
+    ],
+)
+
 SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список услуг",
     value={
@@ -259,6 +274,7 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "comments_quantity": 15,
         "created_at": timezone.now(),
         "is_favorited": False,
+        "price_list_entries": PRICE_LIST_ENTRIES_READ_EXAMPLE.value,
     },
 )
 
@@ -281,6 +297,7 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "comments_quantity": 15,
         "created_at": timezone.now(),
         "comments": COMMENT_LIST_EXAMPLE.value,
+        "price_list_entries": PRICE_LIST_ENTRIES_READ_EXAMPLE.value,
     },
 )
 
@@ -295,6 +312,7 @@ SERVICE_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "price": [{"маникюр": 500}],
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
+        "price_list_entries": PRICE_LIST_ENTRIES_CREATE_UPDATE_EXAMPLE.value,
     },
 )
 

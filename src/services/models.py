@@ -1,5 +1,5 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.validators import MaxValueValidator
 
 from core.abstract_models import AbstractImage, BaseTypeCategory
 from core.base_models import AbstractAdvertisement
@@ -83,3 +83,48 @@ class ServiceImage(AbstractImage):
 
     def __str__(self) -> str:
         return self.service.title
+
+
+class SubService(models.Model):
+    title = models.CharField(
+        verbose_name="Название услуги",
+        max_length=Limits.MAX_LENGTH_SUBSERVICE_TITLE,
+    )
+    price = models.DecimalField(
+        verbose_name="Стоимость услуги",
+        max_digits=Limits.MAX_DIGITS_PRICE,
+        decimal_places=Limits.DECIMAL_PLACES_PRICE,
+        validators=[MinValueValidator(Limits.MIN_VALUE_PRICE)],
+    )
+
+    class Meta:
+        verbose_name = "Услуга прайс-листа"
+        verbose_name_plural = "Услуги прайс-листа"
+
+    def __str__(self):
+        return self.title
+
+
+class PriceListEntry(models.Model):
+    main_service = models.ForeignKey(
+        Service,
+        on_delete=models.CASCADE,
+        related_name="price_list_entries",
+        verbose_name="Основная услуга",
+    )
+    sub_service = models.ForeignKey(
+        SubService,
+        on_delete=models.CASCADE,
+        related_name="main_services",
+        blank=True,
+        verbose_name="Дополнительные услуги",
+    )
+
+    class Meta:
+        verbose_name = "Запись прайс-листа"
+        verbose_name_plural = "Записи прайс-листов"
+
+    def __str__(self):
+        return (
+            f"Подуслуга {self.sub_service.title} для {self.main_service.title}"
+        )
