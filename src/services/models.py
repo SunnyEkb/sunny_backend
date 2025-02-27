@@ -1,9 +1,14 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from core.abstract_models import AbstractImage, BaseTypeCategory
+from core.abstract_models import (
+    AbstractImage,
+    BaseTypeCategory,
+    TimeCreateUpdateModel,
+)
 from core.base_models import AbstractAdvertisement
 from core.choices import ServicePlace
+from core.constants import LimitsValues
 from core.enums import Limits
 from services.managers import ServiceManager
 
@@ -35,7 +40,6 @@ class Service(AbstractAdvertisement):
         verbose_name="Тип услуги",
         related_name="types",
     )
-    price = models.JSONField("Прайс", blank=True, null=True)
     address = models.CharField(
         "Адрес",
         max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value,
@@ -85,16 +89,22 @@ class ServiceImage(AbstractImage):
         return self.service.title
 
 
-class SubService(models.Model):
+class SubService(TimeCreateUpdateModel):
+    main_service = models.ForeignKey(
+        to=Service,
+        verbose_name="Основная услуга",
+        on_delete=models.CASCADE,
+        related_name="price_list_entries",
+    )
     title = models.CharField(
         verbose_name="Название услуги",
-        max_length=Limits.MAX_LENGTH_SUBSERVICE_TITLE,
+        max_length=LimitsValues.MAX_LENGTH_SUBSERVICE_TITLE,
     )
     price = models.DecimalField(
         verbose_name="Стоимость услуги",
-        max_digits=Limits.MAX_DIGITS_PRICE,
-        decimal_places=Limits.DECIMAL_PLACES_PRICE,
-        validators=[MinValueValidator(Limits.MIN_VALUE_PRICE)],
+        max_digits=LimitsValues.MAX_DIGITS_PRICE,
+        decimal_places=LimitsValues.DECIMAL_PLACES_PRICE,
+        validators=[MinValueValidator(LimitsValues.MIN_VALUE_PRICE)],
     )
 
     class Meta:
@@ -103,28 +113,3 @@ class SubService(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class PriceListEntry(models.Model):
-    main_service = models.ForeignKey(
-        Service,
-        on_delete=models.CASCADE,
-        related_name="price_list_entries",
-        verbose_name="Основная услуга",
-    )
-    sub_service = models.ForeignKey(
-        SubService,
-        on_delete=models.CASCADE,
-        related_name="main_services",
-        blank=True,
-        verbose_name="Дополнительные услуги",
-    )
-
-    class Meta:
-        verbose_name = "Запись прайс-листа"
-        verbose_name_plural = "Записи прайс-листов"
-
-    def __str__(self):
-        return (
-            f"Подуслуга {self.sub_service.title} для {self.main_service.title}"
-        )

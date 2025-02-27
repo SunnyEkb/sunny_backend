@@ -7,13 +7,7 @@ from rest_framework import serializers
 from api.v1.serializers import CommentReadSerializer, UserReadSerializer
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
-from services.models import (
-    PriceListEntry,
-    Service,
-    ServiceImage,
-    SubService,
-    Type,
-)
+from services.models import Service, ServiceImage, SubService, Type
 from users.models import Favorites
 
 
@@ -75,29 +69,7 @@ class SubServiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubService
-        fields = ["id", "title", "price"]
-
-
-class PriceListEntrySerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для записи прайс-листа.
-    """
-
-    id = serializers.SlugRelatedField(
-        source="sub_service",
-        slug_field="id",
-        queryset=SubService.objects.all(),
-    )
-    title = serializers.SlugRelatedField(
-        source="sub_service", slug_field="title", read_only=True
-    )
-    price = serializers.SlugRelatedField(
-        source="sub_service", slug_field="price", read_only=True
-    )
-
-    class Meta:
-        model = PriceListEntry
-        fields = ["id", "title", "price"]
+        fields = ["id", "title", "price", "created_at", "updated_at"]
 
 
 class ServiceListSerializer(serializers.ModelSerializer):
@@ -108,7 +80,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
     avg_rating = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
-    price_list_entries = PriceListEntrySerializer(many=True, read_only=True)
+    price_list_entries = SubServiceSerializer(many=True, read_only=True)
 
     class Meta:
         model = Service
@@ -120,7 +92,6 @@ class ServiceListSerializer(serializers.ModelSerializer):
             "experience",
             "place_of_provision",
             "type",
-            "price",
             "status",
             "images",
             "salon_name",
@@ -173,7 +144,6 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             "experience",
             "place_of_provision",
             "type_id",
-            "price",
             "type",
             "salon_name",
             "address",
@@ -186,11 +156,11 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
 
         with transaction.atomic():
             type = get_object_or_404(Type, pk=validated_data.pop("type_id"))
-            main_service = Service.objects.create(**validated_data)
-            self.__ad_type(main_service, type)
             price_list_entries_data = validated_data.pop(
                 "price_list_entries", []
             )
+            main_service = Service.objects.create(**validated_data)
+            self.__ad_type(main_service, type)
             if price_list_entries_data:
                 self.__add_price_list_entries(
                     main_service, price_list_entries_data
@@ -210,9 +180,10 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
                         instance.types.remove(t)
                     self.__ad_type(instance, type)
 
-            self.__update_price_list_entries(
-                instance, validated_data.pop("price_list_entries", [])
-            )
+            if "price_list_entries" in validated_data:
+                instance = self.__update_price_list_entries(
+                    instance, validated_data.pop("price_list_entries", [])
+                )
 
             instance = super().update(instance, validated_data)
         return instance
@@ -229,23 +200,19 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         Метод создания записей для прайс-листа из предварительных данных о
         подуслугах.
         """
-        sub_services = [SubService(**data) for data in price_list_entries_data]
-        created_sub_services = SubService.objects.bulk_create(sub_services)
-        price_list_entries = [
-            PriceListEntry(main_service=instance, sub_service=sub_service)
-            for sub_service in created_sub_services
+        sub_services = [
+            SubService(main_service=instance, **data)
+            for data in price_list_entries_data
         ]
-        PriceListEntry.objects.bulk_create(price_list_entries)
+        SubService.objects.bulk_create(sub_services)
 
     def __update_price_list_entries(
         self, instance: Service, price_list_entries_data: list[dict]
     ) -> Service:
         """Метод обновления записей для прайс-листа и подуслуг."""
-        existing_sub_service_ids = [
-            entry.sub_service.id for entry in instance.price_list_entries.all()
-        ]
-        SubService.objects.filter(id__in=existing_sub_service_ids).delete()
+        instance.price_list_entries.all().delete()
         self.__add_price_list_entries(instance, price_list_entries_data)
+        return instance
 
     def to_representation(self, instance):
         serializer = ServiceListSerializer(instance)
