@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from django.core.exceptions import FieldDoesNotExist
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.test import TestCase
 

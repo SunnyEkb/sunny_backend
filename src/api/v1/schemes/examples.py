@@ -265,7 +265,6 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type": [1, 2, 3],
-        "price": [{"маникюр": 500}],
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
         "address": "Lenina st, 8/13",
@@ -288,7 +287,6 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type": [1, 2, 3],
-        "price": [{"маникюр": 500}],
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
         "address": "Lenina st, 8/13",
@@ -309,7 +307,6 @@ SERVICE_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS.value,
         "type_id": 2,
-        "price": [{"маникюр": 500}],
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
         "price_list_entries": PRICE_LIST_ENTRIES_CREATE_UPDATE_EXAMPLE.value,
@@ -321,7 +318,6 @@ SERVICE_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={
         "description": "string",
         "place_of_provision": ServicePlace.OPTIONS.value,
-        "price": [{"маникюр": 500}],
         "address": "Lenina st, 8/13",
     },
 )
