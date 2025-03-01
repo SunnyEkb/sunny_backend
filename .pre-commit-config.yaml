@@ -30,3 +30,15 @@ repos:
       language: system
       types: [python]
       pass_filenames: false
+
+# Проверка unit тестами
+-   repo: local
+    hooks:
+    - id: django-tests
+      name: Check django tests
+      entry: ./src/manage.py test ./src --settings config.settings.test
+      language: system
+      pass_filenames: false
+      types: [python]
+      verbose: true
+      always_run: true
