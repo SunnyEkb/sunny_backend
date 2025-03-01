@@ -68,6 +68,12 @@ class BaseTypeCategory(models.Model):
         on_delete=models.PROTECT,
         db_index=True,
     )
+    image = models.ImageField(
+        "изображение",
+        upload_to="categories/",
+        blank=True,
+        null=True,
+    )
 
     objects = models.Manager()
     cstm_mng = TypeCategoryManager()
