@@ -26,7 +26,7 @@ class TypeGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Type
-        fields = ("id", "title", "subcategories")
+        fields = ("id", "title", "image", "subcategories")
 
     def get_subcategories(self, obj):
         if obj.subcategories.exists():
