@@ -12,30 +12,35 @@ logger = logging.getLogger("django")
 
 @async_to_sync
 async def send_telegram_message(
-    message: str, chat_id: str = settings.TELEGRAM_SUPPORT_CHAT_ID
+    message: str, chat_id: str, message_thread_id: str | None
 ) -> None:
     """Отправка сообщения в телеграм чат."""
 
     bot = telegram.Bot(token=settings.TELEGRAM_TOKEN)
     async with bot:
         await bot.send_message(
-            chat_id=chat_id,
-            text=message,
+            chat_id=chat_id, text=message, message_thread_id=message_thread_id
         )
 
 
-@async_to_sync
-async def notify_about_moderation(url: str) -> None:
+def send_error_message(message: str) -> None:
+    """Отправка ошибки в телеграм чат."""
+
+    send_telegram_message(
+        message=message,
+        chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
+        message_thread_id=settings.TELEGRAM_SUPPORT_CHAT_TOPIC,
+    )
+
+
+def notify_about_moderation(url: str) -> None:
     """Отправка уведомления о необходимости модерации."""
 
-    bot = telegram.Bot(token=settings.TELEGRAM_TOKEN)
-    for chat_id in settings.TELEGRAM_MODERATORS_CHAT_ID:
-        async with bot:
-            await bot.send_message(
-                chat_id=chat_id,
-                text=f"Необходима модерация. Ссылка: {url}",
-                message_thread_id=settings.TELEGRAM_MODERATORS_CHAT_TOPIC,
-            )
+    send_telegram_message(
+        message=f"Необходима модерация. Ссылка: {url}",
+        chat_id=settings.TELEGRAM_MODERATORS_CHAT_ID,
+        message_thread_id=settings.TELEGRAM_MODERATORS_CHAT_TOPIC,
+    )
 
 
 def delete_image_files(path: str):

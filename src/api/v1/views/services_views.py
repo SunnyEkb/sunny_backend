@@ -4,16 +4,12 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import (
-    mixins,
-    viewsets,
-    status,
-)
+from rest_framework import mixins, status, viewsets
 
-from api.v1.filters import ServiceFilter
-from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from api.v1.filters import ServiceFilter
+from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1.validators import validate_id
 from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
 from core.choices import AdvertisementStatus
@@ -83,6 +79,7 @@ class TypeViewSet(CategoryTypeViewSet):
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.SERVICE_AD_NOT_ACCEPT_406,
         },
         examples=[schemes.SERVICE_CREATE_UPDATE_EXAMPLE],
     ),
@@ -93,6 +90,7 @@ class TypeViewSet(CategoryTypeViewSet):
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.SERVICE_AD_NOT_ACCEPT_406,
         },
         examples=[schemes.SERVICE_PARTIAL_UPDATE_EXAMPLE],
     ),

@@ -2,15 +2,11 @@ import sys
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
+    OpenApiParameter,
     extend_schema,
     extend_schema_view,
-    OpenApiParameter,
 )
-from rest_framework import (
-    mixins,
-    status,
-    viewsets,
-)
+from rest_framework import mixins, status, viewsets
 
 from ads.models import Ad, AdImage, Category
 from api.v1 import schemes
@@ -87,6 +83,7 @@ class CategoryViewSet(CategoryTypeViewSet):
             status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.SERVICE_AD_NOT_ACCEPT_406,
         },
     ),
     partial_update=extend_schema(
@@ -97,6 +94,7 @@ class CategoryViewSet(CategoryTypeViewSet):
             status.HTTP_200_OK: schemes.AD_RETRIEVE_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+            status.HTTP_406_NOT_ACCEPTABLE: schemes.SERVICE_AD_NOT_ACCEPT_406,
         },
     ),
     destroy=extend_schema(
