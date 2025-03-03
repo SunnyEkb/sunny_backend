@@ -4,7 +4,6 @@ from django.db import models
 from core.abstract_models import (
     AbstractImage,
     BaseTypeCategory,
-    TimeCreateUpdateModel,
 )
 from core.base_models import AbstractAdvertisement
 from core.choices import ServicePlace
@@ -89,27 +88,29 @@ class ServiceImage(AbstractImage):
         return self.service.title
 
 
-class SubService(TimeCreateUpdateModel):
+class SubService(models.Model):
+    """Позиция прайс-листа."""
+
     main_service = models.ForeignKey(
         to=Service,
-        verbose_name="Основная услуга",
+        verbose_name="Услуга",
         on_delete=models.CASCADE,
         related_name="price_list_entries",
     )
     title = models.CharField(
-        verbose_name="Название услуги",
+        verbose_name="Наименование",
         max_length=LimitsValues.MAX_LENGTH_SUBSERVICE_TITLE,
     )
     price = models.DecimalField(
-        verbose_name="Стоимость услуги",
+        verbose_name="Цена",
         max_digits=LimitsValues.MAX_DIGITS_PRICE,
         decimal_places=LimitsValues.DECIMAL_PLACES_PRICE,
         validators=[MinValueValidator(LimitsValues.MIN_VALUE_PRICE)],
     )
 
     class Meta:
-        verbose_name = "Услуга прайс-листа"
-        verbose_name_plural = "Услуги прайс-листа"
+        verbose_name = "Позиция прайс-листа"
+        verbose_name_plural = "Позиции прайс-листов"
 
     def __str__(self):
         return self.title

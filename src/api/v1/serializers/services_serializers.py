@@ -69,7 +69,7 @@ class SubServiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubService
-        fields = ["id", "title", "price", "created_at", "updated_at"]
+        fields = ["id", "title", "price"]
 
 
 class ServiceListSerializer(serializers.ModelSerializer):
@@ -196,10 +196,8 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
     def __add_price_list_entries(
         self, instance: Service, price_list_entries_data: list[dict]
     ) -> None:
-        """
-        Метод создания записей для прайс-листа из предварительных данных о
-        подуслугах.
-        """
+        """Создание записей прайс-листа."""
+
         sub_services = [
             SubService(main_service=instance, **data)
             for data in price_list_entries_data
@@ -209,7 +207,8 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
     def __update_price_list_entries(
         self, instance: Service, price_list_entries_data: list[dict]
     ) -> Service:
-        """Метод обновления записей для прайс-листа и подуслуг."""
+        """Обновление записей прайс-листа."""
+
         instance.price_list_entries.all().delete()
         self.__add_price_list_entries(instance, price_list_entries_data)
         return instance

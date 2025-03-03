@@ -90,14 +90,6 @@ class SubServiceModelTest(TestCase):
                 "field_name": "main_service",
                 "expected_type": models.ForeignKey,
             },
-            {
-                "field_name": "created_at",
-                "expected_type": models.DateTimeField,
-            },
-            {
-                "field_name": "updated_at",
-                "expected_type": models.DateTimeField,
-            },
         ]
         error_message_template = (
             "Тип данных поля {field_name} должен быть {expected_type}."
@@ -119,7 +111,7 @@ class SubServiceModelTest(TestCase):
                     )
                 except FieldDoesNotExist:
                     self.fail(
-                        f"Поле {case["field_name"]} должно присутствовать в "
+                        f"Поле {case['field_name']} должно присутствовать в "
                         f"модели SubService."
                     )
 
@@ -180,11 +172,11 @@ class SubServiceModelTest(TestCase):
         meta_attributes_test_data = [
             {
                 "attribute": "verbose_name",
-                "expected_value": "Услуга прайс-листа",
+                "expected_value": "Позиция прайс-листа",
             },
             {
                 "attribute": "verbose_name_plural",
-                "expected_value": "Услуги прайс-листа",
+                "expected_value": "Позиции прайс-листов",
             },
         ]
         error_message_template = (
