@@ -171,8 +171,8 @@ SERVICE_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
 
 SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceCreateUpdateSerializer,
-    description="Услуга содана",
-    examples=[examples.SERVICE_CREATE_UPDATE_EXAMPLE],
+    description="Услуга создана",
+    examples=[examples.SERVICE_LIST_EXAMPLE],
 )
 
 SERVICE_AD_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
