@@ -4,16 +4,12 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import (
-    mixins,
-    viewsets,
-    status,
-)
+from rest_framework import mixins, status, viewsets
 
-from api.v1.filters import ServiceFilter
-from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from api.v1.filters import ServiceFilter
+from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1.validators import validate_id
 from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
 from core.choices import AdvertisementStatus
