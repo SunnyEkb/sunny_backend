@@ -1,6 +1,17 @@
 name: sunny_ekb
 
 services:
+  es:
+      image: elasticsearch:7.8.1
+      container_name: es
+      restart: always
+      environment:
+        - discovery.type=single-node
+      ports:
+        - "9200:9200"
+      volumes:
+        - elasticsearch_data:/usr/share/elasticsearch/data
+
   sunny_db:
     container_name: sunny_db
     image: postgres:16.1-alpine
@@ -74,6 +85,7 @@ services:
     volumes:
       - sunny_static_value:/app/static/
       - sunny_media_value:/app/media/
+      - sunny_data_store_value:/app/data_store/
     env_file:
       - ./.env
     command:
@@ -89,8 +101,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      es:
+        condition: service_started
 
 volumes:
   sunny_static_value:
   sunny_media_value:
+  sunny_data_store_value:
   sunny_ekb_data:
+  elasticsearch_data:
