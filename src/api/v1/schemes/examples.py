@@ -163,11 +163,13 @@ TYPE_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
             {
                 "id": 3,
                 "title": "Массаж",
+                "image": "url",
                 "subcategories": [
                     {
                         "id": 4,
                         "title": "Массаж спины",
                         "subcategories": None,
+                        "image": None,
                     },
                 ],
             },
@@ -180,6 +182,7 @@ TYPE_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
     value={
         "id": 1,
         "title": "Красота и здоровье",
+        "image": "url",
     },
 )
 
@@ -192,11 +195,13 @@ CATEGORY_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
             {
                 "id": 3,
                 "title": "Массаж",
+                "image": "url",
                 "subcategories": [
                     {
                         "id": 4,
                         "title": "Массаж спины",
                         "subcategories": None,
+                        "image": None,
                     },
                 ],
             },
@@ -209,6 +214,7 @@ CATEGORY_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
     value={
         "id": 1,
         "title": "Красота и здоровье",
+        "image": "url",
     },
 )
 
