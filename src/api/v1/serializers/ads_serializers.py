@@ -170,4 +170,4 @@ class CategoryGetWithoutSubCatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ("id", "title")
+        fields = ("id", "title", "image")
