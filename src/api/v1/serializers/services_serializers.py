@@ -16,7 +16,7 @@ class TypeGetWithoutSubCatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Type
-        fields = ("id", "title")
+        fields = ("id", "title", "image")
 
 
 class TypeGetSerializer(serializers.ModelSerializer):
