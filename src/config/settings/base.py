@@ -95,7 +95,7 @@ DATABASES = {
     }
 }
 
-ELASTICSEARCH_DSL_HOSTS = os.getenv(
+ELASTICSEARCH_DSL_HOSTS = getenv(
     "ELASTICSEARCH_DSL_HOSTS", default="localhost:9200"
 ).split(", ")
 

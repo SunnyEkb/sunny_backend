@@ -15,3 +15,5 @@ CHANNEL_LAYERS = {
 
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
+
+INSTALLED_APPS.remove("django_elasticsearch_dsl")  # noqa

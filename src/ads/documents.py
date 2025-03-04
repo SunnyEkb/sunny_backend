@@ -3,43 +3,38 @@ from django_elasticsearch_dsl import Document
 from django_elasticsearch_dsl import fields
 from django_elasticsearch_dsl.registries import registry
 
-from core.choices import ServicePlace
-from services.models import Service
+from ads.models import Ad
+from core.choices import AdState
 
 User = get_user_model()
 
 
 @registry.register_document
-class ServiceDocument(Document):
+class AdDocument(Document):
     provider = fields.ObjectField(
         properties={
             "email": fields.TextField(),
             "id": fields.IntegerField(),
         }
     )
-    place_of_provision = fields.TextField()
+    condition = fields.TextField()
 
-    def prepare_place_of_provision(self, instance):
-        if instance.place_of_provision == ServicePlace.HOUSE_CALL:
-            return "Выезд"
-        if instance.place_of_provision == ServicePlace.OFFICE:
-            return "В офисе"
-        if instance.place_of_provision == ServicePlace.ON_LINE:
-            return "On line"
-        return "По выбору"
+    def prepare_condition(self, instance):
+        if instance.place_of_provision == AdState.USED:
+            return "Б/у"
+        return "Новый"
 
     class Index:
-        name = "services"
+        name = "ads"
         settings = {"number_of_shards": 1, "number_of_replicas": 0}
 
     class Django:
-        model = Service
+        model = Ad
         fields = [
             "id",
             "title",
             "description",
-            "address",
-            "salon_name",
+            "price",
         ]
 
         related_models = [User]
@@ -49,4 +44,4 @@ class ServiceDocument(Document):
 
     def get_instances_from_related(self, related_instance):
         if isinstance(related_instance, User):
-            return related_instance.services.all()
+            return related_instance.ads.all()
