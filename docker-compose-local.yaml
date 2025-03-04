@@ -18,7 +18,7 @@ services:
     volumes:
       - sunny_ekb_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - .env
     ports:
       - "5432:5432"
     healthcheck:
@@ -87,7 +87,7 @@ services:
       - sunny_media_value:/app/media/
       - sunny_data_store_value:/app/data_store/
     env_file:
-      - ./.env
+      - .env
     command:
       - /bin/sh
       - -c
