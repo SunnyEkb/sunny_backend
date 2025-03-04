@@ -1,10 +1,10 @@
 from channels.db import database_sync_to_async
+from channels.exceptions import DenyConnection
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.http import parse_cookie
 from django.utils.deprecation import MiddlewareMixin
-from jwt import decode
 from rest_framework_simplejwt.tokens import UntypedToken
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 User = get_user_model()
 
@@ -35,19 +35,31 @@ class CookieAuthMiddleware:
         self.app = app
 
     async def __call__(self, scope, receive, send):
-        token = scope["cookies"].get(settings.SIMPLE_JWT["AUTH_COOKIE"])
-        try:
-            UntypedToken(token)
-        except (InvalidToken, TokenError):
-            scope["user"] = None
-            return
-        else:
-            user_data = decode(
-                jwt=token,
-                key=settings.SIMPLE_JWT["SIGNING_KEY"],
-                algorithms=[settings.SIMPLE_JWT["ALGORITHM"]],
+        if "headers" not in scope:
+            raise ValueError(
+                "CookieMiddleware was passed a scope that did not have a "
+                "headers key (make sure it is only passed HTTP or WebSocket "
+                "connections)"
             )
-            user = await get_user_from_db(user_data["user_id"])
+        for name, value in scope.get("headers", []):
+            if name == b"cookie":
+                cookies = parse_cookie(value.decode("latin1"))
+                break
+        else:
+            raise DenyConnection("Empty cookies")
+
+        scope = dict(scope, cookies=cookies)
+        token = scope["cookies"].get(settings.SIMPLE_JWT["AUTH_COOKIE"], None)
+        try:
+            user_id = UntypedToken(token).get("user_id")
+        except Exception:
+            raise DenyConnection("Invalid token")
+        if (
+            user_id is None
+            or (user := await get_user_from_db(user_id)) is None
+        ):
+            raise DenyConnection("User does not exist")
+        else:
             scope["user"] = user
 
         return await self.app(scope, receive, send)

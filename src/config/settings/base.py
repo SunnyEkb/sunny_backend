@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "services",
     "ads",
     "comments",
+    "chat",
 ]
 
 MIDDLEWARE = [
