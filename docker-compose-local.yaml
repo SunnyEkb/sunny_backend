@@ -2,15 +2,15 @@ name: sunny_ekb
 
 services:
   es:
-      image: elasticsearch:7.8.1
-      container_name: es
-      restart: always
-      environment:
-        - discovery.type=single-node
-      ports:
-        - "9200:9200"
-      volumes:
-        - elasticsearch_data:/usr/share/elasticsearch/data
+    image: elasticsearch:7.8.1
+    container_name: es
+    restart: always
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
 
   sunny_db:
     container_name: sunny_db
@@ -33,7 +33,6 @@ services:
     image: nginx:1.21.3-alpine
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx_loc.conf:/etc/nginx/conf.d/default.conf
       - sunny_static_value:/var/html/static/
