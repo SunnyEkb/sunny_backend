@@ -96,11 +96,15 @@ DATABASES = {
 }
 
 ELASTICSEARCH_DSL_HOSTS = getenv(
-    "ELASTICSEARCH_DSL_HOSTS", default="es:9200"
+    "ELASTICSEARCH_DSL_HOSTS", default="localhost:9200"
 ).split(", ")
+ELASTIC_PASSWORD = getenv("ELASTIC_PASSWORD", default="password")
+ELASTIC_USERNAME = getenv("ELASTIC_USERNAME", default="elastic")
 
 ELASTICSEARCH_DSL = {
     "default": {"hosts": (ELASTICSEARCH_DSL_HOSTS)},
+    #    "basic_auth": (ELASTIC_USERNAME, ELASTIC_PASSWORD),
+    #    "verify_certs": False,
 }
 
 AUTH_USER_MODEL = "users.CustomUser"
