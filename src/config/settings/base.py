@@ -100,6 +100,9 @@ ELASTICSEARCH_DSL_HOSTS = getenv(
 ).split(", ")
 ELASTIC_PASSWORD = getenv("ELASTIC_PASSWORD", default="password")
 ELASTIC_USERNAME = getenv("ELASTIC_USERNAME", default="elastic")
+ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
+    "django_elasticsearch_dsl.signals.CelerySignalProcessor"
+)
 
 ELASTICSEARCH_DSL = {
     "default": {"hosts": (ELASTICSEARCH_DSL_HOSTS)},
