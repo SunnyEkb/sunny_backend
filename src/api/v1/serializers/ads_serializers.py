@@ -18,7 +18,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ("id", "title", "subcategories")
+        fields = ("id", "title", "image", "subcategories")
 
     def get_subcategories(self, obj):
         if obj.subcategories.exists():
@@ -170,4 +170,4 @@ class CategoryGetWithoutSubCatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ("id", "title")
+        fields = ("id", "title", "image")
