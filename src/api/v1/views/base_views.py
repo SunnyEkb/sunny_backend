@@ -1,5 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.shortcuts import get_current_site
 from django.db.transaction import atomic
+from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -459,7 +461,6 @@ class CategoryTypeViewSet(
 
 @extend_schema(tags=["Moderator"])
 @extend_schema_view(
-    list=extend_schema(summary="Список объектов."),
     responses={
         status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_EXAMPLE,
         status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
@@ -539,7 +540,18 @@ class BaseModeratorViewSet(
         )
 
     def _get_url(self) -> str:
-        raise NotImplementedError
+        obj = self.get_object()
+        domain = get_current_site(self.request).domain
+        return "".join(
+            [
+                "https://",
+                domain,
+                reverse(
+                    f"{obj.__class__.__name__.lower()}s-detail",
+                    kwargs={"pk": obj.id},
+                ),
+            ]
+        )
 
     def _get_receiver(self) -> str:
         raise NotImplementedError

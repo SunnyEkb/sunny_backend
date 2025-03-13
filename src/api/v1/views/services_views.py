@@ -1,5 +1,4 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from django.urls import reverse
 from drf_spectacular.utils import (
     OpenApiParameter,
     extend_schema,
@@ -171,6 +170,9 @@ class ServiceImageViewSet(
         return super().destroy(request, *args, **kwargs)
 
 
+@extend_schema_view(
+    list=extend_schema(summary="Список услуг для модерации."),
+)
 class ServiceModerationViewSet(BaseModeratorViewSet):
     """Модерация услуг."""
 
@@ -178,10 +180,6 @@ class ServiceModerationViewSet(BaseModeratorViewSet):
         status=AdvertisementStatus.MODERATION.value
     )
     serializer_class = api_serializers.ServiceForModerationSerializer
-
-    def _get_url(self):
-        obj = self.get_object()
-        return reverse("services-detail", kwargs={"pk": obj.id})
 
     def _get_receiver(self):
         return self.get_object().provider
