@@ -91,6 +91,10 @@ class CommentAuthorOnly(BasePermission):
 
 
 class ModeratorOnly(BasePermission):
+    """
+    Разрешения на совершение действий только модератору.
+    """
+
     def has_permission(self, request, view):
         return request.user.is_authenticated
 

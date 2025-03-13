@@ -115,6 +115,8 @@ class Notifications(models.TextChoices):
     WELCOME = (
         "{0}, приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
     )
+    APPROVE_OBJECT = "Модерация успешно пройдена."
+    REJECT_OBJECT = "Модерация не пройдена."
 
 
 class EmailSubjects(models.TextChoices):

@@ -1,4 +1,5 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from django.urls import reverse
 from drf_spectacular.utils import (
     OpenApiParameter,
     extend_schema,
@@ -11,7 +12,11 @@ from api.v1 import serializers as api_serializers
 from api.v1.filters import ServiceFilter
 from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
 from api.v1.validators import validate_id
-from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
+from api.v1.views.base_views import (
+    BaseModeratorViewSet,
+    BaseServiceAdViewSet,
+    CategoryTypeViewSet,
+)
 from core.choices import AdvertisementStatus
 from services.models import Service, ServiceImage, Type
 
@@ -164,3 +169,19 @@ class ServiceImageViewSet(
         instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)
+
+
+class ServiceModerationViewSet(BaseModeratorViewSet):
+    """Модерация услуг."""
+
+    queryset = Service.cstm_mng.filter(
+        status=AdvertisementStatus.MODERATION.value
+    )
+    serializer_class = api_serializers.ServiceForModerationSerializer
+
+    def _get_url(self):
+        obj = self.get_object()
+        return reverse("services-detail", kwargs={"pk": obj.id})
+
+    def _get_receiver(self):
+        return self.get_object().provider

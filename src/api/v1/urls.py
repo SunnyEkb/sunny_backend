@@ -16,6 +16,7 @@ from api.v1.views import (
     LogoutView,
     RegisrtyView,
     ServiceImageViewSet,
+    ServiceModerationViewSet,
     ServiceViewSet,
     TypeViewSet,
     VerificationView,
@@ -38,6 +39,11 @@ api_v1_router.register(
 api_v1_router.register("favorite", FavoritesViewSet, "favorite")
 api_v1_router.register("types", TypeViewSet, basename="types")
 api_v1_router.register("services", ServiceViewSet, basename="services")
+api_v1_router.register(
+    "moderator/services",
+    ServiceModerationViewSet,
+    basename="moderation_services",
+)
 api_v1_router.register(
     "serviceimage", ServiceImageViewSet, basename="serviceimage"
 )

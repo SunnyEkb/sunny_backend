@@ -36,7 +36,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
 
 class CommentForModerationSerializer(CommentCreateSerializer):
-    """Сериализатор для модерации объявлений."""
+    """Сериализатор для модерации комментариев."""
 
     images = CommentImageRetrieveSerializer(many=True, read_only=True)
 

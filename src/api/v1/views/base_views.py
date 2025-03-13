@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
+from django.db.transaction import atomic
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -18,11 +19,12 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import ModeratorOnly, OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from bad_word_filter.tasks import moderate_comment
 from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
-from core.choices import AdvertisementStatus, APIResponses
+from core.choices import AdvertisementStatus, APIResponses, Notifications
+from notifications.models import Notification
 from services.models import Service
-from bad_word_filter.tasks import moderate_comment
 from users.models import Favorites
 
 
@@ -476,6 +478,7 @@ class BaseModeratorViewSet(
     @extend_schema(
         summary="Одобрить.",
         methods=["POST"],
+        request=None,
         responses={
             status.HTTP_200_OK: schemes.OBJ_APPROVED_200_OK,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
@@ -487,17 +490,24 @@ class BaseModeratorViewSet(
         methods=("post",),
         url_path="approve",
         url_name="approve",
-        permission_classes=(ModeratorOnly),
+        permission_classes=(ModeratorOnly,),
     )
     def approve(self, request, *args, **kwargs):
         """Одобрить."""
 
         object = self.get_object()
-        object.approve()
+        with atomic():
+            self._create_notification(text=Notifications.APPROVE_OBJECT.value)
+            object.approve()
+        return response.Response(
+            status=status.HTTP_200_OK,
+            data=APIResponses.OBJECT_APPROOVED.value,
+        )
 
     @extend_schema(
         summary="Отклонить.",
         methods=["POST"],
+        request=None,
         responses={
             status.HTTP_200_OK: schemes.OBJ_REJECTED_200_OK,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
@@ -509,10 +519,27 @@ class BaseModeratorViewSet(
         methods=("post",),
         url_path="reject",
         url_name="reject",
-        permission_classes=(ModeratorOnly),
+        permission_classes=(ModeratorOnly,),
     )
     def reject(self, request, *args, **kwargs):
         """Отклонить."""
 
         object = self.get_object()
-        object.reject()
+        with atomic():
+            self._create_notification(text=Notifications.REJECT_OBJECT.value)
+            object.reject()
+        return response.Response(
+            status=status.HTTP_200_OK,
+            data=APIResponses.OBJECT_REJECTED.value,
+        )
+
+    def _create_notification(self, text: dict):
+        Notification.objects.create(
+            link=self._get_url(), receiver=self._get_receiver(), text=text
+        )
+
+    def _get_url(self) -> str:
+        raise NotImplementedError
+
+    def _get_receiver(self) -> str:
+        raise NotImplementedError
