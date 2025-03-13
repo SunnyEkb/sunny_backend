@@ -5,7 +5,7 @@ from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema
 from rest_framework import (
     exceptions,
     mixins,
@@ -460,12 +460,6 @@ class CategoryTypeViewSet(
 
 
 @extend_schema(tags=["Moderator"])
-@extend_schema_view(
-    responses={
-        status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_EXAMPLE,
-        status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-    },
-)
 class BaseModeratorViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
@@ -476,23 +470,6 @@ class BaseModeratorViewSet(
     serializer_class = None
     permission_classes = (ModeratorOnly,)
 
-    @extend_schema(
-        summary="Одобрить.",
-        methods=["POST"],
-        request=None,
-        responses={
-            status.HTTP_200_OK: schemes.OBJ_APPROVED_200_OK,
-            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
-        },
-    )
-    @action(
-        detail=True,
-        methods=("post",),
-        url_path="approve",
-        url_name="approve",
-        permission_classes=(ModeratorOnly,),
-    )
     def approve(self, request, *args, **kwargs):
         """Одобрить."""
 
@@ -505,23 +482,6 @@ class BaseModeratorViewSet(
             data=APIResponses.OBJECT_APPROOVED.value,
         )
 
-    @extend_schema(
-        summary="Отклонить.",
-        methods=["POST"],
-        request=None,
-        responses={
-            status.HTTP_200_OK: schemes.OBJ_REJECTED_200_OK,
-            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
-        },
-    )
-    @action(
-        detail=True,
-        methods=("post",),
-        url_path="reject",
-        url_name="reject",
-        permission_classes=(ModeratorOnly,),
-    )
     def reject(self, request, *args, **kwargs):
         """Отклонить."""
 
