@@ -35,15 +35,19 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         fields = ("rating", "feedback")
 
 
-class CommentReadSerializer(CommentCreateSerializer):
-    """Сериализатор для чтения комментария."""
+class CommentForModerationSerializer(CommentCreateSerializer):
+    """Сериализатор для модерации объявлений."""
 
-    author = UserReadSerializer(read_only=True)
     images = CommentImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta(CommentCreateSerializer.Meta):
-        fields = CommentCreateSerializer.Meta.fields + (
-            "id",
-            "author",
-            "images",
-        )
+        fields = CommentCreateSerializer.Meta.fields + ("id", "images")
+
+
+class CommentReadSerializer(CommentForModerationSerializer):
+    """Сериализатор для чтения комментария."""
+
+    author = UserReadSerializer(read_only=True)
+
+    class Meta(CommentForModerationSerializer.Meta):
+        fields = CommentCreateSerializer.Meta.fields + ("author",)

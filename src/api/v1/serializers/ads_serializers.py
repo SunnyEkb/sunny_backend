@@ -171,3 +171,24 @@ class CategoryGetWithoutSubCatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ("id", "title", "image")
+
+
+class AdForModerationSerializer(serializers.ModelSerializer):
+    """Сериализатор для модерации объявлений."""
+
+    images = AdImageRetrieveSerializer(many=True, read_only=True)
+
+    class Meta:
+        mosel = Ad
+        fields = [
+            "id",
+            "title",
+            "description",
+            "price",
+            "status",
+            "images",
+            "condition",
+            "category",
+            "created_at",
+            "updated_at",
+        ]

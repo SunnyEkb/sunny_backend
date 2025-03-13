@@ -225,3 +225,27 @@ class ServiceRetrieveSerializer(ServiceListSerializer):
 
     class Meta(ServiceListSerializer.Meta):
         fields = ServiceListSerializer.Meta.fields + ("comments",)
+
+
+class ServiceForModerationSerializer(serializers.ModelSerializer):
+    """Сериализатор для модерации услуг."""
+
+    images = ServiceImageRetrieveSerializer(many=True, read_only=True)
+    price_list_entries = SubServiceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Service
+        fields = (
+            "id",
+            "title",
+            "description",
+            "experience",
+            "place_of_provision",
+            "status",
+            "images",
+            "salon_name",
+            "address",
+            "created_at",
+            "updated_at",
+            "price_list_entries",
+        )
