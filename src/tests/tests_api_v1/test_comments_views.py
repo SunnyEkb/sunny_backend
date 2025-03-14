@@ -52,6 +52,7 @@ class TestCommentsView(TestServiceFixtures):
                         app_label="services", model="service"
                     ),
                     object_id=self.published_service.id,
+                    status=CommentStatus.PUBLISHED.value,
                 )
             ),
         )
