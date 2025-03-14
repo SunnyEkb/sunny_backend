@@ -179,7 +179,7 @@ class AdForModerationSerializer(serializers.ModelSerializer):
     images = AdImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta:
-        mosel = Ad
+        model = Ad
         fields = [
             "id",
             "title",

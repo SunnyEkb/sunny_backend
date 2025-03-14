@@ -285,6 +285,11 @@ AD_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.AD_LIST_EXAMPLE],
 )
 
+AD_LIST_FOR_MODERATION_OK_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.AdForModerationSerializer,
+    description="Получение списка объявлений модерации",
+)
+
 AD_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение информации об объявлении",

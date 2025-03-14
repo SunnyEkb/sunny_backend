@@ -216,6 +216,10 @@ class TestAdsFixtures(TestUserFixtures):
             provider=cls.user_2,
             status=AdvertisementStatus.HIDDEN.value,
         )
+        cls.ad_moderation = factories.AdFactory(
+            provider=cls.user_2,
+            status=AdvertisementStatus.MODERATION.value,
+        )
         cls.ad_hidden.category.set([cls.category_1])
         cls.ad_title = "Super_ad"
         cls.new_ad_title = "New_Super_ad"

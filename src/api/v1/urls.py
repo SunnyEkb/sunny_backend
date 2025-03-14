@@ -4,8 +4,9 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from api.v1.views import (
     AdAvatarView,
-    AdViewSet,
     AdImageViewSet,
+    AdModerationViewSet,
+    AdViewSet,
     CategoryViewSet,
     ChangePassowrdView,
     CommentCreateDestroyViewSet,
@@ -43,6 +44,11 @@ api_v1_router.register(
     "moderator/services",
     ServiceModerationViewSet,
     basename="moderation_services",
+)
+api_v1_router.register(
+    "moderator/ads",
+    AdModerationViewSet,
+    basename="moderation_ads",
 )
 api_v1_router.register(
     "serviceimage", ServiceImageViewSet, basename="serviceimage"
