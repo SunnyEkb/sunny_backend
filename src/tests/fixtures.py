@@ -8,7 +8,7 @@ from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
 from ads.models import AdImage
-from core.choices import AdState, AdvertisementStatus, CommentStatus
+from core.choices import AdState, AdvertisementStatus, CommentStatus, Role
 from services.models import ServiceImage
 from tests import factories
 from users.models import Favorites
@@ -85,6 +85,10 @@ class TestUserFixtures(BaseTestCase):
         cls.user_2 = factories.CustomUserFactory(password=cls.password)
         cls.user_3 = factories.CustomUserFactory()
         cls.user_4 = factories.CustomUserFactory(password=cls.password)
+        cls.moderator = factories.CustomUserFactory(
+            password=cls.password,
+            role=Role.MODERATOR,
+        )
         cls.unverified_user = factories.CustomUserFactory(
             password=cls.password, is_active=False
         )
@@ -101,6 +105,8 @@ class TestUserFixtures(BaseTestCase):
         cls.anon_client = APIClient()
         cls.client_for_deletion = APIClient()
         cls.client_for_deletion.force_authenticate(cls.user_for_deletion)
+        cls.client_moderator = APIClient()
+        cls.client_moderator.force_authenticate(cls.moderator)
 
 
 class TestServiceFixtures(TestUserFixtures):
