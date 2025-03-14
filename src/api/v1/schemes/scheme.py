@@ -249,6 +249,11 @@ COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     examples=[examples.COMMENT_LIST_EXAMPLE],
 )
 
+COMMENT_LIST_FOR_MODERATION_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.CommentForModerationSerializer,
+    description="Список комментариев для модерации",
+)
+
 CANT_ADD_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Объект не может быть добавлен в Избранное",

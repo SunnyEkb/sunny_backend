@@ -507,7 +507,7 @@ FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
 
 OBJ_APPROVED_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Одобрено",
-    value={"subject": APIResponses.OBJECT_APPROOVED.value},
+    value={"subject": APIResponses.OBJECT_APPROVED.value},
 )
 
 OBJ_REJECTED_EXAMPLE: OpenApiExample = OpenApiExample(

@@ -479,7 +479,7 @@ class BaseModeratorViewSet(
             object.approve()
         return response.Response(
             status=status.HTTP_200_OK,
-            data=APIResponses.OBJECT_APPROOVED.value,
+            data=APIResponses.OBJECT_APPROVED.value,
         )
 
     def reject(self, request, *args, **kwargs):

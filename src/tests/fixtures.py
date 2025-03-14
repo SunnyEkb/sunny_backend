@@ -178,6 +178,11 @@ class TestServiceFixtures(TestUserFixtures):
             author=cls.user_2,
             status=CommentStatus.PUBLISHED.value,
         )
+        cls.cmmnt_for_mdrtn = factories.CommentFactory(
+            subject=cls.published_service,
+            author=cls.user_3,
+            status=CommentStatus.MODERATION.value,
+        )
         cls.comment_data = {
             "rating": 2,
             "feedback": "Some feadback",

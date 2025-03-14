@@ -10,6 +10,7 @@ from api.v1.views import (
     CategoryViewSet,
     ChangePassowrdView,
     CommentCreateDestroyViewSet,
+    CommentModerationViewSet,
     CommentViewSet,
     CookieTokenRefreshView,
     FavoritesViewSet,
@@ -49,6 +50,11 @@ api_v1_router.register(
     "moderator/ads",
     AdModerationViewSet,
     basename="moderation_ads",
+)
+api_v1_router.register(
+    "moderator/comments",
+    CommentModerationViewSet,
+    basename="moderation_comments",
 )
 api_v1_router.register(
     "serviceimage", ServiceImageViewSet, basename="serviceimage"

@@ -7,10 +7,10 @@ from drf_spectacular.utils import (
 from rest_framework import mixins, viewsets, permissions, response, status
 from rest_framework.decorators import action
 
-from api.v1.paginators import CustomPaginator
-from api.v1.permissions import CommentAuthorOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from api.v1.paginators import CustomPaginator
+from api.v1.permissions import CommentAuthorOnly, ModeratorOnly
 from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.exceptions import WrongObjectType
 from comments.models import Comment
@@ -136,4 +136,84 @@ class CommentCreateDestroyViewSet(
             return response.Response(cmnt_serializer.data)
         return response.Response(
             img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+@extend_schema(tags=["Moderator"])
+@extend_schema_view(
+    list=extend_schema(
+        summary="Список комментариев для модерации.",
+        responses={
+            status.HTTP_200_OK: schemes.COMMENT_LIST_FOR_MODERATION_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
+    ),
+)
+class CommentModerationViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Модерация комментариев."""
+
+    queryset = Comment.cstm_mng.filter(
+        status=CommentStatus.MODERATION.value
+    ).order_by("-created_at")
+    serializer_class = api_serializers.CommentForModerationSerializer
+    permission_classes = (ModeratorOnly,)
+    pagination_class = CustomPaginator
+
+    def _get_receiver(self):
+        return self.get_object().author
+
+    @extend_schema(
+        summary="Одобрить комментарий.",
+        request=None,
+        methods=["POST"],
+        responses={
+            status.HTTP_200_OK: schemes.OBJ_APPROVED_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="approve",
+        url_name="approve",
+        permission_classes=(ModeratorOnly,),
+    )
+    def approve(self, request, *args, **kwargs):
+        """Одобрить."""
+
+        object = self.get_object()
+        object.approve()
+        return response.Response(
+            status=status.HTTP_200_OK,
+            data=APIResponses.OBJECT_APPROVED.value,
+        )
+
+    @extend_schema(
+        summary="Отклонить комментарий.",
+        request=None,
+        methods=["POST"],
+        responses={
+            status.HTTP_200_OK: schemes.OBJ_REJECTED_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="reject",
+        url_name="reject",
+        permission_classes=(ModeratorOnly,),
+    )
+    def reject(self, request, *args, **kwargs):
+        object = self.get_object()
+        object.reject()
+        return response.Response(
+            status=status.HTTP_200_OK,
+            data=APIResponses.OBJECT_REJECTED.value,
         )

@@ -98,7 +98,7 @@ class APIResponses(models.TextChoices):
         "Расширение файлов {0} не поддерживается. Разрешенные"
         f" расширения: {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}"
     )
-    OBJECT_APPROOVED = "Объект одобрен."
+    OBJECT_APPROVED = "Объект одобрен."
     OBJECT_REJECTED = "Объект отклонен."
 
 

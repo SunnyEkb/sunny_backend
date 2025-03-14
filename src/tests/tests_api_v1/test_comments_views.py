@@ -214,3 +214,77 @@ class TestCommentsToServicesCreationView(TestServiceFixtures):
                     data=data,
                 )
                 self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+
+class TestCommentsModerationView(TestServiceFixtures):
+    def test_get_list_of_comments_for_moderation(self):
+        response = self.client_moderator.get(
+            reverse("moderation_comments-list")
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            len(response.json()["results"]),
+            len(Comment.objects.filter(status=CommentStatus.MODERATION.value)),
+        )
+
+    def test_only_moderator_can_get_list_of_comments_for_moderation(self):
+        response = self.client_1.get(reverse("moderation_comments-list"))
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_anon_can_not_get_list_of_comments_for_moderation(self):
+        response = self.anon_client.get(reverse("moderation_comments-list"))
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_approve_comment(self):
+        response = self.client_moderator.post(
+            reverse(
+                "moderation_comments-approve",
+                kwargs={"pk": self.cmmnt_for_mdrtn.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_anon_can_not_approve_comment(self):
+        response = self.anon_client.post(
+            reverse(
+                "moderation_comments-approve",
+                kwargs={"pk": self.cmmnt_for_mdrtn.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_only_moderator_can_approve_comment(self):
+        response = self.client_1.post(
+            reverse(
+                "moderation_comments-approve",
+                kwargs={"pk": self.cmmnt_for_mdrtn.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_reject_comment(self):
+        response = self.client_moderator.post(
+            reverse(
+                "moderation_comments-reject",
+                kwargs={"pk": self.cmmnt_for_mdrtn.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_anon_can_not_reject_comment(self):
+        response = self.anon_client.post(
+            reverse(
+                "moderation_comments-reject",
+                kwargs={"pk": self.cmmnt_for_mdrtn.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_only_moderator_can_reject_commente(self):
+        response = self.client_1.post(
+            reverse(
+                "moderation_comments-reject",
+                kwargs={"pk": self.cmmnt_for_mdrtn.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
