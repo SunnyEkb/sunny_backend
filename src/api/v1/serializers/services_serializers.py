@@ -7,6 +7,7 @@ from rest_framework import serializers
 from api.v1.serializers import CommentReadSerializer, UserReadSerializer
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
+from core.choices import CommentStatus
 from services.models import Service, ServiceImage, SubService, Type
 from users.models import Favorites
 
@@ -105,7 +106,9 @@ class ServiceListSerializer(serializers.ModelSerializer):
         )
 
     def get_comments_quantity(self, obj) -> int:
-        return obj.comments.count()
+        return obj.comments.filter(
+            status=CommentStatus.PUBLISHED.value
+        ).count()
 
     def get_avg_rating(self, obj) -> int:
         rating = obj.comments.aggregate(Avg("rating"))
@@ -225,3 +228,27 @@ class ServiceRetrieveSerializer(ServiceListSerializer):
 
     class Meta(ServiceListSerializer.Meta):
         fields = ServiceListSerializer.Meta.fields + ("comments",)
+
+
+class ServiceForModerationSerializer(serializers.ModelSerializer):
+    """Сериализатор для модерации услуг."""
+
+    images = ServiceImageRetrieveSerializer(many=True, read_only=True)
+    price_list_entries = SubServiceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Service
+        fields = (
+            "id",
+            "title",
+            "description",
+            "experience",
+            "place_of_provision",
+            "status",
+            "images",
+            "salon_name",
+            "address",
+            "created_at",
+            "updated_at",
+            "price_list_entries",
+        )
