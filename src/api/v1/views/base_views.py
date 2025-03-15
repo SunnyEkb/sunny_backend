@@ -1,4 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.shortcuts import get_current_site
+from django.db.transaction import atomic
+from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
@@ -14,14 +17,15 @@ from rest_framework import (
 from rest_framework.decorators import action
 from ads.models import Ad
 from api.v1.paginators import CustomPaginator
-from api.v1.permissions import OwnerOrReadOnly, ReadOnly
+from api.v1.permissions import ModeratorOnly, OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from bad_word_filter.tasks import moderate_comment
 from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
-from core.choices import AdvertisementStatus, APIResponses
+from core.choices import AdvertisementStatus, APIResponses, Notifications
+from notifications.models import Notification
 from services.models import Service
-from bad_word_filter.tasks import moderate_comment
 from users.models import Favorites
 
 
@@ -38,29 +42,6 @@ class BaseServiceAdViewSet(
     pagination_class = CustomPaginator
     filter_backends = (DjangoFilterBackend,)
     serializer_class = None
-
-    def get_queryset(self):
-        queryset = Service.cstm_mng.all()
-        if self.action == "list":
-            params = self.request.query_params
-            queryset = queryset.filter(
-                status=AdvertisementStatus.PUBLISHED.value
-            )
-            if "type_id" in params:
-                try:
-                    type_id = int(params.get("type_id"))
-                except ValueError:
-                    raise exceptions.ValidationError(
-                        detail=APIResponses.INVALID_PARAMETR.value,
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
-                if type_id < 0:
-                    raise exceptions.ValidationError(
-                        detail=APIResponses.INVALID_PARAMETR.value,
-                        code=status.HTTP_400_BAD_REQUEST,
-                    )
-                queryset = queryset.filter(type__id=type_id)
-        return queryset
 
     def get_permissions(self):
         if self.action == "retrieve":
@@ -475,3 +456,61 @@ class CategoryTypeViewSet(
             else:
                 queryset = queryset.filter(parent=None)
         return queryset
+
+
+@extend_schema(tags=["Moderator"])
+class BaseModeratorViewSet(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+):
+    """Базовый вьюсет для модерации комментариев, услуг и объявлений."""
+
+    pagination_class = CustomPaginator
+    serializer_class = None
+    permission_classes = (ModeratorOnly,)
+
+    def approve(self, request, *args, **kwargs):
+        """Одобрить."""
+
+        object = self.get_object()
+        with atomic():
+            self._create_notification(text=Notifications.APPROVE_OBJECT.value)
+            object.approve()
+        return response.Response(
+            status=status.HTTP_200_OK,
+            data=APIResponses.OBJECT_APPROVED.value,
+        )
+
+    def reject(self, request, *args, **kwargs):
+        """Отклонить."""
+
+        object = self.get_object()
+        with atomic():
+            self._create_notification(text=Notifications.REJECT_OBJECT.value)
+            object.reject()
+        return response.Response(
+            status=status.HTTP_200_OK,
+            data=APIResponses.OBJECT_REJECTED.value,
+        )
+
+    def _create_notification(self, text: dict):
+        Notification.objects.create(
+            link=self._get_url(), receiver=self._get_receiver(), text=text
+        )
+
+    def _get_url(self) -> str:
+        obj = self.get_object()
+        domain = get_current_site(self.request).domain
+        return "".join(
+            [
+                "https://",
+                domain,
+                reverse(
+                    f"{obj.__class__.__name__.lower()}s-detail",
+                    kwargs={"pk": obj.id},
+                ),
+            ]
+        )
+
+    def _get_receiver(self) -> str:
+        raise NotImplementedError
