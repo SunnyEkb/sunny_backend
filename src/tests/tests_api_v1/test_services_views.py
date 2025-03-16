@@ -538,3 +538,81 @@ class TestServivecesView(TestServiceFixtures):
                 ),
             ).exists()
         )
+
+
+class TestServivecesModerationView(TestServiceFixtures):
+    def test_get_list_of_services_for_moderation(self):
+        response = self.client_moderator.get(
+            reverse("moderation_services-list")
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            len(response.json()["results"]),
+            len(
+                Service.objects.filter(
+                    status=AdvertisementStatus.MODERATION.value
+                )
+            ),
+        )
+
+    def test_only_moderator_can_get_list_of_services_for_moderation(self):
+        response = self.client_1.get(reverse("moderation_services-list"))
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_anon_can_not_get_list_of_services_for_moderation(self):
+        response = self.anon_client.get(reverse("moderation_services-list"))
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_approve_service(self):
+        response = self.client_moderator.post(
+            reverse(
+                "moderation_services-approve",
+                kwargs={"pk": self.moderate_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_anon_can_not_approve_service(self):
+        response = self.anon_client.post(
+            reverse(
+                "moderation_services-approve",
+                kwargs={"pk": self.moderate_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_only_moderator_can_approve_service(self):
+        response = self.client_1.post(
+            reverse(
+                "moderation_services-approve",
+                kwargs={"pk": self.moderate_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_reject_service(self):
+        response = self.client_moderator.post(
+            reverse(
+                "moderation_services-reject",
+                kwargs={"pk": self.moderate_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_anon_can_not_reject_service(self):
+        response = self.anon_client.post(
+            reverse(
+                "moderation_services-reject",
+                kwargs={"pk": self.moderate_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_only_moderator_can_reject_service(self):
+        response = self.client_1.post(
+            reverse(
+                "moderation_services-reject",
+                kwargs={"pk": self.moderate_service.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)

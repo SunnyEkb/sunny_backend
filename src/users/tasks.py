@@ -2,6 +2,7 @@ from celery import shared_task
 
 from core.email_services import send_password_reset_token, send_welcome_email
 from users.utils import (
+    del_exprd_rfrsh_tokens_from_blck_lst,
     delete_expired_tokens,
     delete_files_after_expiration_date,
     save_file_with_user_data,
@@ -21,6 +22,11 @@ def send_password_reset_token_task(domain, username, mail_to, key):
 @shared_task
 def delete_expired_tokens_task():
     delete_expired_tokens()
+
+
+@shared_task
+def del_exprd_rfrsh_tokens_from_blck_lst_task():
+    del_exprd_rfrsh_tokens_from_blck_lst()
 
 
 @shared_task

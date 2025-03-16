@@ -154,6 +154,11 @@ SERVICE_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.SERVICE_LIST_EXAMPLE],
 )
 
+SERVICE_LIST_FOR_MODERATION_OK_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.ServiceForModerationSerializer,
+    description="Список услуг для модерации.",
+)
+
 AD_SERVICE_SENT_TO_MODERATION: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение списка услуг",
@@ -244,6 +249,11 @@ COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     examples=[examples.COMMENT_LIST_EXAMPLE],
 )
 
+COMMENT_LIST_FOR_MODERATION_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.CommentForModerationSerializer,
+    description="Список комментариев для модерации",
+)
+
 CANT_ADD_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Объект не может быть добавлен в Избранное",
@@ -280,6 +290,11 @@ AD_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.AD_LIST_EXAMPLE],
 )
 
+AD_LIST_FOR_MODERATION_OK_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.AdForModerationSerializer,
+    description="Получение списка объявлений модерации",
+)
+
 AD_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение информации об объявлении",
@@ -302,4 +317,16 @@ FAVORITES_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     response=serializers.FavoritesSerialiser,
     description="Получение списка объектов избранного",
     examples=[examples.FAVORITES_EXAMPLE],
+)
+
+OBJ_APPROVED_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Объект одобрен",
+    examples=[examples.OBJ_APPROVED_EXAMPLE],
+)
+
+OBJ_REJECTED_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Объект отклонен",
+    examples=[examples.OBJ_REJECTED_EXAMPLE],
 )

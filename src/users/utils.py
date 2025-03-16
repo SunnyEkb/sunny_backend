@@ -5,6 +5,7 @@ from uuid import UUID
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.db import transaction
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 
 from core.enums import Limits
 from users.models import VerificationToken
@@ -61,3 +62,11 @@ def delete_files_after_expiration_date():
             str(file).split("_")[-1].replace(".json", ""), "%Y-%m-%d"
         ):
             os.remove(file)
+
+
+def del_exprd_rfrsh_tokens_from_blck_lst():
+    black_listed_tokens = BlacklistedToken.objects.filter(
+        token__expires_at__lt=datetime.now(timezone.utc)
+    )
+    for token in black_listed_tokens:
+        token.token.delete()
