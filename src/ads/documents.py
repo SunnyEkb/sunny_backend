@@ -20,7 +20,7 @@ class AdDocument(Document):
     condition = fields.TextField()
 
     def prepare_condition(self, instance):
-        if instance.place_of_provision == AdState.USED:
+        if instance.condition == AdState.USED:
             return "Б/у"
         return "Новый"
 
