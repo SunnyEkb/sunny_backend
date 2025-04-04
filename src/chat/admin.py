@@ -10,12 +10,13 @@ class MessageAdmin(admin.ModelAdmin):
     list_display = [
         "sender",
         "message",
-        "room_group_name",
         "created_at",
         "updated_at",
     ]
     search_fields = [
         "message",
-        "room_group_name",
     ]
-    ordering = ["created_at", "room_group_name"]
+    ordering = [
+        "chat",
+        "created_at",
+    ]
