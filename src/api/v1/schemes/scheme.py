@@ -154,6 +154,11 @@ SERVICE_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.SERVICE_LIST_EXAMPLE],
 )
 
+SERVICE_LIST_FOR_MODERATION_OK_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.ServiceForModerationSerializer,
+    description="Список услуг для модерации.",
+)
+
 AD_SERVICE_SENT_TO_MODERATION: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение списка услуг",
@@ -171,14 +176,20 @@ SERVICE_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
 
 SERVICE_CREATED_201: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceCreateUpdateSerializer,
-    description="Услуга содана",
-    examples=[examples.SERVICE_CREATE_UPDATE_EXAMPLE],
+    description="Услуга создана",
+    examples=[examples.SERVICE_LIST_EXAMPLE],
 )
 
 SERVICE_AD_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Нет прав для выполнения действия",
     examples=[examples.SERVICE_AD_NO_PERMISSION_EXAMPLE],
+)
+
+SERVICE_AD_NOT_ACCEPT_406: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Услуга (объявление) находятся на модерации",
+    examples=[examples.AD_OR_SERVICE_IS_UNDER_MODERATION_EXAMPLE],
 )
 
 WRONG_PARAMETR_400: OpenApiResponse = OpenApiResponse(
@@ -219,8 +230,11 @@ OBJECT_IS_NOT_PUBLISED_406: OpenApiResponse = OpenApiResponse(
 
 CANT_ADD_PHOTO_406: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
-    description="Превышено максимальное количество фотографий",
-    examples=[examples.CANT_ADD_PHOTO_EXAMPLE],
+    description="Нельзя добавить фото.",
+    examples=[
+        examples.CANT_ADD_PHOTO_EXAMPLE,
+        examples.AD_OR_SERVICE_IS_UNDER_MODERATION_EXAMPLE,
+    ],
 )
 
 CANT_ADD_PHOTO_400: OpenApiResponse = OpenApiResponse(
@@ -233,6 +247,11 @@ COMMENT_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     response=serializers.CommentReadSerializer,
     description="Список комментариев",
     examples=[examples.COMMENT_LIST_EXAMPLE],
+)
+
+COMMENT_LIST_FOR_MODERATION_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.CommentForModerationSerializer,
+    description="Список комментариев для модерации",
 )
 
 CANT_ADD_TO_FAVORITES_406: OpenApiResponse = OpenApiResponse(
@@ -271,6 +290,11 @@ AD_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.AD_LIST_EXAMPLE],
 )
 
+AD_LIST_FOR_MODERATION_OK_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.AdForModerationSerializer,
+    description="Получение списка объявлений модерации",
+)
+
 AD_RETRIEVE_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение информации об объявлении",
@@ -293,4 +317,16 @@ FAVORITES_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     response=serializers.FavoritesSerialiser,
     description="Получение списка объектов избранного",
     examples=[examples.FAVORITES_EXAMPLE],
+)
+
+OBJ_APPROVED_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Объект одобрен",
+    examples=[examples.OBJ_APPROVED_EXAMPLE],
+)
+
+OBJ_REJECTED_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Объект отклонен",
+    examples=[examples.OBJ_REJECTED_EXAMPLE],
 )

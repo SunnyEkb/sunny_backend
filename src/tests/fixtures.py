@@ -8,7 +8,7 @@ from django.test import override_settings
 from rest_framework.test import APIClient, APITestCase
 
 from ads.models import AdImage
-from core.choices import AdState, AdvertisementStatus, CommentStatus
+from core.choices import AdState, AdvertisementStatus, CommentStatus, Role
 from services.models import ServiceImage
 from tests import factories
 from users.models import Favorites
@@ -28,10 +28,10 @@ class BaseTestCase(APITestCase):
         small_gif = (
             b"\x47\x49\x46\x38\x39\x61\x02\x00"
             b"\x01\x00\x80\x00\x00\x00\x00\x00"
-            b"\xFF\xFF\xFF\x21\xF9\x04\x00\x00"
-            b"\x00\x00\x00\x2C\x00\x00\x00\x00"
-            b"\x02\x00\x01\x00\x00\x02\x02\x0C"
-            b"\x0A\x00\x3B"
+            b"\xff\xff\xff\x21\xf9\x04\x00\x00"
+            b"\x00\x00\x00\x2c\x00\x00\x00\x00"
+            b"\x02\x00\x01\x00\x00\x02\x02\x0c"
+            b"\x0a\x00\x3b"
         )
         cls.file_name_1 = "small_1.gif"
         cls.file_name_2 = "small_2.gif"
@@ -40,6 +40,16 @@ class BaseTestCase(APITestCase):
         )
         cls.uploaded_2 = SimpleUploadedFile(
             name=cls.file_name_2, content=small_gif, content_type="image/gif"
+        )
+        cls.base64_image = (
+            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD"
+            "+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNp"
+            "btEAAAAASUVORK5CYII="
+        )
+        cls.wrong_base64_image = (
+            "data:image/txt;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD"
+            "+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNp"
+            "btEAAAAASUVORK5CYII="
         )
 
     @classmethod
@@ -75,6 +85,10 @@ class TestUserFixtures(BaseTestCase):
         cls.user_2 = factories.CustomUserFactory(password=cls.password)
         cls.user_3 = factories.CustomUserFactory()
         cls.user_4 = factories.CustomUserFactory(password=cls.password)
+        cls.moderator = factories.CustomUserFactory(
+            password=cls.password,
+            role=Role.MODERATOR,
+        )
         cls.unverified_user = factories.CustomUserFactory(
             password=cls.password, is_active=False
         )
@@ -91,6 +105,8 @@ class TestUserFixtures(BaseTestCase):
         cls.anon_client = APIClient()
         cls.client_for_deletion = APIClient()
         cls.client_for_deletion.force_authenticate(cls.user_for_deletion)
+        cls.client_moderator = APIClient()
+        cls.client_moderator.force_authenticate(cls.moderator)
 
 
 class TestServiceFixtures(TestUserFixtures):
@@ -162,6 +178,11 @@ class TestServiceFixtures(TestUserFixtures):
             author=cls.user_2,
             status=CommentStatus.PUBLISHED.value,
         )
+        cls.cmmnt_for_mdrtn = factories.CommentFactory(
+            subject=cls.published_service,
+            author=cls.user_3,
+            status=CommentStatus.MODERATION.value,
+        )
         cls.comment_data = {
             "rating": 2,
             "feedback": "Some feadback",
@@ -199,6 +220,10 @@ class TestAdsFixtures(TestUserFixtures):
         cls.ad_hidden = factories.AdFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.HIDDEN.value,
+        )
+        cls.ad_moderation = factories.AdFactory(
+            provider=cls.user_2,
+            status=AdvertisementStatus.MODERATION.value,
         )
         cls.ad_hidden.category.set([cls.category_1])
         cls.ad_title = "Super_ad"

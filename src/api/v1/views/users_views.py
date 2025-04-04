@@ -30,6 +30,11 @@ from api.v1.auth_utils import (
     set_refresh_cookie,
 )
 from api.v1.permissions import SelfOnly
+from api.v1.validators import (
+    validate_phone_updating,
+    validate_username_updating,
+)
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
 from core.choices import APIResponses
 from services.models import Service
@@ -290,6 +295,27 @@ class UserViewSet(
 
         return super().destroy(request, *args, **kwargs)
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial
+        )
+        serializer.is_valid(raise_exception=True)
+        phone = self.request.data.get("phone", None)
+        if phone is not None:
+            validate_phone_updating(instance, phone)
+        username = self.request.data.get("username", None)
+        if username is not None:
+            validate_username_updating(instance, username)
+
+        self.perform_update(serializer)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
     @extend_schema(
         request=None,
         summary="Получить информацию о текущем пользователе.",
@@ -321,6 +347,10 @@ class UserViewSet(
         status.HTTP_200_OK: schemes.USER_GET_OK_200,
         status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
+    description=(
+        "Файл принимается строкой, закодированной в base64. Допустимые "
+        f"расширения файла - {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}."
+    ),
 )
 class AdAvatarView(generics.UpdateAPIView):
     """

@@ -8,6 +8,7 @@ from api.v1.serializers.comments_serializers import CommentReadSerializer
 from api.v1.serializers.users_serializers import UserReadSerializer
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
+from core.choices import CommentStatus
 from users.models import Favorites
 
 
@@ -18,7 +19,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ("id", "title", "subcategories")
+        fields = ("id", "title", "image", "subcategories")
 
     def get_subcategories(self, obj):
         if obj.subcategories.exists():
@@ -97,7 +98,9 @@ class AdListSerializer(serializers.ModelSerializer):
         return False
 
     def get_comments_quantity(self, obj):
-        return obj.comments.count()
+        return obj.comments.filter(
+            status=CommentStatus.PUBLISHED.value
+        ).count()
 
     def get_avg_rating(self, obj):
         rating = obj.comments.aggregate(Avg("rating"))
@@ -170,4 +173,25 @@ class CategoryGetWithoutSubCatSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ("id", "title")
+        fields = ("id", "title", "image")
+
+
+class AdForModerationSerializer(serializers.ModelSerializer):
+    """Сериализатор для модерации объявлений."""
+
+    images = AdImageRetrieveSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Ad
+        fields = [
+            "id",
+            "title",
+            "description",
+            "price",
+            "status",
+            "images",
+            "condition",
+            "category",
+            "created_at",
+            "updated_at",
+        ]

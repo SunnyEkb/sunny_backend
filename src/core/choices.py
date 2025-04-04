@@ -1,6 +1,7 @@
 from django.db import models
 
 from core.enums import Limits
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 
 
 class Role(models.TextChoices):
@@ -19,6 +20,7 @@ class ServicePlace(models.TextChoices):
 class CommentStatus(models.IntegerChoices):
     DRAFT = 0
     PUBLISHED = 1
+    MODERATION = 2
 
 
 class AdvertisementStatus(models.IntegerChoices):
@@ -50,6 +52,9 @@ class APIResponses(models.TextChoices):
     )
     AD_OR_SERVICE_SENT_MODERATION = (
         "Услуга (объявление) отправлены на модерацию."
+    )
+    AD_OR_SERVICE_IS_UNDER_MODERATION = (
+        "Услуга (объявление) не может быть изменена, т.к. она на модерации."
     )
     SERVICE_OR_AD_CANT_BE_PUBLISHED = "Данная услуга (объявление) не скрыта."
     OBJECT_IS_NOT_PUBLISHED = "Данная услуга (объявление) не опубликована."
@@ -85,6 +90,16 @@ class APIResponses(models.TextChoices):
     USERNAME_EXISTS = "Пользователь с таким именем уже существует."
     EMAIL_EXISTS = "Пользователь с таким адресом электронной почты существует."
     PHONE_EXISTS = "Пользователь с таким номером телефона существует."
+    WRONG_CONTENT = (
+        "Изображение должно быть передано в формате base64: "
+        "data:<MIME-type>;base64,<data>"
+    )
+    WRONG_EXTENTION = (
+        "Расширение файлов {0} не поддерживается. Разрешенные"
+        f" расширения: {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}"
+    )
+    OBJECT_APPROVED = "Объект одобрен."
+    OBJECT_REJECTED = "Объект отклонен."
 
 
 class SystemMessages(models.TextChoices):
@@ -100,6 +115,8 @@ class Notifications(models.TextChoices):
     WELCOME = (
         "{0}, приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
     )
+    APPROVE_OBJECT = "Модерация успешно пройдена."
+    REJECT_OBJECT = "Модерация не пройдена."
 
 
 class EmailSubjects(models.TextChoices):

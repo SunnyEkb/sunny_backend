@@ -1,9 +1,13 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.validators import MaxValueValidator
 
-from core.abstract_models import AbstractImage, BaseTypeCategory
+from core.abstract_models import (
+    AbstractImage,
+    BaseTypeCategory,
+)
 from core.base_models import AbstractAdvertisement
 from core.choices import ServicePlace
+from core.constants import LimitsValues
 from core.enums import Limits
 from services.managers import ServiceManager
 
@@ -35,7 +39,6 @@ class Service(AbstractAdvertisement):
         verbose_name="Тип услуги",
         related_name="types",
     )
-    price = models.JSONField("Прайс", blank=True, null=True)
     address = models.CharField(
         "Адрес",
         max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value,
@@ -83,3 +86,31 @@ class ServiceImage(AbstractImage):
 
     def __str__(self) -> str:
         return self.service.title
+
+
+class SubService(models.Model):
+    """Позиция прайс-листа."""
+
+    main_service = models.ForeignKey(
+        to=Service,
+        verbose_name="Услуга",
+        on_delete=models.CASCADE,
+        related_name="price_list_entries",
+    )
+    title = models.CharField(
+        verbose_name="Наименование",
+        max_length=LimitsValues.MAX_LENGTH_SUBSERVICE_TITLE,
+    )
+    price = models.DecimalField(
+        verbose_name="Цена",
+        max_digits=LimitsValues.MAX_DIGITS_PRICE,
+        decimal_places=LimitsValues.DECIMAL_PLACES_PRICE,
+        validators=[MinValueValidator(LimitsValues.MIN_VALUE_PRICE)],
+    )
+
+    class Meta:
+        verbose_name = "Позиция прайс-листа"
+        verbose_name_plural = "Позиции прайс-листов"
+
+    def __str__(self):
+        return self.title

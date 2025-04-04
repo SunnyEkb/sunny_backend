@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 
-from core.utils import send_telegram_message
+from core.utils import send_error_message
 
 
 class TelegramHandler(logging.Handler):
@@ -17,7 +17,7 @@ class TelegramHandler(logging.Handler):
     def emit(self, record):
         try:
             message = self.format(record)
-            send_telegram_message(message, self.chat_id)
+            send_error_message(message)
             self.flush()
         except (KeyboardInterrupt, SystemExit):
             raise
