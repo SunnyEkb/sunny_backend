@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from core.abstract_models import TimeCreateUpdateModel
@@ -10,16 +12,44 @@ class Chat(models.Model):
     """Чат."""
 
     room_group_name = models.CharField(unique=True, max_length=100)
-    members = models.ManyToManyField(
+    limit = models.Q(app_label="services", model="service") | models.Q(
+        app_label="ads", model="ad"
+    )
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        verbose_name="Тип объекта чата",
+        limit_choices_to=limit,
+    )
+    object_id = models.PositiveIntegerField("ID объекта")
+    subject = GenericForeignKey("content_type", "object_id")
+    responder = models.ForeignKey(
         User,
-        verbose_name="Участники",
-        through="ChatMembers",
-        through_fields=("chat", "initiator"),
+        verbose_name="Ответчик",
+        on_delete=models.PROTECT,
+        related_name="chat_responder",
+        limit_choices_to={"is_active": True},
+    )
+    initiator = models.ForeignKey(
+        User,
+        verbose_name="Инициатор",
+        on_delete=models.PROTECT,
+        related_name="chat_initiator",
+        limit_choices_to={"is_active": True},
     )
 
     class Meta:
         verbose_name = "Чат"
         verbose_name_plural = "Чаты"
+        constraints = [
+            models.CheckConstraint(
+                check=~models.Q(responder=models.F("initiator")),
+                name="not self chat",
+            ),
+        ]
+        unique_together = [
+            ["responder", "initiator", "content_type", "object_id"]
+        ]
 
 
 class Message(TimeCreateUpdateModel):
@@ -44,32 +74,3 @@ class Message(TimeCreateUpdateModel):
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
         ordering = ["-created_at"]
-
-
-class ChatMembers(models.Model):
-    """Участники чата."""
-
-    chat = models.ForeignKey(Chat, on_delete=models.PROTECT)
-    responder = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        related_name="chat_responder",
-        limit_choices_to={"is_active": True},
-    )
-    initiator = models.ForeignKey(
-        User,
-        on_delete=models.PROTECT,
-        related_name="chat_initiator",
-        limit_choices_to={"is_active": True},
-    )
-
-    class Meta:
-        verbose_name = "Участники чата"
-        verbose_name_plural = "Участники чатов"
-        unique_together = [["chat", "responder", "initiator"]]
-        constraints = [
-            models.CheckConstraint(
-                check=~models.Q(first=models.F("second")),
-                name="not self chat",
-            ),
-        ]
