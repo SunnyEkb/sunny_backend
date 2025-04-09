@@ -27,8 +27,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         receiver_id = self.scope["url_route"]["kwargs"]["reciever_id"]
         object_id = self.scope["url_route"]["kwargs"]["object_id"]
         type = self.scope["url_route"]["kwargs"]["type"]
-        cont_type_model = await self.get_content_type(type)
 
+        cont_type_model = await self.get_content_type(type)
         if cont_type_model is None:
             raise DenyConnection("Wrong object type.")
 
@@ -41,6 +41,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         initiator = get_user_from_db(sender_id)
         responder = obj.provider
+
+        if sender_id == obj.provider:
+            raise DenyConnection("Do not write to yourself.")
 
         if receiver_id != responder:
             raise DenyConnection("Wrong user.")
