@@ -4,7 +4,7 @@ from chat.models import Message
 
 
 class MessageSerializer(ModelSerializer):
-    """Сериализатор сообщения чата."""
+    """Сериализатор для сообщений."""
 
     sender_username = SerializerMethodField()
 
@@ -14,7 +14,6 @@ class MessageSerializer(ModelSerializer):
             "id",
             "sender_username",
             "message",
-            "room_group_name",
             "created_at",
             "updated_at",
         )

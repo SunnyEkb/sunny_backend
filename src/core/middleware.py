@@ -23,7 +23,7 @@ def get_user_from_db(user_id: str):
     """
 
     try:
-        return User.objects.get(pk=user_id)
+        return User.objects.get(pk=user_id, is_active=True)
     except User.DoesNotExist:
         return None
 
