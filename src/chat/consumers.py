@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from chat.models import Chat, Message
 from chat.serializers import MessageSerializer
 from core.middleware import get_user_from_db
+from core.choices import AdvertisementStatus
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -35,11 +36,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if obj is None:
             raise DenyConnection("Object not found.")
 
+        if obj.status != AdvertisementStatus.PUBLISHED:
+            raise DenyConnection("Object not published.")
+
         initiator = await get_user_from_db(sender_id)
         responder = obj.provider
-
-        if sender_id == obj.provider:
-            raise DenyConnection("Do not write to yourself.")
 
         self.room_group_name = (
             f"chat_{type}_{object_id}_{sender_id}_{responder.id}"
