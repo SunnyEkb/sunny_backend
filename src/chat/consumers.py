@@ -24,7 +24,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
 
         sender_id = self.scope["user"].id
-        receiver_id = self.scope["url_route"]["kwargs"]["reciever_id"]
         object_id = self.scope["url_route"]["kwargs"]["object_id"]
         type = self.scope["url_route"]["kwargs"]["type"]
 
@@ -36,20 +35,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if obj is None:
             raise DenyConnection("Object not found.")
 
-        if await get_user_from_db(receiver_id) is None:
-            raise DenyConnection("Reciever does not exist.")
-
         initiator = get_user_from_db(sender_id)
         responder = obj.provider
 
         if sender_id == obj.provider:
             raise DenyConnection("Do not write to yourself.")
 
-        if receiver_id != responder:
-            raise DenyConnection("Wrong user.")
-
         self.room_group_name = (
-            f"chat_{type}_{object_id}_{sender_id}_{receiver_id}"
+            f"chat_{type}_{object_id}_{sender_id}_{responder.id}"
         )
         await self.channel_layer.group_add(
             self.room_group_name, self.channel_name
