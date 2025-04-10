@@ -35,7 +35,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if obj is None:
             raise DenyConnection("Object not found.")
 
-        initiator = get_user_from_db(sender_id)
+        initiator = await get_user_from_db(sender_id)
         responder = obj.provider
 
         if sender_id == obj.provider:
@@ -81,7 +81,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = await self.save_message(
             sender=self.scope["user"],
             message=message,
-            chat=self.chat,
         )
 
         await self.channel_layer.group_send(
@@ -146,7 +145,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :return: экземпляр ContentType
         """
 
-        return ContentType.get(app_label=f"{type}s", model=f"{type}")
+        return ContentType.objects.get(app_label=f"{type}s", model=f"{type}")
 
     @database_sync_to_async
     def get_object(
@@ -162,8 +161,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         return (
             cont_type_model.model_class()
+            .objects.select_related("provider")
             .get(pk=object_id)
-            .select_related("provider")
         )
 
     @database_sync_to_async
