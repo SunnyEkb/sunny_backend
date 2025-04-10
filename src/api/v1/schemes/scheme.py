@@ -330,3 +330,9 @@ OBJ_REJECTED_200_OK: OpenApiResponse = OpenApiResponse(
     description="Объект отклонен",
     examples=[examples.OBJ_REJECTED_EXAMPLE],
 )
+
+CHATS_LIST_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.ChatSerializer,
+    description="Получение списка чатов",
+    examples=[examples.CHAT_EXAMPLE],
+)
