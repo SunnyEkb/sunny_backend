@@ -16,7 +16,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     """Обработчик для подключений к чату."""
 
     room_group_name = None
-    chat_id = None
+    chat_data = None
+    chat = None
 
     async def connect(self):
         """
@@ -29,11 +30,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         type = self.scope["url_route"]["kwargs"]["type"]
         buyer_id = self.scope["url_route"]["kwargs"]["buyer_id"]
 
-        cont_type_model = await self.get_content_type(type)
+        cont_type_model = await self.__get_content_type(type)
         if cont_type_model is None:
             raise DenyConnection("Content type not found!")
 
-        obj = await self.get_object(cont_type_model, object_id)
+        obj = await self.__get_object(cont_type_model, object_id)
         if obj is None:
             raise DenyConnection("Object not found.")
 
@@ -45,7 +46,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender = await get_user_from_db(sender_id)
 
         self.room_group_name = f"chat_{type}_{object_id}_{buyer_id}"
-        chat_data = {
+        self.chat_data = {
             "room_group_name": self.room_group_name,
             "content_type": cont_type_model,
             "object_id": object_id,
@@ -54,7 +55,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }
 
         if sender == seller:
-            chat = await self.get_chat(chat_data)
+            chat = await self.__get_chat(self.chat_data)
             if chat is None:
                 raise DenyConnection("Do not write to yourself")
             await self.channel_layer.group_add(
@@ -62,18 +63,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
             await self.accept()
             self.chat = chat
+            messages = await self.__get_messages({"chat": self.chat})
+            await self.send(json.dumps(messages, ensure_ascii=False))
 
         elif sender == buyer:
             await self.channel_layer.group_add(
                 self.room_group_name, self.channel_name
             )
             await self.accept()
-            self.chat, _ = await self.get_or_create_chat(chat_data)
+            chat = await self.__get_chat(self.chat_data)
+            if chat is not None:
+                self.chat = chat
+                messages = await self.__get_messages({"chat": self.chat})
+                await self.send(json.dumps(messages, ensure_ascii=False))
         else:
             raise DenyConnection("Access Denied: Forbidden!")
-
-        messages = await self.get_messages({"chat": self.chat})
-        await self.send(json.dumps(messages, ensure_ascii=False))
 
     async def disconnect(self, close_code):
         """
@@ -93,7 +97,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message = data["message"]
 
-        message = await self.save_message(
+        message = await self.__save_chat_message(
             sender=self.scope["user"],
             message=message,
         )
@@ -114,7 +118,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(json.dumps(event["message"], ensure_ascii=False))
 
     @database_sync_to_async
-    def get_messages(self, filters: dict) -> Message | None:
+    def __get_messages(self, filters: dict) -> Message | None:
         """
         Получение списка сообщений из БД.
 
@@ -137,7 +141,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return messages
 
     @database_sync_to_async
-    def save_message(self, sender: AbstractUser, message: str) -> Message:
+    def __save_message(self, sender: AbstractUser, message: str) -> Message:
         """
         Сохренение нового сообщения в БД.
 
@@ -151,8 +155,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         return message
 
+    async def __save_chat_message(
+        self, sender: AbstractUser, message: str
+    ) -> Message:
+        """
+        Сохренение нового сообщения в БД и создание чата в БД, если его нет.
+
+        :param sender: отправитель сообщения
+        :param message: текст сообщения
+        :return: экземпляр сообщения
+        """
+
+        if not self.chat:
+            self.chat = await self.__create_chat(self.chat_data)
+
+        message = await self.__save_message(sender=sender, message=message)
+        return message
+
     @database_sync_to_async
-    def get_content_type(self, type: str) -> ContentType | None:
+    def __get_content_type(self, type: str) -> ContentType | None:
         """
         Получение экземплярf ContentType.
 
@@ -160,14 +181,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :return: экземпляр ContentType
         """
 
-        if not ContentType.objects.filter(
-            app_label=f"{type}s", model=f"{type}"
-        ).exists():
+        try:
+            return ContentType.objects.get(
+                app_label=f"{type}s", model=f"{type}"
+            )
+        except ContentType.DoesNotExist:
             return None
-        return ContentType.objects.get(app_label=f"{type}s", model=f"{type}")
 
     @database_sync_to_async
-    def get_object(
+    def __get_object(
         self, cont_type_model: ContentType, object_id: int
     ) -> object | None:
         """
@@ -178,26 +200,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :return: класс ORM
         """
 
-        return (
-            cont_type_model.model_class()
-            .objects.select_related("provider")
-            .get(pk=object_id)
-        )
+        try:
+            return (
+                cont_type_model.model_class()
+                .objects.select_related("provider")
+                .get(pk=object_id)
+            )
+        except cont_type_model.model_class().DoesNotExist:
+            return None
 
     @database_sync_to_async
-    def get_or_create_chat(self, data: dict) -> Chat:
-        """
-        Создание или получение объекта чата из БД.
-
-        :param data: данные чата
-        :return: экземпляр объекта чата
-        """
-
-        chat = Chat.objects.get_or_create(**data)
-        return chat
-
-    @database_sync_to_async
-    def create_chat(self, data: dict) -> Chat:
+    def __create_chat(self, data: dict) -> Chat:
         """
         Создание объекта чата в БД.
 
@@ -209,7 +222,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         return chat
 
     @database_sync_to_async
-    def get_chat(self, data: dict) -> Chat | None:
+    def __get_chat(self, data: dict) -> Chat | None:
         """
         Получение объекта чата из БД.
 
@@ -217,5 +230,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :return: экземпляр объекта чата
         """
 
-        chat = Chat.objects.get(**data)
-        return chat
+        try:
+            chat = Chat.objects.get(**data)
+            return chat
+        except Chat.DoesNotExist:
+            return None
