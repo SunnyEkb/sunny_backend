@@ -28,5 +28,5 @@ class ChatViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         return Chat.objects.filter(
-            Q(initiator=self.request.user) | Q(responder=self.request.user)
+            Q(buyer=self.request.user) | Q(seller=self.request.user)
         )

@@ -31,7 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         cont_type_model = await self.get_content_type(type)
         if cont_type_model is None:
-            raise DenyConnection("Wrong object type.")
+            raise DenyConnection("Content type not found!")
 
         obj = await self.get_object(cont_type_model, object_id)
         if obj is None:
@@ -40,8 +40,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if obj.status != AdvertisementStatus.PUBLISHED:
             raise DenyConnection("Object not published.")
 
-        initiator = await get_user_from_db(buyer_id)
-        responder = obj.provider
+        buyer = await get_user_from_db(buyer_id)
+        seller = obj.provider
         sender = await get_user_from_db(sender_id)
 
         self.room_group_name = f"chat_{type}_{object_id}_{buyer_id}"
@@ -49,11 +49,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "room_group_name": self.room_group_name,
             "content_type": cont_type_model,
             "object_id": object_id,
-            "initiator": initiator,
-            "responder": responder,
+            "buyer": buyer,
+            "seller": seller,
         }
 
-        if sender == responder:
+        if sender == seller:
             chat = await self.get_chat(chat_data)
             if chat is None:
                 raise DenyConnection("Do not write to yourself")
@@ -63,7 +63,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             await self.accept()
             self.chat = chat
 
-        elif sender == initiator:
+        elif sender == buyer:
             await self.channel_layer.group_add(
                 self.room_group_name, self.channel_name
             )
@@ -160,6 +160,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :return: экземпляр ContentType
         """
 
+        if not ContentType.objects.filter(
+            app_label=f"{type}s", model=f"{type}"
+        ).exists():
+            return None
         return ContentType.objects.get(app_label=f"{type}s", model=f"{type}")
 
     @database_sync_to_async
