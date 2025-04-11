@@ -23,8 +23,8 @@ class ChatAdmin(admin.ModelAdmin):
 
     list_display = [
         "room_group_name",
-        "responder",
-        "initiator",
+        "seller",
+        "buyer",
     ]
     search_fields = ["room_group_name"]
     ordering = ["room_group_name"]

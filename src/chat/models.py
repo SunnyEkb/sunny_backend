@@ -23,18 +23,18 @@ class Chat(models.Model):
     )
     object_id = models.PositiveIntegerField("ID объекта")
     subject = GenericForeignKey("content_type", "object_id")
-    responder = models.ForeignKey(
+    seller = models.ForeignKey(
         User,
-        verbose_name="Ответчик",
+        verbose_name="Продавец",
         on_delete=models.PROTECT,
-        related_name="chat_responder",
+        related_name="chat_as_seller",
         limit_choices_to={"is_active": True},
     )
-    initiator = models.ForeignKey(
+    buyer = models.ForeignKey(
         User,
-        verbose_name="Инициатор",
+        verbose_name="Покупатель",
         on_delete=models.PROTECT,
-        related_name="chat_initiator",
+        related_name="chat_as_buyer",
         limit_choices_to={"is_active": True},
     )
 
@@ -43,12 +43,12 @@ class Chat(models.Model):
         verbose_name_plural = "Чаты"
         constraints = [
             models.CheckConstraint(
-                check=~models.Q(responder=models.F("initiator")),
+                check=~models.Q(seller=models.F("buyer")),
                 name="not self chat",
             ),
         ]
         unique_together = [
-            ["responder", "initiator", "content_type", "object_id"]
+            ["seller", "buyer", "content_type", "object_id"]
         ]
 
 

@@ -1,6 +1,7 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer
 
 from api.v1.serializers.fields import FavoriteObjectRelatedField
+from api.v1.serializers.users_serializers import UserReadSerializer
 from chat.models import Chat
 
 
@@ -8,20 +9,14 @@ class ChatSerializer(ModelSerializer):
     """Сериализатор для сообщений."""
 
     subject = FavoriteObjectRelatedField(read_only=True)
-    responder_username = SerializerMethodField()
-    initiator_username = SerializerMethodField()
+    buyer = UserReadSerializer(read_only=True)
+    seller = UserReadSerializer(read_only=True)
 
     class Meta:
         model = Chat
         fields = (
             "id",
-            "responder_username",
-            "initiator_username",
+            "buyer",
+            "seller",
             "subject",
         )
-
-    def get_initiator_username(self, obj):
-        return obj.initiator.username
-
-    def get_responder_username(self, obj):
-        return obj.responder.username

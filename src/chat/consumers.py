@@ -27,6 +27,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         sender_id = self.scope["user"].id
         object_id = self.scope["url_route"]["kwargs"]["object_id"]
         type = self.scope["url_route"]["kwargs"]["type"]
+        buyer_id = self.scope["url_route"]["kwargs"]["buyer_id"]
 
         cont_type_model = await self.get_content_type(type)
         if cont_type_model is None:
@@ -39,17 +40,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if obj.status != AdvertisementStatus.PUBLISHED:
             raise DenyConnection("Object not published.")
 
-        initiator = await get_user_from_db(sender_id)
+        initiator = await get_user_from_db(buyer_id)
         responder = obj.provider
+        sender = await get_user_from_db(sender_id)
 
         self.room_group_name = (
-            f"chat_{type}_{object_id}_{sender_id}_{responder.id}"
+            f"chat_{type}_{object_id}_{buyer_id}"
         )
-        await self.channel_layer.group_add(
-            self.room_group_name, self.channel_name
-        )
-        await self.accept()
-
         chat_data = {
             "room_group_name": self.room_group_name,
             "content_type": cont_type_model,
@@ -57,7 +54,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "initiator": initiator,
             "responder": responder,
         }
-        self.chat, _ = await self.get_or_create_chat(chat_data)
+
+        if sender == responder:
+            chat = await self.get_chat(chat_data)
+            if chat is None:
+                raise DenyConnection("Do not write to yourself")
+            await self.channel_layer.group_add(
+                self.room_group_name, self.channel_name
+            )
+            await self.accept()
+            self.chat = chat
+
+        elif sender == initiator:
+            await self.channel_layer.group_add(
+                self.room_group_name, self.channel_name
+            )
+            await self.accept()
+            self.chat, _ = await self.get_or_create_chat(chat_data)
+        else:
+            raise DenyConnection("Access Denied: Forbidden!")
+
         messages = await self.get_messages({"chat": self.chat})
         await self.send(json.dumps(messages, ensure_ascii=False))
 
@@ -176,4 +192,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
 
         chat = Chat.objects.get_or_create(**data)
+        return chat
+
+    @database_sync_to_async
+    def create_chat(self, data: dict) -> Chat:
+        """
+        Создание объекта чата в БД.
+
+        :param data: данные чата
+        :return: экземпляр объекта чата
+        """
+
+        chat = Chat.objects.create(**data)
+        return chat
+
+    @database_sync_to_async
+    def get_chat(self, data: dict) -> Chat | None:
+        """
+        Получение объекта чата из БД.
+
+        :param data: данные чата
+        :return: экземпляр объекта чата
+        """
+
+        chat = Chat.objects.get(**data)
         return chat
