@@ -47,9 +47,7 @@ class Chat(models.Model):
                 name="not self chat",
             ),
         ]
-        unique_together = [
-            ["seller", "buyer", "content_type", "object_id"]
-        ]
+        unique_together = [["seller", "buyer", "content_type", "object_id"]]
 
 
 class Message(TimeCreateUpdateModel):

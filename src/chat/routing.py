@@ -4,9 +4,7 @@ from chat.consumers import ChatConsumer
 
 chat_urlpatterns = [
     re_path(
-        (
-            r"ws/chat/(?P<type>\w+)/(?P<object_id>\d+)/(?P<buyer_id>\d+)/"
-        ),
+        (r"ws/chat/(?P<type>\w+)/(?P<object_id>\d+)/(?P<buyer_id>\d+)/"),
         ChatConsumer.as_asgi(),
         name="chat_consumer",
     ),

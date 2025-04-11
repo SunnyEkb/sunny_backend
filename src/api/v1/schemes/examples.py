@@ -520,7 +520,7 @@ CHAT_EXAMPLE: OpenApiExample = OpenApiExample(
     value={
         "id": 1,
         "subject": AD_RETRIEVE_EXAMPLE.value,
-        "responder_username": "username",
-        "initiator_username": "username",
+        "seller": USER_INFO_EXAMPLE.value,
+        "buyer": USER_INFO_EXAMPLE.value,
     },
 )

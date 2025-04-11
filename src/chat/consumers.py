@@ -44,9 +44,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         responder = obj.provider
         sender = await get_user_from_db(sender_id)
 
-        self.room_group_name = (
-            f"chat_{type}_{object_id}_{buyer_id}"
-        )
+        self.room_group_name = f"chat_{type}_{object_id}_{buyer_id}"
         chat_data = {
             "room_group_name": self.room_group_name,
             "content_type": cont_type_model,
