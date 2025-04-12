@@ -11,6 +11,4 @@ class FavoritesSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = Favorites
-        fields = [
-            "subject",
-        ]
+        fields = ["subject"]

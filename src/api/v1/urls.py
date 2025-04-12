@@ -9,6 +9,7 @@ from api.v1.views import (
     AdViewSet,
     CategoryViewSet,
     ChangePassowrdView,
+    ChatViewSet,
     CommentCreateDestroyViewSet,
     CommentModerationViewSet,
     CommentViewSet,
@@ -28,6 +29,7 @@ from api.v1.views import (
 api_v1_router = DefaultRouter()
 api_v1_router.register("ads", AdViewSet, basename="ads")
 api_v1_router.register("categories", CategoryViewSet, basename="categories")
+api_v1_router.register("chats", ChatViewSet, basename="chats")
 api_v1_router.register(
     "comments",
     CommentCreateDestroyViewSet,
