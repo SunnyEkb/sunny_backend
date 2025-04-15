@@ -2,12 +2,14 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import mixins, permissions, viewsets
+from rest_framework import mixins, permissions, response, status, viewsets
 from rest_framework.decorators import action
 
 from api.v1 import serializers as api_serializers
+from api.v1 import schemes
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import NotificationRecieverOnly
+from core.choices import APIResponses
 from notifications.models import Notification
 
 
@@ -15,7 +17,12 @@ from notifications.models import Notification
     tags=["Notifications"],
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список Уведомлений."),
+    list=extend_schema(
+        summary="Список Уведомлений.",
+        responses={
+            status.HTTP_200_OK: schemes.NOTIFICATIONS_LIST_200_OK,
+        },
+    ),
 )
 class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список уведомлений."""
@@ -31,6 +38,11 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         summary="Пометить прочитанным.",
         request=None,
         methods=["POST"],
+        responses={
+            status.HTTP_200_OK: schemes.NOTIFICATION_MARKED_AS_READ_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
     )
     @action(
         detail=True,
@@ -39,7 +51,39 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         url_name="mark_as_read",
         permission_classes=(NotificationRecieverOnly,),
     )
-    def approve(self, request, *args, **kwargs):
+    def mark_as_read(self, request, *args, **kwargs):
         """Пометить прочитанным."""
 
-        pass
+        obj: Notification = self.get_object()
+        obj.mark_as_read()
+        return response.Response(
+            status=status.HTTP_200_OK,
+            data=APIResponses.NOTIFICATION_IS_READ.value,
+        )
+
+    @extend_schema(
+        summary="Пометить непрочитанным.",
+        request=None,
+        methods=["POST"],
+        responses={
+            status.HTTP_200_OK: schemes.NOTIFICATION_MARKED_AS_UNREAD_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="mark_as_unread",
+        url_name="mark_as_unread",
+        permission_classes=(NotificationRecieverOnly,),
+    )
+    def mark_as_unread(self, request, *args, **kwargs):
+        """Пометить непрочитанным."""
+
+        obj: Notification = self.get_object()
+        obj.mark_as_unread()
+        return response.Response(
+            status=status.HTTP_200_OK,
+            data=APIResponses.NOTIFICATION_IS_UNREAD.value,
+        )

@@ -59,8 +59,10 @@ class Notification(TimeCreateUpdateModel):
             self.read_at = None
             self.save()
 
+    @property
     def read(self):
         return bool(self.read_at)
 
+    @property
     def unread(self):
         return bool(not self.read_at)

@@ -524,3 +524,13 @@ CHAT_EXAMPLE: OpenApiExample = OpenApiExample(
         "buyer": USER_INFO_EXAMPLE.value,
     },
 )
+
+NOTIFICATION_IS_READ_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Уведомление помечено как прочитанное",
+    value={"subject": APIResponses.NOTIFICATION_IS_READ.value},
+)
+
+NOTIFICATION_IS_UNREAD_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Уведомление помечено как ytпрочитанное",
+    value={"subject": APIResponses.NOTIFICATION_IS_UNREAD.value},
+)
