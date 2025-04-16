@@ -47,7 +47,7 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     @action(
         detail=True,
         methods=("post",),
-        url_path="mark_as_read",
+        url_path="mark-as-read",
         url_name="mark_as_read",
         permission_classes=(NotificationRecieverOnly,),
     )
@@ -74,7 +74,7 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     @action(
         detail=True,
         methods=("post",),
-        url_path="mark_as_unread",
+        url_path="mark-as-unread",
         url_name="mark_as_unread",
         permission_classes=(NotificationRecieverOnly,),
     )
