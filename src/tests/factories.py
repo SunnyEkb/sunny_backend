@@ -11,6 +11,7 @@ from ads.models import Ad, Category
 from core.choices import ServicePlace
 from core.enums import Limits
 from comments.models import Comment
+from notifications.models import Notification
 from services.models import Service, Type
 from users.models import CustomUser
 
@@ -91,3 +92,13 @@ class ServiceFactory(DjangoModelFactory):
         length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value
     )
     address = fuzzy.FuzzyText(length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value)
+
+
+class NotificationFactory(DjangoModelFactory):
+    """Фабрика для экземпляров модели уведомлений."""
+
+    class Meta:
+        model = Notification
+
+    receiver = SubFactory(CustomUserFactory)
+    text = fuzzy.FuzzyText(length=Limits.MAX_LENGTH_NOTIFICATION_TEXT.value)

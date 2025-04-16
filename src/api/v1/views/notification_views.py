@@ -32,7 +32,7 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     pagination_class = CustomPaginator
 
     def get_queryset(self):
-        return Notification.objects.filter(receiver=self.reqest.user)
+        return Notification.objects.filter(receiver=self.request.user)
 
     @extend_schema(
         summary="Пометить прочитанным.",
