@@ -100,6 +100,8 @@ class APIResponses(models.TextChoices):
     )
     OBJECT_APPROVED = "Объект одобрен."
     OBJECT_REJECTED = "Объект отклонен."
+    NOTIFICATION_IS_READ = "Уведомление помечено как прочитанное."
+    NOTIFICATION_IS_UNREAD = "Уведомление помечено как непрочитанное."
 
 
 class SystemMessages(models.TextChoices):

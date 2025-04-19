@@ -17,6 +17,7 @@ from api.v1.views import (
     FavoritesViewSet,
     LoginView,
     LogoutView,
+    NotificationViewSet,
     RegisrtyView,
     ServiceImageViewSet,
     ServiceModerationViewSet,
@@ -34,6 +35,11 @@ api_v1_router.register(
     "comments",
     CommentCreateDestroyViewSet,
     basename="comments_create",
+)
+api_v1_router.register(
+    "notifications",
+    NotificationViewSet,
+    basename="notifications",
 )
 api_v1_router.register(
     r"comments/(?P<type>\w+)/(?P<obj_id>\d+)",
