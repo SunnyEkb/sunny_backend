@@ -336,3 +336,20 @@ CHATS_LIST_200_OK: OpenApiResponse = OpenApiResponse(
     description="Получение списка чатов",
     examples=[examples.CHAT_EXAMPLE],
 )
+
+NOTIFICATIONS_LIST_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NotificationSerializer,
+    description="Получение списка чатов",
+)
+
+NOTIFICATION_MARKED_AS_READ_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Уведомление помечено как прочитанное",
+    examples=[examples.NOTIFICATION_IS_READ_EXAMPLE],
+)
+
+NOTIFICATION_MARKED_AS_UNREAD_200_OK: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Уведомление помечено как ytпрочитанное",
+    examples=[examples.NOTIFICATION_IS_UNREAD_EXAMPLE],
+)

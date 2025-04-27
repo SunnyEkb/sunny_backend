@@ -268,3 +268,11 @@ class TestAdsFixtures(TestUserFixtures):
             subject=cls.ad_1,
             author=cls.user_1,
         )
+
+
+class TestNotificationsFixtures(TestUserFixtures):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.notif_1 = factories.NotificationFactory(receiver=cls.user_1)
+        cls.notif_2 = factories.NotificationFactory(receiver=cls.user_1)

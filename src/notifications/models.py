@@ -50,17 +50,19 @@ class Notification(TimeCreateUpdateModel):
         return self.text[:30]
 
     def mark_as_read(self):
-        if self.unread():
+        if self.unread:
             self.read_at = timezone.now()
             self.save()
 
     def mark_as_unread(self):
-        if self.read():
+        if self.read:
             self.read_at = None
             self.save()
 
+    @property
     def read(self):
         return bool(self.read_at)
 
+    @property
     def unread(self):
         return bool(not self.read_at)

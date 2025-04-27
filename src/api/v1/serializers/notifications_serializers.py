@@ -13,8 +13,6 @@ class NotificationSerializer(ModelSerializer):
         fields = [
             "text",
             "link",
-            "sender",
-            "receiver",
             "created_at",
             "updated_at",
             "read_at",
