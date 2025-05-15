@@ -5,6 +5,7 @@ from channels.exceptions import DenyConnection
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
+from rest_framework.utils.serializer_helpers import ReturnList
 
 from chat.models import Chat, Message
 from chat.serializers import MessageSerializer
@@ -76,6 +77,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.chat = chat
                 messages = await self.__get_messages({"chat": self.chat})
                 await self.send(json.dumps(messages, ensure_ascii=False))
+            else:  # убрать после отладки
+                await self.send(
+                    json.dumps(
+                        {"message": "Вы подключились."}, ensure_ascii=False
+                    )
+                )
         else:
             raise DenyConnection("Access Denied: Forbidden!")
 
@@ -118,7 +125,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(json.dumps(event["message"], ensure_ascii=False))
 
     @database_sync_to_async
-    def __get_messages(self, filters: dict) -> Message | None:
+    def __get_messages(self, filters: dict) -> ReturnList:
         """
         Получение списка сообщений из БД.
 
