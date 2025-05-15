@@ -19,6 +19,7 @@ def send_email(
     """
     Отправка e-mail.
     """
+
     try:
         html_body = render_to_string(html_template, context)
         message_text = render_to_string(text_template, context)
