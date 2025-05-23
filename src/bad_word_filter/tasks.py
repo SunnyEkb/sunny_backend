@@ -9,7 +9,13 @@ from notifications.models import Notification
 
 
 @shared_task
-def moderate_comment(comment_id: int, admin_url: str):
+def moderate_comment(comment_id: int, request: str) -> None:
+    """
+    Задача по модерации комментария.
+
+    :param comment_id: идентификатор комментария
+    :param request: экземпляр запроса
+    """
     comment: Comment = Comment.objects.filter(pk=comment_id).first()
     if comment:
         if len(bad_words_filter(comment.feedback)) > 0:
@@ -18,4 +24,4 @@ def moderate_comment(comment_id: int, admin_url: str):
                 text=SystemMessages.AUTOMATIC_COMMENT_MODERATION_FAILED.value,
             )
         else:
-            notify_about_moderation(comment.get_admin_url(admin_url))
+            notify_about_moderation(comment.get_admin_url(request))
