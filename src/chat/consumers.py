@@ -81,12 +81,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     self.chat = chat
                     messages = await self.__get_messages({"chat": self.chat})
                     await self.send(json.dumps(messages, ensure_ascii=False))
-                else:  # убрать после отладки
-                    await self.send(
-                        json.dumps(
-                            {"message": "Вы подключились."}, ensure_ascii=False
-                        )
-                    )
             else:
                 raise DenyConnection("Access Denied: Forbidden!")
         except DenyConnection:
