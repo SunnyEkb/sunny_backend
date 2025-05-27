@@ -285,6 +285,11 @@ LOGGING = {
             "()": "core.log.TelegramHandler",
             "level": "ERROR",
         },
+        "telegram_async_logger": {
+            "formatter": "main",
+            "()": "core.log.TelegramAsyncHandler",
+            "level": "ERROR",
+        },
     },
     "loggers": {
         "django.server": {
@@ -295,6 +300,11 @@ LOGGING = {
         "django": {
             "level": "ERROR",
             "handlers": ["file_logger", "telegram_logger"],
+            "propagate": False,
+        },
+        "chat": {
+            "level": "ERROR",
+            "handlers": ["telegram_async_logger"],
             "propagate": False,
         },
         "factory": {
