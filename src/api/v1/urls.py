@@ -4,18 +4,23 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 from api.v1.views import (
     AdAvatarView,
-    AdViewSet,
     AdImageViewSet,
+    AdModerationViewSet,
+    AdViewSet,
     CategoryViewSet,
     ChangePassowrdView,
+    ChatViewSet,
     CommentCreateDestroyViewSet,
+    CommentModerationViewSet,
     CommentViewSet,
     CookieTokenRefreshView,
     FavoritesViewSet,
     LoginView,
     LogoutView,
+    NotificationViewSet,
     RegisrtyView,
     ServiceImageViewSet,
+    ServiceModerationViewSet,
     ServiceViewSet,
     TypeViewSet,
     VerificationView,
@@ -25,10 +30,16 @@ from api.v1.views import (
 api_v1_router = DefaultRouter()
 api_v1_router.register("ads", AdViewSet, basename="ads")
 api_v1_router.register("categories", CategoryViewSet, basename="categories")
+api_v1_router.register("chats", ChatViewSet, basename="chats")
 api_v1_router.register(
     "comments",
     CommentCreateDestroyViewSet,
     basename="comments_create",
+)
+api_v1_router.register(
+    "notifications",
+    NotificationViewSet,
+    basename="notifications",
 )
 api_v1_router.register(
     r"comments/(?P<type>\w+)/(?P<obj_id>\d+)",
@@ -38,6 +49,21 @@ api_v1_router.register(
 api_v1_router.register("favorite", FavoritesViewSet, "favorite")
 api_v1_router.register("types", TypeViewSet, basename="types")
 api_v1_router.register("services", ServiceViewSet, basename="services")
+api_v1_router.register(
+    "moderator/services",
+    ServiceModerationViewSet,
+    basename="moderation_services",
+)
+api_v1_router.register(
+    "moderator/ads",
+    AdModerationViewSet,
+    basename="moderation_ads",
+)
+api_v1_router.register(
+    "moderator/comments",
+    CommentModerationViewSet,
+    basename="moderation_comments",
+)
 api_v1_router.register(
     "serviceimage", ServiceImageViewSet, basename="serviceimage"
 )

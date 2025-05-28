@@ -1,13 +1,9 @@
-import logging
 import os
 import shutil
 
 from asgiref.sync import async_to_sync
 from django.conf import settings
 import telegram
-
-
-logger = logging.getLogger("django")
 
 
 @async_to_sync
@@ -29,6 +25,18 @@ async def send_telegram_message(
         )
 
 
+async def send_telegram_message_async(
+    message: str, chat_id: str, message_thread_id: str | None
+) -> None:
+    """Отправка сообщения в телеграм чат асинхронно."""
+
+    bot = telegram.Bot(token=settings.TELEGRAM_TOKEN)
+    async with bot:
+        await bot.send_message(
+            chat_id=chat_id, text=message, message_thread_id=message_thread_id
+        )
+
+
 def send_error_message(message: str) -> None:
     """
     Отправка ошибки в телеграм чат.
@@ -37,7 +45,17 @@ def send_error_message(message: str) -> None:
     """
 
     send_telegram_message(
-        message=message,
+        message=message[:4095],
+        chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
+        message_thread_id=settings.TELEGRAM_SUPPORT_CHAT_TOPIC,
+    )
+
+
+async def send_error_message_async(message: str) -> None:
+    """Отправка ошибки в телеграм чат асинхронно."""
+
+    await send_telegram_message_async(
+        message=message[:4095],
         chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
         message_thread_id=settings.TELEGRAM_SUPPORT_CHAT_TOPIC,
     )

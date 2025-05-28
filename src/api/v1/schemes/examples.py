@@ -502,7 +502,35 @@ AD_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
 
 FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список избранного",
+    value={"subject": AD_RETRIEVE_EXAMPLE.value},
+)
+
+OBJ_APPROVED_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Одобрено",
+    value={"subject": APIResponses.OBJECT_APPROVED.value},
+)
+
+OBJ_REJECTED_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Отклонено",
+    value={"subject": APIResponses.OBJECT_REJECTED.value},
+)
+
+CHAT_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список чатов",
     value={
+        "id": 1,
         "subject": AD_RETRIEVE_EXAMPLE.value,
+        "seller": USER_INFO_EXAMPLE.value,
+        "buyer": USER_INFO_EXAMPLE.value,
     },
+)
+
+NOTIFICATION_IS_READ_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Уведомление помечено как прочитанное",
+    value={"subject": APIResponses.NOTIFICATION_IS_READ.value},
+)
+
+NOTIFICATION_IS_UNREAD_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Уведомление помечено как ytпрочитанное",
+    value={"subject": APIResponses.NOTIFICATION_IS_UNREAD.value},
 )

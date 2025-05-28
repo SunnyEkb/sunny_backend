@@ -20,6 +20,7 @@ class ServicePlace(models.TextChoices):
 class CommentStatus(models.IntegerChoices):
     DRAFT = 0
     PUBLISHED = 1
+    MODERATION = 2
 
 
 class AdvertisementStatus(models.IntegerChoices):
@@ -97,6 +98,10 @@ class APIResponses(models.TextChoices):
         "Расширение файлов {0} не поддерживается. Разрешенные"
         f" расширения: {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}"
     )
+    OBJECT_APPROVED = "Объект одобрен."
+    OBJECT_REJECTED = "Объект отклонен."
+    NOTIFICATION_IS_READ = "Уведомление помечено как прочитанное."
+    NOTIFICATION_IS_UNREAD = "Уведомление помечено как непрочитанное."
 
 
 class SystemMessages(models.TextChoices):
@@ -112,6 +117,8 @@ class Notifications(models.TextChoices):
     WELCOME = (
         "{0}, приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
     )
+    APPROVE_OBJECT = "Модерация успешно пройдена."
+    REJECT_OBJECT = "Модерация не пройдена."
 
 
 class EmailSubjects(models.TextChoices):

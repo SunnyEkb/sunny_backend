@@ -5,13 +5,22 @@ from drf_spectacular.utils import (
     extend_schema_view,
 )
 from rest_framework import mixins, status, viewsets
+from rest_framework.decorators import action
 
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from api.v1.filters import ServiceFilter
-from api.v1.permissions import PhotoOwnerOrReadOnly, PhotoReadOnly
+from api.v1.permissions import (
+    ModeratorOnly,
+    PhotoOwnerOrReadOnly,
+    PhotoReadOnly,
+)
 from api.v1.validators import validate_id
-from api.v1.views.base_views import BaseServiceAdViewSet, CategoryTypeViewSet
+from api.v1.views.base_views import (
+    BaseModeratorViewSet,
+    BaseServiceAdViewSet,
+    CategoryTypeViewSet,
+)
 from core.choices import AdvertisementStatus
 from services.models import Service, ServiceImage, Type
 
@@ -162,3 +171,65 @@ class ServiceImageViewSet(
         instance.delete_image_files()
 
         return super().destroy(request, *args, **kwargs)
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="Список услуг для модерации.",
+        responses={
+            status.HTTP_200_OK: schemes.SERVICE_LIST_FOR_MODERATION_OK_200,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
+    ),
+)
+class ServiceModerationViewSet(BaseModeratorViewSet):
+    """Модерация услуг."""
+
+    queryset = Service.cstm_mng.filter(
+        status=AdvertisementStatus.MODERATION.value
+    )
+    serializer_class = api_serializers.ServiceForModerationSerializer
+
+    def _get_receiver(self):
+        return self.get_object().provider
+
+    @extend_schema(
+        summary="Одобрить услугу.",
+        request=None,
+        methods=["POST"],
+        responses={
+            status.HTTP_200_OK: schemes.OBJ_APPROVED_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="approve",
+        url_name="approve",
+        permission_classes=(ModeratorOnly,),
+    )
+    def approve(self, request, *args, **kwargs):
+        return super().approve(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Отклонить услугу.",
+        request=None,
+        methods=["POST"],
+        responses={
+            status.HTTP_200_OK: schemes.OBJ_REJECTED_200_OK,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+            status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
+        },
+    )
+    @action(
+        detail=True,
+        methods=("post",),
+        url_path="reject",
+        url_name="reject",
+        permission_classes=(ModeratorOnly,),
+    )
+    def reject(self, request, *args, **kwargs):
+        return super().reject(request, *args, **kwargs)

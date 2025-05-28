@@ -88,3 +88,27 @@ class CommentAuthorOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.author == request.user
+
+
+class ModeratorOnly(BasePermission):
+    """
+    Разрешения на совершение действий только модератору.
+    """
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_moderator
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_moderator
+
+
+class NotificationRecieverOnly(BasePermission):
+    """
+    Только получатель уведомления.
+    """
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated
+
+    def has_object_permission(self, request, view, obj):
+        return obj.receiver == request.user

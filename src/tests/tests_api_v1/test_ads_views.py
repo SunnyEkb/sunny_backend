@@ -358,3 +358,77 @@ class TestAdView(TestAdsFixtures):
                 ),
             ).exists()
         )
+
+
+class TestAdsModerationView(TestAdsFixtures):
+    def test_get_list_of_ads_for_moderation(self):
+        response = self.client_moderator.get(reverse("moderation_ads-list"))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            len(response.json()["results"]),
+            len(
+                Ad.objects.filter(status=AdvertisementStatus.MODERATION.value)
+            ),
+        )
+
+    def test_only_moderator_can_get_list_of_ads_for_moderation(self):
+        response = self.client_1.get(reverse("moderation_ads-list"))
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_anon_can_not_get_list_of_ads_for_moderation(self):
+        response = self.anon_client.get(reverse("moderation_ads-list"))
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_approve_ad(self):
+        response = self.client_moderator.post(
+            reverse(
+                "moderation_ads-approve",
+                kwargs={"pk": self.ad_moderation.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_anon_can_not_approve_ad(self):
+        response = self.anon_client.post(
+            reverse(
+                "moderation_ads-approve",
+                kwargs={"pk": self.ad_moderation.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_only_moderator_can_approve_ad(self):
+        response = self.client_1.post(
+            reverse(
+                "moderation_ads-approve",
+                kwargs={"pk": self.ad_moderation.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_reject_ad(self):
+        response = self.client_moderator.post(
+            reverse(
+                "moderation_ads-reject",
+                kwargs={"pk": self.ad_moderation.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_anon_can_not_reject_ad(self):
+        response = self.anon_client.post(
+            reverse(
+                "moderation_ads-reject",
+                kwargs={"pk": self.ad_moderation.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+
+    def test_only_moderator_can_reject_ad(self):
+        response = self.client_1.post(
+            reverse(
+                "moderation_ads-reject",
+                kwargs={"pk": self.ad_moderation.id},
+            )
+        )
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
