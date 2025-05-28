@@ -28,7 +28,13 @@ async def send_telegram_message(
 async def send_telegram_message_async(
     message: str, chat_id: str, message_thread_id: str | None
 ) -> None:
-    """Отправка сообщения в телеграм чат асинхронно."""
+    """
+    Отправка сообщения в телеграм чат асинхронно.
+
+    :param message: текст сообщения
+    :param chat_id: идентификатор чата
+    :param message_thread_id: номер подгруппы
+    """
 
     bot = telegram.Bot(token=settings.TELEGRAM_TOKEN)
     async with bot:
@@ -52,7 +58,11 @@ def send_error_message(message: str) -> None:
 
 
 async def send_error_message_async(message: str) -> None:
-    """Отправка ошибки в телеграм чат асинхронно."""
+    """
+    Отправка ошибки в телеграм чат асинхронно.
+
+    :param message: текст ошибки
+    """
 
     await send_telegram_message_async(
         message=message[:4095],
