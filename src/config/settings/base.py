@@ -302,7 +302,7 @@ LOGGING = {
             "handlers": ["file_logger", "telegram_logger"],
             "propagate": False,
         },
-        "chat": {
+        "chat.consumers": {
             "level": "ERROR",
             "handlers": ["telegram_async_logger"],
             "propagate": False,

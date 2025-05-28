@@ -13,7 +13,7 @@ from chat.serializers import MessageSerializer
 from core.middleware import get_user_from_db
 from core.choices import AdvertisementStatus
 
-logger = logging.getLogger("chat")
+logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
