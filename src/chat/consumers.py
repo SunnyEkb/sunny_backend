@@ -13,7 +13,7 @@ from chat.serializers import MessageSerializer
 from core.middleware import get_user_from_db
 from core.choices import AdvertisementStatus
 
-logger = logging.getLogger("django")
+logger = logging.getLogger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -107,20 +107,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         try:
             data = json.loads(text_data)
-            message = data["message"]
+            message = data.get("message", None)
 
-            message = await self.__save_chat_message(
-                sender=self.scope["user"],
-                message=message,
-            )
+            if message and isinstance(message, str):
+                message = await self.__save_chat_message(
+                    sender=self.scope["user"],
+                    message=message,
+                )
 
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "chat_message",
-                    "message": MessageSerializer(message).data,
-                },
-            )
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "chat_message",
+                        "message": MessageSerializer(message).data,
+                    },
+                )
         except Exception as e:
             logger.exception(e)
 
