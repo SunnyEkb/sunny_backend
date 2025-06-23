@@ -7,6 +7,8 @@ from django.conf import settings
 
 @lru_cache
 def get_bad_words_list() -> List:
+    """Получение списка нецензурных слов."""
+
     with open(
         os.path.join(settings.BASE_DIR, "media", "bad_words.txt"),
         encoding="utf-8",
@@ -16,6 +18,8 @@ def get_bad_words_list() -> List:
 
 @lru_cache
 def get_good_words_list() -> List:
+    """Получение списка исключений."""
+
     with open(
         os.path.join(settings.BASE_DIR, "media", "white_list_words.txt"),
         encoding="utf-8",
@@ -24,6 +28,13 @@ def get_good_words_list() -> List:
 
 
 def bad_words_filter(text: str) -> List[str]:
+    """
+    Модерация текста.
+
+    :param text: текст для модерации
+    :return: список нецензурных слов из текста
+    """
+
     bad_words = get_bad_words_list()
     good_words = get_good_words_list()
 

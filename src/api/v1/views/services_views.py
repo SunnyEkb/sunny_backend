@@ -50,9 +50,7 @@ class TypeViewSet(CategoryTypeViewSet):
         return api_serializers.TypeGetSerializer
 
 
-@extend_schema(
-    tags=["Services"],
-)
+@extend_schema(tags=["Services"])
 @extend_schema_view(
     list=extend_schema(
         summary=(
