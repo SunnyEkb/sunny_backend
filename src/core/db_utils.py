@@ -1,13 +1,32 @@
 from django.core.exceptions import ValidationError
+from django.core.files.base import File
 
 from core.enums import Limits
 
 
-def validate_image(fieldfile_obj):
+def validate_image(fieldfile_obj: File) -> None:
+    """
+    Проверяет, размер загружаемого файла.
+
+    :param fieldfile_obj: объект файла
+    """
+
     filesize = fieldfile_obj.file.size
     megabyte_limit = Limits.MAX_FILE_SIZE
     if filesize > megabyte_limit:
         raise ValidationError("Max file size is %sMB" % str(megabyte_limit))
+
+
+def validate_svg(fieldfile_obj: File) -> None:
+    """
+    Проверяет, что загружаемый файл в формате SVG.
+
+    :param fieldfile_obj: объект файла
+    """
+
+    filename = fieldfile_obj.file.name
+    if not filename.endswith(".svg"):
+        raise ValidationError("File must be SVG.")
 
 
 def service_image_path(instance: object, filename: str) -> str:
