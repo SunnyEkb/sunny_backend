@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 
-from core.db_utils import get_path_to_save_image, validate_image
+from core.db_utils import get_path_to_save_image, validate_image, validate_svg
 from core.enums import Limits
 from core.managers import TypeCategoryManager
 from services.tasks import delete_image_files_task
@@ -68,9 +68,10 @@ class BaseTypeCategory(models.Model):
         on_delete=models.PROTECT,
         db_index=True,
     )
-    image = models.ImageField(
+    image = models.FileField(
         "изображение",
         upload_to="categories/",
+        validators=[validate_svg],
         blank=True,
         null=True,
     )
