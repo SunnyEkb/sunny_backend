@@ -20,7 +20,7 @@ from api.v1.paginators import CustomPaginator
 from api.v1.permissions import ModeratorOnly, OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-from bad_word_filter.tasks import moderate_comment
+from bad_word_filter.tasks import moderate_comment_task
 from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
 from core.choices import AdvertisementStatus, APIResponses, Notifications
@@ -362,15 +362,16 @@ class BaseServiceAdViewSet(
                 data=APIResponses.COMMENTS_BY_PROVIDER_PROHIBITED.value,
             )
 
-        comment = serializer.save(
+        comment: Comment = serializer.save(
             content_type=ContentType.objects.get(
                 app_label=app_label, model=model
             ),
             object_id=object.id,
             author=request.user,
         )
-        admin_url = comment.get_admin_url(self.request)
-        moderate_comment.delay_on_commit(comment.id, admin_url)
+        moderate_comment_task.delay_on_commit(
+            comment_id=comment.id, request=self.request
+        )
 
         return response.Response(
             status=status.HTTP_201_CREATED,

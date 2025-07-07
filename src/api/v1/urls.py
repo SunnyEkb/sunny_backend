@@ -9,6 +9,7 @@ from api.v1.views import (
     AdViewSet,
     CategoryViewSet,
     ChangePassowrdView,
+    ChatViewSet,
     CommentCreateDestroyViewSet,
     CommentModerationViewSet,
     CommentViewSet,
@@ -16,6 +17,7 @@ from api.v1.views import (
     FavoritesViewSet,
     LoginView,
     LogoutView,
+    NotificationViewSet,
     RegisrtyView,
     ServiceImageViewSet,
     ServiceModerationViewSet,
@@ -29,10 +31,16 @@ from api.v1.views import (
 api_v1_router = DefaultRouter()
 api_v1_router.register("ads", AdViewSet, basename="ads")
 api_v1_router.register("categories", CategoryViewSet, basename="categories")
+api_v1_router.register("chats", ChatViewSet, basename="chats")
 api_v1_router.register(
     "comments",
     CommentCreateDestroyViewSet,
     basename="comments_create",
+)
+api_v1_router.register(
+    "notifications",
+    NotificationViewSet,
+    basename="notifications",
 )
 api_v1_router.register(
     r"comments/(?P<type>\w+)/(?P<obj_id>\d+)",

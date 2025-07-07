@@ -1,4 +1,3 @@
-import logging
 import os
 import shutil
 
@@ -7,14 +6,35 @@ from django.conf import settings
 import telegram
 
 
-logger = logging.getLogger("django")
-
-
 @async_to_sync
 async def send_telegram_message(
     message: str, chat_id: str, message_thread_id: str | None
 ) -> None:
-    """Отправка сообщения в телеграм чат."""
+    """
+    Отправка сообщения в телеграм чат.
+
+    :param message: текст сообщения
+    :param chat_id: идентификатор чата
+    :param message_thread_id: номер подгруппы
+    """
+
+    bot = telegram.Bot(token=settings.TELEGRAM_TOKEN)
+    async with bot:
+        await bot.send_message(
+            chat_id=chat_id, text=message, message_thread_id=message_thread_id
+        )
+
+
+async def send_telegram_message_async(
+    message: str, chat_id: str, message_thread_id: str | None
+) -> None:
+    """
+    Отправка сообщения в телеграм чат асинхронно.
+
+    :param message: текст сообщения
+    :param chat_id: идентификатор чата
+    :param message_thread_id: номер подгруппы
+    """
 
     bot = telegram.Bot(token=settings.TELEGRAM_TOKEN)
     async with bot:
@@ -24,17 +44,39 @@ async def send_telegram_message(
 
 
 def send_error_message(message: str) -> None:
-    """Отправка ошибки в телеграм чат."""
+    """
+    Отправка ошибки в телеграм чат.
+
+    :param message: текст ошибки
+    """
 
     send_telegram_message(
-        message=message,
+        message=message[:4095],
+        chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
+        message_thread_id=settings.TELEGRAM_SUPPORT_CHAT_TOPIC,
+    )
+
+
+async def send_error_message_async(message: str) -> None:
+    """
+    Отправка ошибки в телеграм чат асинхронно.
+
+    :param message: текст ошибки
+    """
+
+    await send_telegram_message_async(
+        message=message[:4095],
         chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
         message_thread_id=settings.TELEGRAM_SUPPORT_CHAT_TOPIC,
     )
 
 
 def notify_about_moderation(url: str) -> None:
-    """Отправка уведомления о необходимости модерации."""
+    """
+    Отправка уведомления о необходимости модерации.
+
+    :param url: url объекта модерации в админ панели
+    """
 
     send_telegram_message(
         message=f"Необходима модерация. Ссылка: {url}",
@@ -43,7 +85,13 @@ def notify_about_moderation(url: str) -> None:
     )
 
 
-def delete_image_files(path: str):
+def delete_image_files(path: str) -> None:
+    """
+    Удаление файлов из директории.
+
+    :param path: директория для удаления файлов
+    """
+
     full_path = os.path.join(settings.MEDIA_ROOT, path)
     if os.path.exists(full_path):
         directory = os.path.dirname(full_path)
@@ -54,6 +102,12 @@ def delete_image_files(path: str):
                 os.remove(full_file_path)
 
 
-def delete_images_dir(path: str):
+def delete_images_dir(path: str) -> None:
+    """
+    Удаление директории.
+
+    :param path: адрес директории
+    """
+
     if os.path.exists(path):
         shutil.rmtree(os.path.join(settings.MEDIA_ROOT, path))

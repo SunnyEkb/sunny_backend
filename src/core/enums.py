@@ -6,25 +6,58 @@ class Limits(IntEnum):
     Предельные значения.
     """
 
+    # Предельные значения для users
     MAX_LENGTH_FIRST_NAME = 50
+    """Предельная длина имени."""
     MAX_LENGTH_LAST_NAME = 50
-    MAX_LENGTH_USER_ROLE = 20
-    MAX_LENGTH_PHONE_NUMBER = 12
-    MAX_LENGTH_NOTIFICATION_TEXT = 500
-    MAX_LENGTH_ADVMNT_TITLE = 250
-    MAX_LENGTH_ADVMNT_DESCRIPTION = 500
-    MAX_LENGTH_SERVICE_ADDRESS = 250
-    MAX_LENGTH_SERVICE_SALON_NAME = 250
-    MAX_LENGTH_SERVICE_PLACE = 50
-    MAX_LENGTH_ADVMNT_CATEGORY = 50
-    MAX_LENGTH_ADVMNT_STATE = 15
-    MAX_LENGTH_TYPE_TITLE = 50
-    MAXIMUM_EXPERIENCE = 50
-    MAX_FILE_SIZE = 5 * 1024 * 1024
-    MAX_FILE_QUANTITY = 5
-    MAX_RATING = 5
-    MIN_RATING = 1
-    MAX_COMMENT_TEXT = 500
-    REGISTRY_TOKEN_LIFETIME = 24
+    """Предельная длина фамилии."""
     USERNAME_MIN_LENGTH = 2
+    """Минимальная длина имени пользователя."""
     USERNAME_MAX_LENGTH = 25
+    """Максимальная длина имени пользователя."""
+    MAX_LENGTH_USER_ROLE = 20
+    """Предельная длина наименования роли пользователя."""
+    MAX_LENGTH_PHONE_NUMBER = 12
+    """Предельная длина номера телефона."""
+    REGISTRY_TOKEN_LIFETIME = 24
+    """Время жизни токена для подтверждения регистрации в часах."""
+
+    # Предельные значения для notifications
+    MAX_LENGTH_NOTIFICATION_TEXT = 500
+    """Предельная длина текста уведомления."""
+
+    # Предельные значения для ads
+    MAX_LENGTH_ADVMNT_TITLE = 250
+    """Предельная длина наименования объявления."""
+    MAX_LENGTH_ADVMNT_DESCRIPTION = 500
+    """Предельная длина описания объявления."""
+    MAX_LENGTH_ADVMNT_CATEGORY = 50
+    """Предельная длина наименования категории объявления."""
+    MAX_LENGTH_ADVMNT_STATE = 15
+    """Предельная длина типа состояния товара."""
+
+    # Предельные значения для services
+    MAX_LENGTH_SERVICE_ADDRESS = 250
+    """Предельная длина адреса оказания услуги."""
+    MAX_LENGTH_SERVICE_SALON_NAME = 250
+    """Предельная длина названия салона."""
+    MAX_LENGTH_SERVICE_PLACE = 50
+    """Предельная длина типа места оказания услуги."""
+    MAX_LENGTH_TYPE_TITLE = 50
+    """Предельная длина наименования типа для услуг."""
+    MAXIMUM_EXPERIENCE = 50
+    """Предельное значение опыта."""
+
+    # Предельные значения для загружаемых файлов
+    MAX_FILE_SIZE = 5 * 1024 * 1024
+    """Предельный размер файла."""
+    MAX_FILE_QUANTITY = 5
+    """Предельное количество фото, загружаемых к услуге или объявлению."""
+
+    # Предельные значения для comments
+    MAX_RATING = 5
+    """Максимальное значение оценки в отзыве."""
+    MIN_RATING = 1
+    """Минимальное значение оценки в отзыве."""
+    MAX_COMMENT_TEXT = 500
+    """Предельная длина текста отзыва."""
