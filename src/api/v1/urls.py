@@ -22,6 +22,7 @@ from api.v1.views import (
     ServiceImageViewSet,
     ServiceModerationViewSet,
     ServiceViewSet,
+    SearchView,
     TypeViewSet,
     VerificationView,
     UserViewSet,
@@ -101,5 +102,6 @@ urlpatterns = [
     re_path(
         r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
     ),
+    path("search", SearchView.as_view()),
     path("", include(api_v1_router.urls)),
 ]

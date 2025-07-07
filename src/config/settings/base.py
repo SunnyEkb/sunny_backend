@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "drf_spectacular",
+    "django_elasticsearch_dsl",
     "django_rest_passwordreset",
     "rest_framework.authtoken",
     "rest_framework_simplejwt",
@@ -93,6 +94,21 @@ DATABASES = {
         "HOST": getenv("POSTGRES_HOST", default="db_test"),
         "PORT": getenv("POSTGRES_PORT", default=5432),
     }
+}
+
+ELASTICSEARCH_DSL_HOSTS = getenv(
+    "ELASTICSEARCH_DSL_HOSTS", default="localhost:9200"
+).split(", ")
+ELASTIC_PASSWORD = getenv("ELASTIC_PASSWORD", default="password")
+ELASTIC_USERNAME = getenv("ELASTIC_USERNAME", default="elastic")
+ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
+    "django_elasticsearch_dsl.signals.CelerySignalProcessor"
+)
+
+ELASTICSEARCH_DSL = {
+    "default": {"hosts": (ELASTICSEARCH_DSL_HOSTS)},
+    #    "basic_auth": (ELASTIC_USERNAME, ELASTIC_PASSWORD),
+    #    "verify_certs": False,
 }
 
 AUTH_USER_MODEL = "users.CustomUser"

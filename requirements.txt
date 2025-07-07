@@ -17,3 +17,6 @@ Pillow==10.3.0
 Celery==5.4.0
 flower==2.0.1
 django_filter==24.2
+elasticsearch==8.10.1
+elasticsearch-dsl==8.9.0
+django-elasticsearch-dsl==8.0

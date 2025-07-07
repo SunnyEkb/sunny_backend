@@ -5,7 +5,10 @@ from rest_framework import serializers
 
 from ads.models import Ad, AdImage, Category
 from api.v1.serializers.comments_serializers import CommentReadSerializer
-from api.v1.serializers.users_serializers import UserReadSerializer
+from api.v1.serializers.users_serializers import (
+    UserReadSerializer,
+    UserSearchSerializer,
+)
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
 from core.choices import CommentStatus
@@ -194,4 +197,21 @@ class AdForModerationSerializer(serializers.ModelSerializer):
             "category",
             "created_at",
             "updated_at",
+        ]
+
+
+class AdSearchSerializer(serializers.ModelSerializer):
+    """Сериализатор для посика объявлений."""
+
+    provider = UserSearchSerializer(read_only=True)
+
+    class Meta:
+        model = Ad
+        fields = [
+            "id",
+            "title",
+            "description",
+            "price",
+            "provider",
+            "condition",
         ]

@@ -1,13 +1,25 @@
 name: sunny_ekb
 
 services:
+  es:
+    image: elasticsearch:8.10.1
+    container_name: es
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
   sunny_db:
     container_name: sunny_db
     image: postgres:16.1-alpine
     volumes:
       - sunny_ekb_data:/var/lib/postgresql/data/
     env_file:
-      - ./.env
+      - .env
     ports:
       - "5432:5432"
     healthcheck:
@@ -22,7 +34,6 @@ services:
     image: nginx:1.21.3-alpine
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx_loc.conf:/etc/nginx/conf.d/default.conf
       - sunny_static_value:/var/html/static/
@@ -74,8 +85,9 @@ services:
     volumes:
       - sunny_static_value:/app/static/
       - sunny_media_value:/app/media/
+      - sunny_data_store_value:/app/data_store/
     env_file:
-      - ./.env
+      - .env
     command:
       - /bin/sh
       - -c
@@ -89,8 +101,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      es:
+        condition: service_started
 
 volumes:
   sunny_static_value:
   sunny_media_value:
+  sunny_data_store_value:
   sunny_ekb_data:
+  elasticsearch_data:
