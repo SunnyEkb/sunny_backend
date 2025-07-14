@@ -4,7 +4,11 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from api.v1.serializers import CommentReadSerializer, UserReadSerializer
+from api.v1.serializers import (
+    CommentReadSerializer,
+    UserReadSerializer,
+    UserSearchSerializer,
+)
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import validate_file_size
 from core.choices import CommentStatus
@@ -251,4 +255,22 @@ class ServiceForModerationSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "price_list_entries",
+        )
+
+
+class ServiceSearchSerializer(serializers.ModelSerializer):
+    """Сериализатор для поиска услуг."""
+
+    provider = UserSearchSerializer(read_only=True)
+
+    class Meta:
+        model = Service
+        fields = (
+            "id",
+            "title",
+            "description",
+            "address",
+            "salon_name",
+            "provider",
+            "place_of_provision",
         )

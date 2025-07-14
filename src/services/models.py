@@ -58,9 +58,8 @@ class Service(AbstractAdvertisement):
     class Meta:
         verbose_name = "Услуга"
         verbose_name_plural = "Услуги"
-        ordering = [
-            "-created_at",
-        ]
+        ordering = ["-created_at"]
+        default_related_name = "services"
 
     def __str__(self) -> str:
         return self.title

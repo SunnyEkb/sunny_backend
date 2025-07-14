@@ -46,6 +46,16 @@ class UserReadSerializer(ModelSerializer):
         ]
 
 
+class UserSearchSerializer(ModelSerializer):
+    """
+    Сериализатор для получения данных о пользователе.
+    """
+
+    class Meta:
+        model = User
+        fields = ["id", "email"]
+
+
 class UserCreateSerializer(ModelSerializer):
     """
     Сериализатор для создания пользователя.
