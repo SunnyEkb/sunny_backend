@@ -353,3 +353,8 @@ NOTIFICATION_MARKED_AS_UNREAD_200_OK: OpenApiResponse = OpenApiResponse(
     description="Уведомление помечено как ytпрочитанное",
     examples=[examples.NOTIFICATION_IS_UNREAD_EXAMPLE],
 )
+
+SEARCH_OK_200: OpenApiResponse = OpenApiResponse(
+    response=serializers.AdSearchSerializer,
+    description="Поиск объявлений",
+)

@@ -2,18 +2,21 @@ import copy
 from typing import List, Optional
 
 from django.http import HttpResponse
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from elasticsearch_dsl import Q
 from rest_framework import views, request, response, status
 
 from ads.documents import AdDocument
-from api.v1 import serializers
+from api.v1 import schemes, serializers
 from services.documents import ServiceDocument
 
 
 @extend_schema(
     summary="Поиск по услугам и объявлениям.",
     tags=["Search"],
+    request=None,
+    parameters=[OpenApiParameter("search", str)],
+    responses={status.HTTP_200_OK: schemes.SEARCH_OK_200},
 )
 class SearchView(views.APIView):
     document_classes = [AdDocument, ServiceDocument]
