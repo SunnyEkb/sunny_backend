@@ -1,15 +1,4 @@
 services:
-  es:
-    image: elasticsearch:8.10.1
-    container_name: es
-    restart: always
-    environment:
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-
   db:
     image: postgres:16.1-alpine
     container_name: db
@@ -60,7 +49,7 @@ services:
     image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
     container_name: celery
     restart: always
-    command: celery -A config worker -l INFO
+    entrypoint: "celery -A config worker -l INFO"
     env_file:
       - .env
     depends_on:
@@ -71,7 +60,7 @@ services:
     image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
     container_name: beat
     restart: always
-    command: celery -A config beat -l INFO
+    entrypoint: "celery -A config beat -l INFO"
     env_file:
       - .env
     depends_on:
@@ -98,13 +87,12 @@ services:
       - sunny_data_store_value:/app/data_store/
     depends_on:
       - db
-      - es
       - redis
     ports:
       - "8000:8000"
     env_file:
       - ./.env
-    command: python3 -m daphne -b 0.0.0.0 -p 8000 config.asgi:application
+    entrypoint: python3 -m daphne -b 0.0.0.0 -p 8000 config.asgi:application
 
   frontend:
     image: ${DOCKER_HUB_USERNAME}/sunny_ekb_frontend:latest
@@ -118,4 +106,3 @@ volumes:
   sunny_media_value:
   sunny_data_store_value:
   sunny_ekb_data:
-  elasticsearch_data:
