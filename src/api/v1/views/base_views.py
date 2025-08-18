@@ -62,7 +62,7 @@ class BaseServiceAdViewSet(
             return super().list(request, *args, **kwargs)
         except exceptions.ValidationError:
             return response.Response(
-                data={"detail": APIResponses.INVALID_PARAMETR.value},
+                data={"detail": APIResponses.INVALID_PARAMETR},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -71,10 +71,10 @@ class BaseServiceAdViewSet(
         instance = self.get_object()
 
         # Проверяем, что объект не находится на модерации
-        if instance.status == AdvertisementStatus.MODERATION.value:
+        if instance.status == AdvertisementStatus.MODERATION:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION.value,
+                data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION,
             )
 
         serializer = self.get_serializer(
@@ -118,10 +118,10 @@ class BaseServiceAdViewSet(
         """Скрыть услугу или объявление."""
 
         object = self.get_object()
-        if not object.status == AdvertisementStatus.PUBLISHED.value:
+        if not object.status == AdvertisementStatus.PUBLISHED:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.CAN_NOT_HIDE_SERVICE_OR_AD.value,
+                data=APIResponses.CAN_NOT_HIDE_SERVICE_OR_AD,
             )
         object.hide()
         serializer = self.get_serializer(object)
@@ -157,20 +157,18 @@ class BaseServiceAdViewSet(
         object = self.get_object()
         obj_status = object.status
         if obj_status not in [
-            AdvertisementStatus.DRAFT.value,
-            AdvertisementStatus.HIDDEN.value,
+            AdvertisementStatus.DRAFT,
+            AdvertisementStatus.HIDDEN,
         ]:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.SERVICE_OR_AD_CANT_BE_PUBLISHED.value,
+                data=APIResponses.SERVICE_OR_AD_CANT_BE_PUBLISHED,
             )
         object.publish(request)
-        if obj_status == AdvertisementStatus.HIDDEN.value:
+        if obj_status == AdvertisementStatus.HIDDEN:
             serializer = self.get_serializer(object)
             return response.Response(serializer.data)
-        return response.Response(
-            APIResponses.AD_OR_SERVICE_SENT_MODERATION.value
-        )
+        return response.Response(APIResponses.AD_OR_SERVICE_SENT_MODERATION)
 
     @extend_schema(
         summary="Добавить фото к услуге.",
@@ -202,10 +200,10 @@ class BaseServiceAdViewSet(
         object = self.get_object()
 
         # Проверяем, что объект не находится на модерации
-        if object.status == AdvertisementStatus.MODERATION.value:
+        if object.status == AdvertisementStatus.MODERATION:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION.value,
+                data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION,
             )
 
         # Проверяем, чтобы количество фото было не больше максимума
@@ -213,7 +211,7 @@ class BaseServiceAdViewSet(
         if len(images) >= 5:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.MAX_IMAGE_QUANTITY_EXEED.value,
+                data=APIResponses.MAX_IMAGE_QUANTITY_EXEED,
             )
 
         data = request.data
@@ -262,10 +260,10 @@ class BaseServiceAdViewSet(
         """Добавить в избранное."""
 
         object = self.get_object()
-        if object.status != AdvertisementStatus.PUBLISHED.value:
+        if object.status != AdvertisementStatus.PUBLISHED:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.OBJECT_IS_NOT_PUBLISHED.value,
+                data=APIResponses.OBJECT_IS_NOT_PUBLISHED,
             )
 
         if isinstance(object, Service):
@@ -284,12 +282,12 @@ class BaseServiceAdViewSet(
         ).exists():
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.OBJECT_ALREADY_IN_FAVORITES.value,
+                data=APIResponses.OBJECT_ALREADY_IN_FAVORITES,
             )
         if object.provider == request.user:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE.value,
+                data=APIResponses.OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE,
             )
         Favorites.objects.create(
             content_type=ContentType.objects.get(
@@ -300,7 +298,7 @@ class BaseServiceAdViewSet(
         )
         return response.Response(
             status=status.HTTP_201_CREATED,
-            data=APIResponses.ADDED_TO_FAVORITES.value,
+            data=APIResponses.ADDED_TO_FAVORITES,
         )
 
     @extend_schema(
@@ -331,10 +329,10 @@ class BaseServiceAdViewSet(
             )
 
         object = self.get_object()
-        if object.status != AdvertisementStatus.PUBLISHED.value:
+        if object.status != AdvertisementStatus.PUBLISHED:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.OBJECT_IS_NOT_PUBLISHED.value,
+                data=APIResponses.OBJECT_IS_NOT_PUBLISHED,
             )
 
         if isinstance(object, Service):
@@ -353,13 +351,13 @@ class BaseServiceAdViewSet(
         ).exists():
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.COMMENT_ALREADY_EXISTS.value,
+                data=APIResponses.COMMENT_ALREADY_EXISTS,
             )
 
         if object.provider == request.user:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.COMMENTS_BY_PROVIDER_PROHIBITED.value,
+                data=APIResponses.COMMENTS_BY_PROVIDER_PROHIBITED,
             )
 
         comment: Comment = serializer.save(
@@ -375,7 +373,7 @@ class BaseServiceAdViewSet(
 
         return response.Response(
             status=status.HTTP_201_CREATED,
-            data=APIResponses.COMMENT_ADDED.value,
+            data=APIResponses.COMMENT_ADDED,
         )
 
     @extend_schema(
@@ -418,7 +416,7 @@ class BaseServiceAdViewSet(
         ).exists():
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.OBJECT_NOT_IN_FAVORITES.value,
+                data=APIResponses.OBJECT_NOT_IN_FAVORITES,
             )
         Favorites.objects.get(
             content_type=ContentType.objects.get(
@@ -429,7 +427,7 @@ class BaseServiceAdViewSet(
         ).delete()
         return response.Response(
             status=status.HTTP_204_NO_CONTENT,
-            data=APIResponses.DELETED_FROM_FAVORITES.value,
+            data=APIResponses.DELETED_FROM_FAVORITES,
         )
 
 
@@ -475,11 +473,11 @@ class BaseModeratorViewSet(
 
         object = self.get_object()
         with atomic():
-            self._create_notification(text=Notifications.APPROVE_OBJECT.value)
+            self._create_notification(text=Notifications.APPROVE_OBJECT)
             object.approve()
         return response.Response(
             status=status.HTTP_200_OK,
-            data=APIResponses.OBJECT_APPROVED.value,
+            data=APIResponses.OBJECT_APPROVED,
         )
 
     def reject(self, request, *args, **kwargs):
@@ -487,11 +485,11 @@ class BaseModeratorViewSet(
 
         object = self.get_object()
         with atomic():
-            self._create_notification(text=Notifications.REJECT_OBJECT.value)
+            self._create_notification(text=Notifications.REJECT_OBJECT)
             object.reject()
         return response.Response(
             status=status.HTTP_200_OK,
-            data=APIResponses.OBJECT_REJECTED.value,
+            data=APIResponses.OBJECT_REJECTED,
         )
 
     def _create_notification(self, text: dict):

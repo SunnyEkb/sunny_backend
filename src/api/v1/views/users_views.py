@@ -100,19 +100,15 @@ class LoginView(APIView):
                     set_access_cookie(response, data)
                     set_refresh_cookie(response, data)
                     response["X-CSRFToken"] = csrf.get_token(request)
-                    response.data = {
-                        "Success": APIResponses.SUCCESS_LOGIN.value
-                    }
+                    response.data = {"Success": APIResponses.SUCCESS_LOGIN}
                     return response
                 else:
                     return Response(
-                        {"No active": APIResponses.ACCOUNT_IS_INACTIVE.value},
+                        {"No active": APIResponses.ACCOUNT_IS_INACTIVE},
                         status=status.HTTP_403_FORBIDDEN,
                     )
             else:
-                raise AuthenticationFailed(
-                    APIResponses.INVALID_CREDENTIALS.value
-                )
+                raise AuthenticationFailed(APIResponses.INVALID_CREDENTIALS)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -146,10 +142,10 @@ class LogoutView(APIView):
             response.delete_cookie("X-CSRFToken")
             response.delete_cookie("csrftoken")
             response["X-CSRFToken"] = None
-            response.data = {"Success": APIResponses.SUCCESS_LOGOUT.value}
+            response.data = {"Success": APIResponses.SUCCESS_LOGOUT}
             return response
         except Exception:
-            raise ParseError(APIResponses.INVALID_TOKEN.value)
+            raise ParseError(APIResponses.INVALID_TOKEN)
 
 
 @extend_schema(
@@ -166,7 +162,7 @@ class CookieTokenRefreshView(TokenRefreshView):
     Обновление refresh и access токена.
     """
 
-    serializer_class = api_serializers.CookieTokenRefreshSerializer
+    serializer_class = api_serializers.CookieTokenRefreshSerializer  # type: ignore  # noqa
 
     def finalize_response(self, request, response, *args, **kwargs):
         if response.status_code == status.HTTP_401_UNAUTHORIZED:
@@ -181,7 +177,7 @@ class CookieTokenRefreshView(TokenRefreshView):
             set_access_cookie(response, response.data)
             del response.data["access"]
         response["X-CSRFToken"] = request.COOKIES.get("csrftoken")
-        response.data = {"Success": APIResponses.SUCCESS_TOKEN_REFRESH.value}
+        response.data = {"Success": APIResponses.SUCCESS_TOKEN_REFRESH}
         return super().finalize_response(request, response, *args, **kwargs)
 
 
@@ -213,7 +209,7 @@ class ChangePassowrdView(GenericAPIView):
             user.set_password(request.data["new_password"])
             user.save()
             return Response(
-                data={"Success": APIResponses.PASSWORD_CHANGED.value},
+                data={"Success": APIResponses.PASSWORD_CHANGED},
                 status=status.HTTP_200_OK,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -396,16 +392,16 @@ class VerificationView(APIView):
                 verify_user(token)
                 return Response(
                     status=status.HTTP_200_OK,
-                    data=APIResponses.VERIFICATION_SUCCESS.value,
+                    data=APIResponses.VERIFICATION_SUCCESS,
                 )
             except TokenDoesNotExists:
                 return Response(
                     status=status.HTTP_403_FORBIDDEN,
-                    data=APIResponses.VERIFICATION_FAILED.value,
+                    data=APIResponses.VERIFICATION_FAILED,
                 )
             except TokenExpired:
                 return Response(
                     status=status.HTTP_403_FORBIDDEN,
-                    data=APIResponses.TOKEN_EXPIRED.value,
+                    data=APIResponses.TOKEN_EXPIRED,
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -24,7 +24,7 @@ class CommentImageRetrieveSerializer(CommentImageCreateSerializer):
     """Сериализатор для получения фото комментариев."""
 
     class Meta(CommentImageCreateSerializer.Meta):
-        fields = CommentImageCreateSerializer.Meta.fields + ("id",)
+        fields = CommentImageCreateSerializer.Meta.fields + ("id",)  # type: ignore  # noqa
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
@@ -41,7 +41,7 @@ class CommentForModerationSerializer(CommentCreateSerializer):
     images = CommentImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta(CommentCreateSerializer.Meta):
-        fields = CommentCreateSerializer.Meta.fields + ("id", "images")
+        fields = CommentCreateSerializer.Meta.fields + ("id", "images")  # type: ignore  # noqa
 
 
 class CommentReadSerializer(CommentForModerationSerializer):
@@ -50,4 +50,4 @@ class CommentReadSerializer(CommentForModerationSerializer):
     author = UserReadSerializer(read_only=True)
 
     class Meta(CommentForModerationSerializer.Meta):
-        fields = CommentCreateSerializer.Meta.fields + ("author",)
+        fields = CommentCreateSerializer.Meta.fields + ("author",)  # type: ignore  # noqa

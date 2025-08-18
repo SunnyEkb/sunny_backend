@@ -33,7 +33,7 @@ class Ad(AbstractAdvertisement):
         "Состояние",
         choices=AdState,
         max_length=Limits.MAX_LENGTH_ADVMNT_STATE,
-        default=AdState.USED.value,
+        default=AdState.USED,
     )
     category = models.ManyToManyField(
         Category,

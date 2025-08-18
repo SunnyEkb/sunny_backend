@@ -8,7 +8,7 @@ import telegram
 
 @async_to_sync
 async def send_telegram_message(
-    message: str, chat_id: str, message_thread_id: str | None
+    message: str, chat_id: str, message_thread_id: int | None
 ) -> None:
     """
     Отправка сообщения в телеграм чат.
@@ -26,7 +26,7 @@ async def send_telegram_message(
 
 
 async def send_telegram_message_async(
-    message: str, chat_id: str, message_thread_id: str | None
+    message: str, chat_id: str, message_thread_id: int | None
 ) -> None:
     """
     Отправка сообщения в телеграм чат асинхронно.

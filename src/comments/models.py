@@ -37,22 +37,20 @@ class Comment(TimeCreateUpdateModel):
         "Оценка",
         validators=[
             MinValueValidator(
-                Limits.MIN_RATING.value,
-                f"Оценка не может быть меньше {Limits.MIN_RATING.value}",
+                Limits.MIN_RATING,
+                f"Оценка не может быть меньше {Limits.MIN_RATING}",
             ),
             MaxValueValidator(
-                Limits.MAX_RATING.value,
-                f"Оценка не может быть больше {Limits.MAX_RATING.value}",
+                Limits.MAX_RATING,
+                f"Оценка не может быть больше {Limits.MAX_RATING}",
             ),
         ],
     )
-    feedback = models.CharField(
-        "отзыв", max_length=Limits.MAX_COMMENT_TEXT.value
-    )
+    feedback = models.CharField("отзыв", max_length=Limits.MAX_COMMENT_TEXT)
     status = models.IntegerField(
         "Статус комментария",
         choices=CommentStatus.choices,
-        default=CommentStatus.DRAFT.value,
+        default=CommentStatus.DRAFT,
     )
 
     cstm_mng = CommentManager()
@@ -76,18 +74,18 @@ class Comment(TimeCreateUpdateModel):
             delete_images_dir_task.delay(f"comments/{self.id}")
 
     def approve(self):
-        if self.status == CommentStatus.MODERATION.value:
-            self.status = CommentStatus.PUBLISHED.value
+        if self.status == CommentStatus.MODERATION:
+            self.status = CommentStatus.PUBLISHED
             self.save()
 
     def reject(self) -> None:
         if self.status == CommentStatus.MODERATION:
-            self.status = CommentStatus.DRAFT.value
+            self.status = CommentStatus.DRAFT
             self.save()
 
     def publish(self, request) -> None:
-        if self.status == CommentStatus.DRAFT.value:
-            self.status = CommentStatus.MODERATION.value
+        if self.status == CommentStatus.DRAFT:
+            self.status = CommentStatus.MODERATION
             self.save()
             url = self.get_admin_url(request)
             if "test" not in sys.argv:

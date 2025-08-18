@@ -58,7 +58,7 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         obj.mark_as_read()
         return response.Response(
             status=status.HTTP_200_OK,
-            data=APIResponses.NOTIFICATION_IS_READ.value,
+            data=APIResponses.NOTIFICATION_IS_READ,
         )
 
     @extend_schema(
@@ -85,5 +85,5 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         obj.mark_as_unread()
         return response.Response(
             status=status.HTTP_200_OK,
-            data=APIResponses.NOTIFICATION_IS_UNREAD.value,
+            data=APIResponses.NOTIFICATION_IS_UNREAD,
         )

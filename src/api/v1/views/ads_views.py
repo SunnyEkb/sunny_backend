@@ -135,7 +135,7 @@ class AdViewSet(BaseServiceAdViewSet):
                 validate_id(category_id)
                 queryset = queryset.filter(
                     category__id=category_id,
-                    status=AdvertisementStatus.PUBLISHED.value,
+                    status=AdvertisementStatus.PUBLISHED,
                 )
             else:
                 queryset = Ad.objects.none()
@@ -194,8 +194,8 @@ class AdImageViewSet(
 class AdModerationViewSet(BaseModeratorViewSet):
     """Модерация объявлений."""
 
-    queryset = Ad.cstm_mng.filter(status=AdvertisementStatus.MODERATION.value)
-    serializer_class = api_serializers.AdForModerationSerializer
+    queryset = Ad.cstm_mng.filter(status=AdvertisementStatus.MODERATION)
+    serializer_class = api_serializers.AdForModerationSerializer  # type: ignore  # noqa
 
     def _get_receiver(self):
         return self.get_object().provider

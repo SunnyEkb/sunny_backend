@@ -120,9 +120,7 @@ class ServiceViewSet(BaseServiceAdViewSet):
         queryset = Service.cstm_mng.all()
         if self.action == "list":
             params = self.request.query_params
-            queryset = queryset.filter(
-                status=AdvertisementStatus.PUBLISHED.value
-            )
+            queryset = queryset.filter(status=AdvertisementStatus.PUBLISHED)
             if "type_id" in params:
                 type_id = params.get("type_id")
                 validate_id(type_id)
@@ -186,10 +184,8 @@ class ServiceImageViewSet(
 class ServiceModerationViewSet(BaseModeratorViewSet):
     """Модерация услуг."""
 
-    queryset = Service.cstm_mng.filter(
-        status=AdvertisementStatus.MODERATION.value
-    )
-    serializer_class = api_serializers.ServiceForModerationSerializer
+    queryset = Service.cstm_mng.filter(status=AdvertisementStatus.MODERATION)
+    serializer_class = api_serializers.ServiceForModerationSerializer  # type: ignore  # noqa
 
     def _get_receiver(self):
         return self.get_object().provider
