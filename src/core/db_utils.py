@@ -3,10 +3,6 @@ from django.core.files.base import File
 from django.db.models import Model
 
 from core.enums import Limits
-from ads.models import Ad
-from comments.models import Comment
-from services.models import Service
-from users.models import CustomUser
 
 
 def validate_image(fieldfile_obj: File) -> None:
@@ -34,7 +30,7 @@ def validate_svg(fieldfile_obj: File) -> None:
         raise ValidationError("File must be SVG.")
 
 
-def service_image_path(instance: Service, filename: str) -> str:
+def service_image_path(instance: Model, filename: str) -> str:
     """
     Возвращает путь для сохранения фото к услуге.
 
@@ -48,7 +44,7 @@ def service_image_path(instance: Service, filename: str) -> str:
     )
 
 
-def comment_image_path(instance: Comment, filename: str) -> str:
+def comment_image_path(instance: Model, filename: str) -> str:
     """
     Возвращает путь для сохранения фото к комментарию.
 
@@ -62,7 +58,7 @@ def comment_image_path(instance: Comment, filename: str) -> str:
     )
 
 
-def ad_image_path(instance: Ad, filename: str) -> str:
+def ad_image_path(instance: Model, filename: str) -> str:
     """
     Возвращает путь для сохранения фото к объявлению.
 
@@ -74,7 +70,7 @@ def ad_image_path(instance: Ad, filename: str) -> str:
     return "ads/{}/{}".format(instance.ad.id, filename).replace("\\\\", "/")
 
 
-def user_photo_path(instance: CustomUser, filename: str) -> str:
+def user_photo_path(instance: Model, filename: str) -> str:
     """
     Возвращает путь для сохранения фото пользователя.
 
