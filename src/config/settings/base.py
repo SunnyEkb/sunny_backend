@@ -176,9 +176,9 @@ SIMPLE_JWT = {
     "AUTH_REFRESH": getenv("AUTH_REFRESH", default="refresh"),
     "AUTH_COOKIE_DOMAIN": None,
     "AUTH_COOKIE_SECURE": False,  # True заменить на проде
-    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_HTTP_ONLY": False,  # True заменить на проде
     "AUTH_COOKIE_PATH": "/",
-    "AUTH_COOKIE_SAMESITE": "None",  # "Lax" заменить на проде
+    #    "AUTH_COOKIE_SAMESITE": "None",  # "Lax" заменить на проде
 }
 
 DRFSO2_PROPRIETARY_BACKEND_NAME = "VK.com"
@@ -190,11 +190,11 @@ SOCIAL_AUTH_VK_OAUTH2_SECRET = getenv("SOCIAL_AUTH_VK_OAUTH2_SECRET")
 
 CORS_ALLOW_CREDENTIALS = True
 #  CSRF_COOKIE_SECURE = False  # True заменить на проде
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False  # True заменить на проде
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 SESSION_COOKIE_SECURE = False  # True заменить на проде
 #  CSRF_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_SAMESITE = "None"
+#  SESSION_COOKIE_SAMESITE = "None"
 CSRF_TRUSTED_ORIGINS = getenv(
     "CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1"
 ).split(", ")
