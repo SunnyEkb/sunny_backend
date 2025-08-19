@@ -168,7 +168,7 @@ class AdRetrieveSerializer(AdListSerializer):
     comments = CommentReadSerializer(many=True)
 
     class Meta(AdListSerializer.Meta):
-        fields = AdListSerializer.Meta.fields + ("comments",)
+        fields = AdListSerializer.Meta.fields + ("comments",)  # type: ignore  # noqa
 
 
 class CategoryGetWithoutSubCatSerializer(serializers.ModelSerializer):

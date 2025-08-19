@@ -56,9 +56,9 @@ class PhotoReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         if isinstance(obj, ServiceImage):
-            return obj.service.status == AdvertisementStatus.PUBLISHED.value
+            return obj.service.status == AdvertisementStatus.PUBLISHED
         if isinstance(obj, AdImage):
-            return obj.ad.status == AdvertisementStatus.PUBLISHED.value
+            return obj.ad.status == AdvertisementStatus.PUBLISHED
         return False
 
 
@@ -74,7 +74,7 @@ class ReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         return (
             obj.provider == request.user
-            or obj.status == AdvertisementStatus.PUBLISHED.value
+            or obj.status == AdvertisementStatus.PUBLISHED
         )
 
 

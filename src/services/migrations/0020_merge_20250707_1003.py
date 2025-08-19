@@ -10,4 +10,4 @@ class Migration(migrations.Migration):
         ("services", "0019_alter_type_image"),
     ]
 
-    operations = []
+    operations = []  # type: ignore

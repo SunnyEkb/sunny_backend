@@ -168,10 +168,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :return: экземпляр сообщения
         """
 
-        message = Message.objects.create(
+        msg = Message.objects.create(
             sender=sender, message=message, chat=self.chat
         )
-        return message
+        return msg
 
     async def __save_chat_message(
         self, sender: AbstractUser, message: str
@@ -187,8 +187,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not self.chat:
             self.chat = await self.__create_chat(self.chat_data)
 
-        message = await self.__save_message(sender=sender, message=message)
-        return message
+        msg = await self.__save_message(sender=sender, message=message)
+        return msg
 
     @database_sync_to_async
     def __get_content_type(self, type: str) -> ContentType | None:

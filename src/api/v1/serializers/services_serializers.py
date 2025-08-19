@@ -110,11 +110,9 @@ class ServiceListSerializer(serializers.ModelSerializer):
         )
 
     def get_comments_quantity(self, obj) -> int:
-        return obj.comments.filter(
-            status=CommentStatus.PUBLISHED.value
-        ).count()
+        return obj.comments.filter(status=CommentStatus.PUBLISHED).count()
 
-    def get_avg_rating(self, obj) -> int:
+    def get_avg_rating(self, obj) -> int | None:
         rating = obj.comments.aggregate(Avg("rating"))
         rating = rating["rating__avg"]
         if rating is None:
@@ -231,7 +229,7 @@ class ServiceRetrieveSerializer(ServiceListSerializer):
     comments = CommentReadSerializer(many=True)
 
     class Meta(ServiceListSerializer.Meta):
-        fields = ServiceListSerializer.Meta.fields + ("comments",)
+        fields = ServiceListSerializer.Meta.fields + ("comments",)  # type: ignore  # noqa
 
 
 class ServiceForModerationSerializer(serializers.ModelSerializer):

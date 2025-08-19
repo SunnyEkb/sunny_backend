@@ -10,4 +10,4 @@ class Migration(migrations.Migration):
         ("ads", "0016_alter_category_image"),
     ]
 
-    operations = []
+    operations = []  # type: ignore

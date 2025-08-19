@@ -1,2 +1,10 @@
 [tool.black]
 line-length = 79
+
+[tool.mypy]
+mypy_path = "./src"
+ignore_missing_imports = true
+exclude = [
+    '0017_merge_0016_alter_ad_options_0016_alter_category_image\.py',
+    '0020_merge_20250707_1003\.py',
+]

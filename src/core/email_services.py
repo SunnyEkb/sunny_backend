@@ -60,7 +60,7 @@ def send_password_reset_token(
         text_template="email/reset_password.txt",
         mail_to=mail_to,
         context=context,
-        subject=EmailSubjects.PASSWORD_CHANGE.value,
+        subject=EmailSubjects.PASSWORD_CHANGE,
     )
 
 
@@ -85,5 +85,5 @@ def send_welcome_email(username: str, token: str, email: str) -> None:
         text_template="email/welcome.txt",
         mail_to=email,
         context=context,
-        subject=EmailSubjects.WELCOME.value,
+        subject=EmailSubjects.WELCOME,
     )

@@ -18,13 +18,13 @@ def moderate_comment_task(comment_id: int, request: Request) -> None:
     :param request: экземпляр объекта запроса
     """
 
-    comment = Comment.objects.filter(pk=comment_id)
-    if comment.exists():
-        comment: Comment = comment.first()
+    comments = Comment.objects.filter(pk=comment_id)
+    if comments.exists():
+        comment: Comment = comments.first()
         if len(bad_words_filter(comment.feedback)) > 0:
             Notification.objects.create(
                 receiver=comment.author,
-                text=SystemMessages.AUTOMATIC_COMMENT_MODERATION_FAILED.value,
+                text=SystemMessages.AUTOMATIC_COMMENT_MODERATION_FAILED,
             )
         else:
             notify_about_moderation(comment.get_admin_url(request))
