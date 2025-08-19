@@ -178,7 +178,7 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_SECURE": False,  # True заменить на проде
     "AUTH_COOKIE_HTTP_ONLY": False,  # True заменить на проде
     "AUTH_COOKIE_PATH": "/",
-    #    "AUTH_COOKIE_SAMESITE": "None",  # "Lax" заменить на проде
+    "AUTH_COOKIE_SAMESITE": "None",  # "Lax" заменить на проде
 }
 
 DRFSO2_PROPRIETARY_BACKEND_NAME = "VK.com"
