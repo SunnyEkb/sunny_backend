@@ -46,7 +46,7 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             return Comment.cstm_mng.filter(
                 content_type=cont_type_model,
                 object_id=obj.id,
-                status=CommentStatus.PUBLISHED.value,
+                status=CommentStatus.PUBLISHED,
             ).order_by("-created_at")
         return Comment.cstm_mng.none()
 
@@ -128,7 +128,7 @@ class CommentCreateDestroyViewSet(
         if len(images) >= 5:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.MAX_IMAGE_QUANTITY_EXEED.value,
+                data=APIResponses.MAX_IMAGE_QUANTITY_EXEED,
             )
         if img_serializer.is_valid():
             img_serializer.save(comment=comment)
@@ -157,7 +157,7 @@ class CommentModerationViewSet(
     """Модерация комментариев."""
 
     queryset = Comment.cstm_mng.filter(
-        status=CommentStatus.MODERATION.value
+        status=CommentStatus.MODERATION
     ).order_by("-created_at")
     serializer_class = api_serializers.CommentForModerationSerializer
     permission_classes = (ModeratorOnly,)
@@ -190,7 +190,7 @@ class CommentModerationViewSet(
         object.approve()
         return response.Response(
             status=status.HTTP_200_OK,
-            data=APIResponses.OBJECT_APPROVED.value,
+            data=APIResponses.OBJECT_APPROVED,
         )
 
     @extend_schema(
@@ -215,5 +215,5 @@ class CommentModerationViewSet(
         object.reject()
         return response.Response(
             status=status.HTTP_200_OK,
-            data=APIResponses.OBJECT_REJECTED.value,
+            data=APIResponses.OBJECT_REJECTED,
         )

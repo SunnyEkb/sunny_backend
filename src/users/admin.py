@@ -6,7 +6,7 @@ from users.models import CustomUser, Favorites, VerificationToken
 
 
 @admin.register(CustomUser)
-class UserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin):
     """
     Отображение модели пользователя в админке.
     """
