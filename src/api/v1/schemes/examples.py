@@ -226,7 +226,7 @@ COMMENT_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
             "rating": 5,
             "feedback": "Супер",
             "id": 1,
-            "author": USER_INFO_EXAMPLE,
+            "author": USER_INFO_EXAMPLE.value,
             "images": [{"id": 1, "image": "string"}],
         },
     ],
@@ -265,7 +265,7 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список услуг",
     value={
         "id": 1,
-        "provider": USER_INFO_EXAMPLE,
+        "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
         "experience": 50,
@@ -279,7 +279,7 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "comments_quantity": 15,
         "created_at": timezone.now(),
         "is_favorited": False,
-        "price_list_entries": PRICE_LIST_ENTRIES_READ_EXAMPLE,
+        "price_list_entries": PRICE_LIST_ENTRIES_READ_EXAMPLE.value,
     },
 )
 
@@ -287,7 +287,7 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Информация об услуге",
     value={
         "id": 1,
-        "provider": USER_INFO_EXAMPLE,
+        "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
         "experience": 50,
@@ -300,8 +300,8 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "avg_rating": 4.1,
         "comments_quantity": 15,
         "created_at": timezone.now(),
-        "comments": COMMENT_LIST_EXAMPLE,
-        "price_list_entries": PRICE_LIST_ENTRIES_READ_EXAMPLE,
+        "comments": COMMENT_LIST_EXAMPLE.value,
+        "price_list_entries": PRICE_LIST_ENTRIES_READ_EXAMPLE.value,
     },
 )
 
@@ -315,7 +315,7 @@ SERVICE_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "type_id": 2,
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
-        "price_list_entries": PRICE_LIST_ENTRIES_CREATE_UPDATE_EXAMPLE,
+        "price_list_entries": PRICE_LIST_ENTRIES_CREATE_UPDATE_EXAMPLE.value,
     },
 )
 
@@ -429,7 +429,7 @@ AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Информация об объвлении",
     value={
         "id": 1,
-        "provider": USER_INFO_EXAMPLE,
+        "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
         "category": [1, 2, 3],
@@ -441,7 +441,7 @@ AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "avg_rating": 4.1,
         "comments_quantity": 15,
         "created_at": timezone.now(),
-        "comments": COMMENT_LIST_EXAMPLE,
+        "comments": COMMENT_LIST_EXAMPLE.value,
     },
 )
 
@@ -449,7 +449,7 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список объявлений",
     value={
         "id": 1,
-        "provider": USER_INFO_EXAMPLE,
+        "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
         "category": [1, 2, 3],
@@ -500,7 +500,7 @@ AD_PARTIAL_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
 
 FAVORITES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список избранного",
-    value={"subject": AD_RETRIEVE_EXAMPLE},
+    value={"subject": AD_RETRIEVE_EXAMPLE.value},
 )
 
 OBJ_APPROVED_EXAMPLE: OpenApiExample = OpenApiExample(
@@ -517,9 +517,9 @@ CHAT_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список чатов",
     value={
         "id": 1,
-        "subject": AD_RETRIEVE_EXAMPLE,
-        "seller": USER_INFO_EXAMPLE,
-        "buyer": USER_INFO_EXAMPLE,
+        "subject": AD_RETRIEVE_EXAMPLE.value,
+        "seller": USER_INFO_EXAMPLE.value,
+        "buyer": USER_INFO_EXAMPLE.value,
     },
 )
 
