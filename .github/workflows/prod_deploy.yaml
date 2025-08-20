@@ -88,12 +88,12 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            cd ${{ secrets.TARGET_SERVER_PATH }} &&
-            docker compose exec -T backend python3 manage.py dumpdata --settings config.settings.dev --indent 2 --exclude admin.logentry --exclude sessions.session > dump_$(date +%Y%m%d_%H%M).json &&
-            docker compose stop &&
-            docker compose rm -f backend &&
-            docker compose rm -f celery &&
-            docker compose rm -f celery-beat &&
-            docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/sunny_ekb &&
-            docker compose up -d &&
+            cd ${{ secrets.TARGET_SERVER_PATH }}
+            docker compose exec -T backend python3 manage.py dumpdata --settings config.settings.dev --indent 2 --exclude admin.logentry --exclude sessions.session > dump_$(date +%Y%m%d_%H%M).json
+            docker compose stop
+            docker compose rm -f backend
+            docker compose rm -f celery
+            docker compose rm -f celery-beat
+            docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/sunny_ekb
+            docker compose up -d
             docker compose exec -T backend python manage.py migrate --settings config.settings.dev
