@@ -98,7 +98,12 @@ class TestCommentsView(TestServiceFixtures):
             reverse(
                 "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
             ),
-            data={"image": self.base64_image},
+            data={
+                "images": [
+                    {"image": self.base64_image},
+                    {"image": self.base64_image},
+                ]
+            },
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -107,7 +112,7 @@ class TestCommentsView(TestServiceFixtures):
             reverse(
                 "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
             ),
-            data={"image": self.uploaded_2},
+            data={"images": [{"image": self.uploaded_2}]},
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
@@ -116,7 +121,7 @@ class TestCommentsView(TestServiceFixtures):
             reverse(
                 "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
             ),
-            data={"image": self.wrong_base64_image},
+            data={"images": [{"image": self.wrong_base64_image}]},
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
@@ -125,7 +130,7 @@ class TestCommentsView(TestServiceFixtures):
             reverse(
                 "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
             ),
-            data={"image": "some_string"},
+            data={"images": [{"image": "some_string"}]},
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
@@ -134,7 +139,12 @@ class TestCommentsView(TestServiceFixtures):
             reverse(
                 "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
             ),
-            data=self.image_data,
+            data={
+                "images": [
+                    {"image": self.base64_image},
+                    {"image": self.base64_image},
+                ]
+            },
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
@@ -143,7 +153,12 @@ class TestCommentsView(TestServiceFixtures):
             reverse(
                 "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
             ),
-            data=self.image_data,
+            data={
+                "images": [
+                    {"image": self.base64_image},
+                    {"image": self.base64_image},
+                ]
+            },
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 

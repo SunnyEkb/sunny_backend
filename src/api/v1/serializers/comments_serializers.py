@@ -20,6 +20,12 @@ class CommentImageCreateSerializer(serializers.ModelSerializer):
         fields = ("image",)
 
 
+class CommentImageAddSerializer(serializers.Serializer):
+    """Сериализатор для создания фото к комментарию."""
+
+    image = serializers.CharField()
+
+
 class CommentImageRetrieveSerializer(CommentImageCreateSerializer):
     """Сериализатор для получения фото комментариев."""
 
@@ -30,9 +36,22 @@ class CommentImageRetrieveSerializer(CommentImageCreateSerializer):
 class CommentCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания комментария."""
 
+    images = CommentImageAddSerializer(many=True)
+
     class Meta:
         model = Comment
-        fields = ("rating", "feedback")
+        fields = ("rating", "feedback", "images")
+
+    def create(self, validated_data):
+        images = validated_data.pop("images")
+        comment = Comment.objects.create(**validated_data)
+        for image in images:
+            print(image)
+            img_serializer = CommentImageCreateSerializer(data=image)
+            print(img_serializer.is_valid())
+            if img_serializer.is_valid():
+                img_serializer.save(comment=comment)
+        return comment
 
 
 class CommentForModerationSerializer(CommentCreateSerializer):

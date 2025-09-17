@@ -63,7 +63,7 @@ USER_UPDATE_AVATAR_EXAMPLE: OpenApiExample = OpenApiExample(
 
 UPLOAD_FILE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Загрузка изображения.",
-    value={"image": "data:<MIME-type>;base64,<data>"},
+    value={"images": [{"image": "data:<MIME-type>;base64,<data>"}]},
 )
 
 USER_INFO_EXAMPLE: OpenApiExample = OpenApiExample(

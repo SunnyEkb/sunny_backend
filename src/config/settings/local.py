@@ -6,7 +6,7 @@ if getenv("USE_SQLITE", default="False") == "True":  # noqa
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": str(BASE_DIR / "db.sqlite3"),  # noqa
+            "NAME": str(BASE_DIR / "sunny.sqlite3"),  # noqa
         }
     }
 
