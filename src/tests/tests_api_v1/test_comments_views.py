@@ -72,7 +72,7 @@ class TestCommentsView(TestServiceFixtures):
     def test_not_author_cant_delete_comment(self):
         response = self.client_1.delete(
             reverse(
-                "comments_create-detail", kwargs={"pk": self.comment_2.id}
+                "comments_destroy-detail", kwargs={"pk": self.comment_2.id}
             ),
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
@@ -80,7 +80,7 @@ class TestCommentsView(TestServiceFixtures):
     def test_anon_user_cant_delete_comment(self):
         response = self.anon_client.delete(
             reverse(
-                "comments_create-detail", kwargs={"pk": self.comment_2.id}
+                "comments_destroy-detail", kwargs={"pk": self.comment_2.id}
             ),
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
@@ -88,79 +88,10 @@ class TestCommentsView(TestServiceFixtures):
     def test_comment_delete(self):
         response = self.client_2.delete(
             reverse(
-                "comments_create-detail", kwargs={"pk": self.comment_2.id}
+                "comments_destroy-detail", kwargs={"pk": self.comment_2.id}
             ),
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
-
-    def test_add_image(self):
-        response = self.client_2.post(
-            reverse(
-                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
-            ),
-            data={
-                "images": [
-                    {"image": self.base64_image},
-                    {"image": self.base64_image},
-                ]
-            },
-        )
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_add_image_file(self):
-        response = self.client_2.post(
-            reverse(
-                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
-            ),
-            data={"images": [{"image": self.uploaded_2}]},
-        )
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-
-    def test_add_image_wrong_value(self):
-        response = self.client_2.post(
-            reverse(
-                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
-            ),
-            data={"images": [{"image": self.wrong_base64_image}]},
-        )
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-
-    def test_add_image_wrong_extention(self):
-        response = self.client_2.post(
-            reverse(
-                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
-            ),
-            data={"images": [{"image": "some_string"}]},
-        )
-        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-
-    def test_anon_user_cant_add_image(self):
-        response = self.anon_client.post(
-            reverse(
-                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
-            ),
-            data={
-                "images": [
-                    {"image": self.base64_image},
-                    {"image": self.base64_image},
-                ]
-            },
-        )
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-
-    def test_not_author_cant_add_image(self):
-        response = self.client_1.post(
-            reverse(
-                "comments_create-add_photo", kwargs={"pk": self.comment_2.id}
-            ),
-            data={
-                "images": [
-                    {"image": self.base64_image},
-                    {"image": self.base64_image},
-                ]
-            },
-        )
-        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
 
 class TestCommentsToAdsCreationView(TestAdsFixtures):
@@ -168,6 +99,15 @@ class TestCommentsToAdsCreationView(TestAdsFixtures):
         response = self.client_4.post(
             reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
             data=self.comment_data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_add_comment_without_images_to_an_ad(self):
+        response = self.client_3.post(
+            reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
+            data=self.comment_data_without_images,
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
@@ -175,6 +115,7 @@ class TestCommentsToAdsCreationView(TestAdsFixtures):
         response = self.client_1.post(
             reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
             data=self.comment_data,
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
@@ -182,20 +123,68 @@ class TestCommentsToAdsCreationView(TestAdsFixtures):
         response = self.anon_client.post(
             reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
             data=self.comment_data,
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
+    def test_cant_add_comment_with_too_much_images(self):
+        response = self.client_3.post(
+            reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
+            data=self.comment_data_with_too_much_images,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_cant_add_comment_with_wrong_image_value(self):
+        response = self.client_3.post(
+            reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
+            data=self.comment_data_images_wrong_base64,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_cant_add_comment_with_wrong_image_extention(self):
+        response = self.client_3.post(
+            reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
+            data=self.comment_data_images_wrong_ext,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
 
 class TestCommentsToServicesCreationView(TestServiceFixtures):
-    def test_add_comment_to_service(self):
+    def test_add_comment_without_images_to_service(self):
         response = self.client_4.post(
             reverse(
                 "services-add_comment",
                 kwargs={"pk": self.published_service.id},
             ),
             data=self.comment_data,
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_add_comment_with_images_to_service(self):
+        response = self.client_1.post(
+            reverse(
+                "services-add_comment",
+                kwargs={"pk": self.service_2.id},
+            ),
+            data=self.comment_data_without_images,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+    def test_cant_add_comment_with_wrong_image_to_service(self):
+        response = self.client_3.post(
+            reverse(
+                "services-add_comment",
+                kwargs={"pk": self.service_2.id},
+            ),
+            data=self.comment_data_with_wrong_bs64,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_user_cant_add_two_comments_to_the_same_service(self):
         response = self.client_1.post(
@@ -204,6 +193,7 @@ class TestCommentsToServicesCreationView(TestServiceFixtures):
                 kwargs={"pk": self.published_service.id},
             ),
             data=self.comment_data,
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
@@ -214,6 +204,7 @@ class TestCommentsToServicesCreationView(TestServiceFixtures):
                 kwargs={"pk": self.published_service.id},
             ),
             data=self.comment_data,
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 

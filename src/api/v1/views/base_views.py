@@ -353,7 +353,6 @@ class BaseServiceAdViewSet(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.COMMENT_ALREADY_EXISTS,
             )
-
         if object.provider == request.user:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,

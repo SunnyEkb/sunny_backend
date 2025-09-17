@@ -2,7 +2,12 @@ from rest_framework import serializers
 
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.serializers.users_serializers import UserReadSerializer
-from api.v1.validators import validate_file_size
+from api.v1.validators import (
+    validate_base64_field,
+    validate_extention,
+    validate_file_quantity,
+    validate_file_size,
+)
 from comments.models import Comment, CommentImage
 
 
@@ -25,6 +30,10 @@ class CommentImageAddSerializer(serializers.Serializer):
 
     image = serializers.CharField()
 
+    def validate_image(self, value):
+        validate_base64_field(value)
+        return value
+
 
 class CommentImageRetrieveSerializer(CommentImageCreateSerializer):
     """Сериализатор для получения фото комментариев."""
@@ -36,22 +45,32 @@ class CommentImageRetrieveSerializer(CommentImageCreateSerializer):
 class CommentCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания комментария."""
 
-    images = CommentImageAddSerializer(many=True)
+    images = CommentImageAddSerializer(many=True, required=False)
 
     class Meta:
         model = Comment
         fields = ("rating", "feedback", "images")
 
     def create(self, validated_data):
+        if "images" not in validated_data.keys():
+            comment = Comment.objects.create(**validated_data)
+            return comment
         images = validated_data.pop("images")
         comment = Comment.objects.create(**validated_data)
         for image in images:
-            print(image)
             img_serializer = CommentImageCreateSerializer(data=image)
-            print(img_serializer.is_valid())
-            if img_serializer.is_valid():
+            if img_serializer.is_valid(raise_exception=True):
                 img_serializer.save(comment=comment)
         return comment
+
+    def validate_images(self, data):
+        validate_file_quantity(data)
+        for img in data:
+            validate_base64_field(img["image"])
+            format, _ = img["image"].split(";base64,")
+            ext = format.split("/")[-1]
+            validate_extention(ext)
+        return data
 
 
 class CommentForModerationSerializer(CommentCreateSerializer):

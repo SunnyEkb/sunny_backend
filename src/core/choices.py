@@ -91,7 +91,7 @@ class APIResponses(models.TextChoices):
     EMAIL_EXISTS = "Пользователь с таким адресом электронной почты существует."
     PHONE_EXISTS = "Пользователь с таким номером телефона существует."
     WRONG_CONTENT = (
-        "Изображение должно быть передано в формате base64: "
+        "Изображения должны быть переданы в формате base64: "
         "data:<MIME-type>;base64,<data>"
     )
     WRONG_EXTENTION = (
