@@ -127,10 +127,10 @@ class TestCommentsToAdsCreationView(TestAdsFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
-    def test_cant_add_comment_with_too_much_images(self):
+    def test_cant_add_comment_with_too_mmany_images(self):
         response = self.client_3.post(
             reverse("ads-add_comment", kwargs={"pk": self.ad_2.id}),
-            data=self.comment_data_with_too_much_images,
+            data=self.comment_data_with_too_many_images,
             format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
@@ -170,18 +170,31 @@ class TestCommentsToServicesCreationView(TestServiceFixtures):
                 "services-add_comment",
                 kwargs={"pk": self.service_2.id},
             ),
-            data=self.comment_data_without_images,
+            data=self.comment_data_without_img,
             format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
     def test_cant_add_comment_with_wrong_image_to_service(self):
         response = self.client_3.post(
-            reverse(
-                "services-add_comment",
-                kwargs={"pk": self.service_2.id},
-            ),
+            reverse("services-add_comment", kwargs={"pk": self.service_2.id}),
             data=self.comment_data_with_wrong_bs64,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_cant_add_comment_with_too_mmany_images(self):
+        response = self.client_3.post(
+            reverse("services-add_comment", kwargs={"pk": self.service_2.id}),
+            data=self.comment_data_with_too_many_img,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_cant_add_comment_with_wrong_image_extention(self):
+        response = self.client_3.post(
+            reverse("services-add_comment", kwargs={"pk": self.service_2.id}),
+            data=self.comment_data_with_wrong_ext,
             format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)

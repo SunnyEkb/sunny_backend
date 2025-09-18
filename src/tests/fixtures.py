@@ -183,21 +183,34 @@ class TestServiceFixtures(TestUserFixtures):
             author=cls.user_3,
             status=CommentStatus.MODERATION.value,
         )
-        cls.comment_data_without_images = {
+        cls.comment_data_without_img = {
             "rating": 2,
             "feedback": "Some feadback",
         }
-        cls.comment_data = cls.comment_data_without_images | {
+        cls.comment_data = cls.comment_data_without_img | {
             "images": [
                 {"image": cls.base64_image},
                 {"image": cls.base64_image},
             ]
         }
-        cls.comment_data_with_wrong_bs64 = {
-            "rating": 2,
-            "feedback": "Some feadback",
+        cls.comment_data_with_wrong_ext = cls.comment_data_without_img | {
             "images": [
                 {"image": cls.wrong_base64_image},
+            ],
+        }
+        cls.comment_data_with_wrong_bs64 = cls.comment_data_without_img | {
+            "images": [
+                {"image": "some string"},
+            ],
+        }
+        cls.comment_data_with_too_many_img = cls.comment_data_without_img | {
+            "images": [
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
             ],
         }
         cls.image_data = {"image": cls.uploaded}
@@ -276,7 +289,7 @@ class TestAdsFixtures(TestUserFixtures):
                 {"image": cls.base64_image},
             ],
         }
-        cls.comment_data_with_too_much_images = {
+        cls.comment_data_with_too_many_images = {
             "rating": 2,
             "feedback": "Some feadback",
             "images": [
