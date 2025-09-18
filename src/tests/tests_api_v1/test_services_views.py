@@ -462,10 +462,11 @@ class TestServivecesView(TestServiceFixtures):
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_add_serviceimage_wrong_extention(self):
-        data = {"images": [{"image": self.base64_image}]}
+        data = {"images": [{"image": self.wrong_base64_image}]}
         response = self.client_1.post(
             reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
             data=data,
+            format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
