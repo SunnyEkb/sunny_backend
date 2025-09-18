@@ -74,7 +74,7 @@ class CommentDestroyViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Удалить комментарий и добавить к нему фото."""
+    """Удалить комментарий."""
 
     serializer_class = api_serializers.CommentReadSerializer
 

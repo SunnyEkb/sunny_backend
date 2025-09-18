@@ -173,7 +173,7 @@ class BaseServiceAdViewSet(
     @extend_schema(
         summary="Добавить фото к услуге.",
         methods=["POST"],
-        request=api_serializers.AdImageCreateSerializer,
+        request=api_serializers.AdImagesSerializer,
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
@@ -195,7 +195,7 @@ class BaseServiceAdViewSet(
         permission_classes=(OwnerOrReadOnly,),
     )
     def add_photo(self, request, *args, **kwargs):
-        """Добавить фото к услуге."""
+        """Добавить фото к услуге (объявлению)."""
 
         object = self.get_object()
 
@@ -208,7 +208,7 @@ class BaseServiceAdViewSet(
 
         # Проверяем, чтобы количество фото было не больше максимума
         images = object.images.all()
-        if len(images) >= 5:
+        if len(images) + len(request.data) >= 5:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.MAX_IMAGE_QUANTITY_EXEED,
@@ -217,19 +217,29 @@ class BaseServiceAdViewSet(
         data = request.data
         # Определяем необходимый сериализатор
         if isinstance(object, Service):
-            img_serializer = api_serializers.ServiceImageCreateSerializer(
-                data=data
-            )
+            img_serializer = api_serializers.ServiceImagesSerializer(data=data)
         elif isinstance(object, Ad):
-            img_serializer = api_serializers.AdImageCreateSerializer(data=data)
+            img_serializer = api_serializers.AdImagesSerializer(data=data)
 
         if img_serializer.is_valid():
             if isinstance(
-                img_serializer, api_serializers.ServiceImageCreateSerializer
+                img_serializer, api_serializers.ServiceImagesSerializer
             ):
-                img_serializer.save(service=object)
+                for image in img_serializer.validated_data["images"]:
+                    photo_serializer = (
+                        api_serializers.ServiceImageCreateSerializer(  # noqa
+                            data=image
+                        )
+                    )
+                    if photo_serializer.is_valid(raise_exception=True):
+                        photo_serializer.save(service=object)
             else:
-                img_serializer.save(ad=object)
+                for image in img_serializer.validated_data["images"]:
+                    photo_serializer = api_serializers.AdImageCreateSerializer(
+                        data=image
+                    )
+                    if photo_serializer.is_valid(raise_exception=True):
+                        photo_serializer.save(ad=object)
             object.set_draft()
             obj_serializer = self.get_serializer(object)
             return response.Response(obj_serializer.data)
