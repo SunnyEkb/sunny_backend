@@ -311,6 +311,12 @@ class BaseServiceAdViewSet(
             status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
             status.HTTP_406_NOT_ACCEPTABLE: schemes.OBJECT_IS_NOT_PUBLISED_406,
         },
+        examples=[schemes.COMMENT_CREATE_EXAMPLE],
+        description=(
+            'Поле "images" не является обязательным. '
+            "Фото принимаются строкой, закодированной в base64. Допустимые "
+            f"расширения файла - {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}."
+        ),
     )
     @action(
         detail=True,

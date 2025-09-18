@@ -237,6 +237,10 @@ COMMENT_CREATE_EXAMPLE: OpenApiExample = OpenApiExample(
     value={
         "rating": 5,
         "feedback": "Супер",
+        "images": [
+            {"image": "data:<MIME-type>;base64,<data>"},
+            {"image": "data:<MIME-type>;base64,<data>"},
+        ],
     },
 )
 
