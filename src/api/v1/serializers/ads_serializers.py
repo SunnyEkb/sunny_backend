@@ -10,7 +10,11 @@ from api.v1.serializers.users_serializers import (
     UserSearchSerializer,
 )
 from api.v1.serializers.image_fields import Base64ImageField
-from api.v1.validators import validate_file_size
+from api.v1.validators import (
+    validate_base64_field,
+    validate_file_size,
+    validate_extention,
+)
 from core.choices import CommentStatus
 from users.models import Favorites
 
@@ -35,7 +39,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class AdImageCreateSerializer(serializers.ModelSerializer):
-    """Сериализатор для создания фото к объявлению."""
+    """Сериализатор для добавления фото к объявлению."""
 
     image = Base64ImageField(
         required=True,
@@ -46,6 +50,30 @@ class AdImageCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdImage
         fields = ("image",)
+
+
+class AdImageSerializer(serializers.Serializer):
+    """Сериализатор для добавления одного фото к объявлению."""
+
+    image = serializers.CharField()
+
+    def validate_image(self, value):
+        validate_base64_field(value)
+        return value
+
+
+class AdImagesSerializer(serializers.Serializer):
+    """Сериализатор для добавления нескольких фото к объявлению."""
+
+    images = AdImageSerializer(many=True)
+
+    def validate_images(self, data):
+        for img in data:
+            validate_base64_field(img["image"])
+            format, _ = img["image"].split(";base64,")
+            ext = format.split("/")[-1]
+            validate_extention(ext)
+        return data
 
 
 class AdImageRetrieveSerializer(serializers.ModelSerializer):

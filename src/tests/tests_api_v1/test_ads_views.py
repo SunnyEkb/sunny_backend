@@ -359,6 +359,72 @@ class TestAdView(TestAdsFixtures):
             ).exists()
         )
 
+    def test_add_images_to_an_ad(self):
+        data = {"images": [{"image": self.base64_image}]}
+        response = self.client_1.post(
+            reverse("ads-add_photo", kwargs={"pk": self.ad_1.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+    def test_an_ad_status_set_to_draft_after_add_image(self):
+        data = {"images": [{"image": self.base64_image}]}
+        self.client_2.post(
+            reverse("ads-add_photo", kwargs={"pk": self.ad_2.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(
+            Ad.objects.get(id=self.ad_2.id).status,
+            AdvertisementStatus.DRAFT.value,
+        )
+
+    def test_cant_add_photo_to_an_ad_under_moderation(self):
+        data = {"images": [{"image": self.base64_image}]}
+        response = self.client_2.post(
+            reverse("ads-add_photo", kwargs={"pk": self.ad_moderation.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
+    def test_cant_add_image_with_wrong_value_to_an_ad(self):
+        data = {"images": [{"image": "some string"}]}
+        response = self.client_1.post(
+            reverse("ads-add_photo", kwargs={"pk": self.ad_1.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_cant_add_image_with_wrong_extention_to_an_ad(self):
+        data = {"images": [{"image": self.wrong_base64_image}]}
+        response = self.client_1.post(
+            reverse("ads-add_photo", kwargs={"pk": self.ad_1.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_cant_add_too_much_images_to_an_ad(self):
+        data = {
+            "images": [
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+            ]
+        }
+        response = self.client_1.post(
+            reverse("ads-add_photo", kwargs={"pk": self.ad_1.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
+
 
 class TestAdsModerationView(TestAdsFixtures):
     def test_get_list_of_ads_for_moderation(self):

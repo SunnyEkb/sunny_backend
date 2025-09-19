@@ -10,7 +10,7 @@ from api.v1.views import (
     CategoryViewSet,
     ChangePassowrdView,
     ChatViewSet,
-    CommentCreateDestroyViewSet,
+    CommentDestroyViewSet,
     CommentModerationViewSet,
     CommentViewSet,
     CookieTokenRefreshView,
@@ -34,8 +34,8 @@ api_v1_router.register("categories", CategoryViewSet, basename="categories")
 api_v1_router.register("chats", ChatViewSet, basename="chats")
 api_v1_router.register(
     "comments",
-    CommentCreateDestroyViewSet,
-    basename="comments_create",
+    CommentDestroyViewSet,
+    basename="comments_destroy",
 )
 api_v1_router.register(
     "notifications",
