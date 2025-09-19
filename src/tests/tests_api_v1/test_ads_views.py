@@ -389,7 +389,7 @@ class TestAdView(TestAdsFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
-    def test_add_image_with_wrong_value_to_an_ad(self):
+    def test_cant_add_image_with_wrong_value_to_an_ad(self):
         data = {"images": [{"image": "some string"}]}
         response = self.client_1.post(
             reverse("ads-add_photo", kwargs={"pk": self.ad_1.id}),
@@ -398,7 +398,7 @@ class TestAdView(TestAdsFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
-    def test_add_image_with_wrong_extention_to_an_ad(self):
+    def test_cant_add_image_with_wrong_extention_to_an_ad(self):
         data = {"images": [{"image": self.wrong_base64_image}]}
         response = self.client_1.post(
             reverse("ads-add_photo", kwargs={"pk": self.ad_1.id}),
@@ -406,6 +406,24 @@ class TestAdView(TestAdsFixtures):
             format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_cant_add_too_much_images_to_an_ad(self):
+        data = {
+            "images": [
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+            ]
+        }
+        response = self.client_1.post(
+            reverse("ads-add_photo", kwargs={"pk": self.ad_1.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
 
 class TestAdsModerationView(TestAdsFixtures):

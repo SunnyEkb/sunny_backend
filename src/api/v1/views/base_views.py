@@ -208,7 +208,7 @@ class BaseServiceAdViewSet(
 
         # Проверяем, чтобы количество фото было не больше максимума
         images = object.images.all()
-        if len(images) + len(request.data) >= 5:
+        if len(images) + len(request.data["images"]) >= 5:
             return response.Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.MAX_IMAGE_QUANTITY_EXEED,

@@ -452,7 +452,7 @@ class TestServivecesView(TestServiceFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
-    def test_add_serviceimage_wrong_value(self):
+    def test_cant_add_image_with_wrong_value_to_a_service(self):
         data = {"images": [{"image": "some string"}]}
         response = self.client_1.post(
             reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
@@ -461,7 +461,7 @@ class TestServivecesView(TestServiceFixtures):
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
-    def test_add_serviceimage_wrong_extention(self):
+    def test_cant_add_image_with_wrong_extention_to_a_service(self):
         data = {"images": [{"image": self.wrong_base64_image}]}
         response = self.client_1.post(
             reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
@@ -469,6 +469,24 @@ class TestServivecesView(TestServiceFixtures):
             format="json",
         )
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_cant_add_too_much_images_to_an_ad(self):
+        data = {
+            "images": [
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+                {"image": self.base64_image},
+            ]
+        }
+        response = self.client_1.post(
+            reverse("services-add_photo", kwargs={"pk": self.service_1.id}),
+            data=data,
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
     def test_get_service_image(self):
         response = self.client_3.get(
