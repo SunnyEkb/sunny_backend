@@ -10,7 +10,11 @@ from api.v1.serializers import (
     UserSearchSerializer,
 )
 from api.v1.serializers.image_fields import Base64ImageField
-from api.v1.validators import validate_file_size
+from api.v1.validators import (
+    validate_base64_field,
+    validate_file_size,
+    validate_extention,
+)
 from core.choices import CommentStatus
 from services.models import Service, ServiceImage, SubService, Type
 from users.models import Favorites
@@ -65,6 +69,30 @@ class ServiceImageRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = ServiceImage
         fields = ("id", "image")
+
+
+class ServiceImageSerializer(serializers.Serializer):
+    """Сериализатор для добавления одного фото к услуге."""
+
+    image = serializers.CharField()
+
+    def validate_image(self, value):
+        validate_base64_field(value)
+        return value
+
+
+class ServiceImagesSerializer(serializers.Serializer):
+    """Сериализатор для добавления нескольких фото к услуге."""
+
+    images = ServiceImageSerializer(many=True)
+
+    def validate_images(self, data):
+        for img in data:
+            validate_base64_field(img["image"])
+            format, _ = img["image"].split(";base64,")
+            ext = format.split("/")[-1]
+            validate_extention(ext)
+        return data
 
 
 class SubServiceSerializer(serializers.ModelSerializer):

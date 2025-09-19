@@ -11,7 +11,6 @@ from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import CommentAuthorOnly, ModeratorOnly
-from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.exceptions import WrongObjectType
 from comments.models import Comment
 from core.choices import APIResponses, CommentStatus
@@ -71,11 +70,11 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         },
     ),
 )
-class CommentCreateDestroyViewSet(
+class CommentDestroyViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Удалить комментарий и добавить к нему фото."""
+    """Удалить комментарий."""
 
     serializer_class = api_serializers.CommentReadSerializer
 
@@ -91,52 +90,6 @@ class CommentCreateDestroyViewSet(
         instance: Comment = self.get_object()
         instance.delete_images()
         return super().destroy(request, *args, **kwargs)
-
-    @extend_schema(
-        summary="Добавить фото к комментарию.",
-        methods=["POST"],
-        request=api_serializers.CommentImageCreateSerializer,
-        responses={
-            status.HTTP_200_OK: schemes.COMMENT_LIST_200_OK,
-            status.HTTP_400_BAD_REQUEST: schemes.CANT_ADD_PHOTO_400,
-            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: schemes.CANT_ADD_PHOTO_406,
-        },
-        examples=[schemes.UPLOAD_FILE_EXAMPLE],
-        description=(
-            "Файл принимается строкой, закодированной в base64. Допустимые "
-            f"расширения файла - {', '.join(ALLOWED_IMAGE_FILE_EXTENTIONS)}."
-        ),
-    )
-    @action(
-        detail=True,
-        methods=("post",),
-        url_path="add-photo",
-        url_name="add_photo",
-        permission_classes=(CommentAuthorOnly,),
-    )
-    def add_photo(self, request, *args, **kwargs):
-        """Добавить фото к комментарию."""
-
-        comment: Comment = self.get_object()
-        data = request.data
-        img_serializer = api_serializers.CommentImageCreateSerializer(
-            data=data
-        )
-        images = comment.images.all()
-        if len(images) >= 5:
-            return response.Response(
-                status=status.HTTP_406_NOT_ACCEPTABLE,
-                data=APIResponses.MAX_IMAGE_QUANTITY_EXEED,
-            )
-        if img_serializer.is_valid():
-            img_serializer.save(comment=comment)
-            cmnt_serializer = api_serializers.CommentReadSerializer(comment)
-            return response.Response(cmnt_serializer.data)
-        return response.Response(
-            img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-        )
 
 
 @extend_schema(tags=["Moderator"])

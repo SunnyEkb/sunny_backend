@@ -19,6 +19,13 @@ def validate_file_size(temp_file):
         raise ValidationError(APIResponses.MAX_FILE_SIZE_EXEED)
 
 
+def validate_file_quantity(value):
+    """Валидация количества загружаемых файлов."""
+
+    if len(value) > Limits.MAX_FILE_QUANTITY:
+        raise ValidationError(APIResponses.MAX_IMAGE_QUANTITY_EXEED)
+
+
 def validate_username(value):
     """Валидация имени пользователя."""
 
