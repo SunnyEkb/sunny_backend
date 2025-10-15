@@ -15,6 +15,7 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import (
     validate_email,
+    validate_email_length,
     validate_file_size,
     validate_phone,
     validate_username,
@@ -80,6 +81,10 @@ class UserCreateSerializer(ModelSerializer):
         extra_kwargs = {
             "password": {"write_only": True},
         }
+
+    def validate_email(self, value):
+        validate_email_length(value)
+        return value
 
     def validate(self, attrs):
         if attrs["password"] != attrs["confirmation"]:
