@@ -67,7 +67,7 @@ class UserCreateSerializer(ModelSerializer):
     )
     confirmation = CharField(write_only=True, required=True)
     username = CharField(required=True, validators=[validate_username])
-    email = EmailField(validators=[validate_email])
+    email = EmailField(validators=[validate_email, validate_email_length])
 
     class Meta:
         model = User
@@ -81,10 +81,6 @@ class UserCreateSerializer(ModelSerializer):
         extra_kwargs = {
             "password": {"write_only": True},
         }
-
-    def validate_email(self, value):
-        validate_email_length(value)
-        return value
 
     def validate(self, attrs):
         if attrs["password"] != attrs["confirmation"]:

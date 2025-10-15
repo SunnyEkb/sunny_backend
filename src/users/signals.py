@@ -2,14 +2,18 @@ from uuid import uuid4
 
 from django.contrib.auth import get_user_model
 from django.contrib.sites.shortcuts import get_current_site
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django_rest_passwordreset.signals import reset_password_token_created
 
 from core.choices import Notifications
 from notifications.models import Notification
 from users.models import VerificationToken
-from users.tasks import send_password_reset_token_task, send_welcome_email_task
+from users.tasks import (
+    send_password_changed_email_task,
+    send_password_reset_token_task,
+    send_welcome_email_task,
+)
 
 User = get_user_model()
 
@@ -59,3 +63,16 @@ def send_welcome_email_signal(sender, instance, created, **kwargs):
             token=token,
             email=instance.email,
         )
+
+
+@receiver(pre_save, sender=User)
+def on_passwordchange(sender, instance, **kwargs):
+    if instance.id is None:
+        pass
+    else:
+        previous_data = User.objects.get(id=instance.id)
+        if previous_data.password != instance.password:
+            send_password_changed_email_task(
+                username=previous_data.username,
+                mail_to=previous_data.email,
+            )

@@ -128,6 +128,9 @@ class Notifications(models.TextChoices):
 class EmailSubjects(models.TextChoices):
     WELCOME = "Регистрация на сервие Солнечный Екатеринбург"
     PASSWORD_CHANGE = "Сброс пароля на сервисе Солнечный Екатеринбург"
+    PASSWORD_HAS_CHANGED = (
+        "Уведомление о смене пароля на сервисе Солнечный Екатеринбург"
+    )
 
 
 class AdState(models.TextChoices):
