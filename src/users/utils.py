@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timedelta, timezone
+from typing import Any
 from uuid import UUID
 
 from django.contrib.auth import get_user_model
@@ -31,7 +32,12 @@ def verify_user(token: UUID):
         raise TokenExpired()
 
 
-def delete_expired_tokens():
+def delete_expired_tokens() -> None:
+    """
+    Удаление просроченных токенов активации пользователя
+    и данных неподтвержденных пользователей из БД.
+    """
+
     tokens = VerificationToken.cstm_mng.filter(
         created_at__lt=datetime.now(timezone.utc)
         - timedelta(hours=Limits.REGISTRY_TOKEN_LIFETIME.value)
@@ -43,7 +49,14 @@ def delete_expired_tokens():
             token.delete()
 
 
-def save_file_with_user_data(email, data):
+def save_file_with_user_data(email: str, data: Any) -> None:
+    """
+    Сохранение сведений о пользователе после удаления его аккаунта.
+
+    :param email: email пользователя
+    :param data: данные пользователя
+    """
+
     date = (
         datetime.now(timezone.utc) + settings.DATA_RETENTION_PERIOD
     ).strftime("%Y-%m-%d")
@@ -55,16 +68,25 @@ def save_file_with_user_data(email, data):
         file.write(data)
 
 
-def delete_files_after_expiration_date():
+def delete_files_after_expiration_date() -> None:
+    """
+    Удаление сведений об удаленных пользователях \
+        после истечения срока хранения данных.
+    """
+
     files = os.listdir(settings.PATH_TO_SAVE_DELETED_USERS_DATA.location)
     for file in files:
-        if datetime.now(timezone.utc).date > datetime.strptime(
+        if datetime.now(timezone.utc).date() > datetime.strptime(
             str(file).split("_")[-1].replace(".json", ""), "%Y-%m-%d"
         ):
             os.remove(file)
 
 
-def del_exprd_rfrsh_tokens_from_blck_lst():
+def del_exprd_rfrsh_tokens_from_blck_lst() -> None:
+    """
+    Удаление просроченных refresh токенов из черного списка.
+    """
+
     black_listed_tokens = BlacklistedToken.objects.filter(
         token__expires_at__lt=datetime.now(timezone.utc)
     )

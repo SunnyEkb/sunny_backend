@@ -66,13 +66,13 @@ def send_welcome_email_signal(sender, instance, created, **kwargs):
 
 
 @receiver(pre_save, sender=User)
-def on_passwordchange(sender, instance, **kwargs):
+def on_password_change(sender, instance, **kwargs):
     if instance.id is None:
         pass
     else:
         previous_data = User.objects.get(id=instance.id)
         if previous_data.password != instance.password:
-            send_password_changed_email_task(
+            send_password_changed_email_task.delay(
                 username=previous_data.username,
                 mail_to=previous_data.email,
             )

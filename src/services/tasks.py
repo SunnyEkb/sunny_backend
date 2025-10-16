@@ -8,8 +8,14 @@ from core.utils import (
 
 
 @shared_task
-def delete_image_files_task(path: str):
-    delete_image_files(path)
+def delete_image_files_task(path: str) -> None:
+    """
+    Отложенная задача по удалению файлов из директории.
+
+    :param path: директория для удаления файлов
+    """
+
+    delete_image_files(path=path)
 
 
 @shared_task
