@@ -16,7 +16,7 @@ from users.utils import (
 
 
 @shared_task
-def send_welcome_email_task(username, token, email) -> None:
+def send_welcome_email_task(username: str, token: str, email: str) -> None:
     """
     Отложенная задача по отправке приветственного сообщения на email.
 
@@ -29,7 +29,9 @@ def send_welcome_email_task(username, token, email) -> None:
 
 
 @shared_task
-def send_password_reset_token_task(domain, username, mail_to, key) -> None:
+def send_password_reset_token_task(
+    domain: str, username: str, mail_to: str, key: str
+) -> None:
     """
     Отложенная задача по отправке токена для смены пароля от ЛК на email.
 
