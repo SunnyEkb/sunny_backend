@@ -43,6 +43,8 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
         return self.title
 
     def hide(self) -> None:
+        """Изменить статус на \"Скрыто\"."""
+
         if self.status == AdvertisementStatus.PUBLISHED:
             with transaction.atomic():
                 Favorites.clear_favorites(self)
@@ -50,6 +52,16 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
                 self.save()
 
     def publish(self, request) -> None:
+        """
+        Опубликовать услугу или объявление.
+
+        Если текущий статус объявления - \"Черновик\", то статус меняется на \
+            \"На модерации\".
+        Если статус объявления - \"Скрыто\", то на \"Опубликовано\"
+
+        :request: http запрос
+        """
+
         if self.status == AdvertisementStatus.HIDDEN:
             self.status = AdvertisementStatus.PUBLISHED
             self.save()
@@ -61,17 +73,31 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
                 notify_about_moderation_task.delay(url)
 
     def set_draft(self):
+        """Изменить статус на \"Черновик\"."""
+
         with transaction.atomic():
             self.status = AdvertisementStatus.DRAFT
             Favorites.clear_favorites(self)
             self.save()
 
     def approve(self) -> None:
+        """
+        Подтверлить публикацию.
+
+        Изменить статус на \"Опубликовано\".
+        """
+
         if self.status == AdvertisementStatus.MODERATION:
             self.status = AdvertisementStatus.PUBLISHED
             self.save()
 
     def reject(self) -> None:
+        """
+        Отказать в публикации.
+
+        Изменить статус на \"Черновик\".
+        """
+
         if self.status == AdvertisementStatus.MODERATION:
             self.status = AdvertisementStatus.DRAFT
             self.save()

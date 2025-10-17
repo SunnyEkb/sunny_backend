@@ -15,7 +15,13 @@ from users.exceptions import TokenDoesNotExists, TokenExpired
 User = get_user_model()
 
 
-def verify_user(token: UUID):
+def verify_user(token: UUID) -> None:
+    """
+    Активация аккаунта пользователя.
+
+    :param token: токен активации
+    """
+
     ver_token = VerificationToken.cstm_mng.filter(token=token)
     if ver_token.exists() is False:
         raise TokenDoesNotExists()

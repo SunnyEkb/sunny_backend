@@ -20,9 +20,21 @@ def delete_image_files_task(path: str) -> None:
 
 @shared_task
 def delete_images_dir_task(path: str):
-    delete_images_dir(path)
+    """
+    Отложенная задача по удалению директории.
+
+    :param path: директория для удаления
+    """
+
+    delete_images_dir(path=path)
 
 
 @shared_task
 def notify_about_moderation_task(url: str):
-    notify_about_moderation(url)
+    """
+    Отложенная задача по отправке уведомления о необходимости модерации.
+
+    :param url: url объекта модерации в админ панели
+    """
+
+    notify_about_moderation(url=url)

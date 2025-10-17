@@ -79,7 +79,7 @@ def del_exprd_rfrsh_tokens_from_blck_lst_task() -> None:
 
 
 @shared_task
-def delete_files_after_expiration_date_task():
+def delete_files_after_expiration_date_task() -> None:
     """
     Периодическая задача по удалению сведений об удаленных пользователях \
         после истечения срока хранения данных.
