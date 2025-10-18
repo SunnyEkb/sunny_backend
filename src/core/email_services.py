@@ -87,3 +87,22 @@ def send_welcome_email(username: str, token: str, email: str) -> None:
         context=context,
         subject=EmailSubjects.WELCOME,
     )
+
+
+def send_password_changed_email(username: str, email: str) -> None:
+    """
+    Отправка сообщения о смене пароля на email.
+
+    :param username: имя пользователя, которому отправляется письмо
+    :param email: адрес отправки письма
+    """
+
+    context = {"username": username}
+
+    send_email(
+        html_template="email/password_changed.html",
+        text_template="email/password_changed.txt",
+        mail_to=email,
+        context=context,
+        subject=EmailSubjects.PASSWORD_HAS_CHANGED,
+    )
