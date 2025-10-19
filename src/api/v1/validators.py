@@ -63,6 +63,16 @@ def validate_email(value: str):
         raise ValidationError(APIResponses.EMAIL_EXISTS)
 
 
+def validate_email_length(email: str):
+    """Валидация длины email."""
+
+    if (
+        len(email) < Limits.MIN_LENGTH_EAMIL
+        or len(email) > Limits.MAX_LENGTH_EAMIL
+    ):
+        raise ValidationError(APIResponses.INVALID_EMAIL_LENGTH)
+
+
 def validate_phone(value: str):
     """Валидация номера телефона."""
 

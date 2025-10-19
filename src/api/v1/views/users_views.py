@@ -194,7 +194,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 )
 class ChangePassowrdView(GenericAPIView):
     """
-    Регистрация пользователей.
+    Изменение пароля пользователя.
     """
 
     permission_classes = [IsAuthenticated]
@@ -202,6 +202,12 @@ class ChangePassowrdView(GenericAPIView):
 
     def post(self, request):
         data = request.data
+
+        # убрать пробелы в начале и конец пароля refactor later
+        data["current_password"] = data["current_password"].strip()
+        data["new_password"] = data["new_password"].strip()
+        data["confirmation"] = data["confirmation"].strip()
+
         data["user"] = request.user
         serializer = api_serializers.PasswordChangeSerializer(data=data)
         if serializer.is_valid():

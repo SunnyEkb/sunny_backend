@@ -24,12 +24,46 @@ class TestUser(TestUserFixtures):
     def tearDown(self):
         settings.EMAIL_BACKEND = self.real_email_backend
 
+    def test_user_registry_with_too_short_email(self):
+        body = {
+            "username": self.username,
+            "email": self.email_short,
+            "phone": self.phone,
+            "password": self.password,
+            "confirmation": self.password,
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("email", None),
+            [APIResponses.INVALID_EMAIL_LENGTH],
+        )
+
+    def test_user_registry_with_too_long_email(self):
+        body = {
+            "username": self.username,
+            "email": self.email_long,
+            "phone": self.phone,
+            "password": self.password,
+            "confirmation": self.password,
+        }
+        response = self.anon_client.post(
+            reverse("registry"), data=body, format="json"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(
+            response.json().get("email", None),
+            [APIResponses.INVALID_EMAIL_LENGTH],
+        )
+
     def test_user_registry(self):
         email = self.email_1
         body = {
             "username": self.username,
             "email": email,
-            "phone": self.new_phone,
+            "phone": self.phone,
             "password": self.password,
             "confirmation": self.password,
         }
@@ -83,7 +117,7 @@ class TestUser(TestUserFixtures):
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("non_field_errors", None),
-            [APIResponses.PASSWORD_DO_NOT_MATCH.value],
+            [APIResponses.PASSWORD_DO_NOT_MATCH],
         )
 
     def test_user_registry_username_validation_long_username(self):

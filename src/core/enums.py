@@ -9,6 +9,10 @@ class Limits(IntEnum):
     # Предельные значения для users
     MAX_LENGTH_FIRST_NAME = 50
     """Предельная длина имени."""
+    MAX_LENGTH_EAMIL = 60
+    """Максимальная длина email."""
+    MIN_LENGTH_EAMIL = 7
+    """Минимальная длина email."""
     MAX_LENGTH_LAST_NAME = 50
     """Предельная длина фамилии."""
     USERNAME_MIN_LENGTH = 2
