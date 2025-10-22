@@ -382,10 +382,7 @@ class BaseServiceAdViewSet(
             object_id=object.id,
             author=request.user,
         )
-        moderate_comment_task.delay_on_commit(
-            comment_id=comment.id, request=self.request
-        )
-
+        moderate_comment_task.delay_on_commit(comment_id=comment.id)
         return response.Response(
             status=status.HTTP_201_CREATED,
             data=APIResponses.COMMENT_ADDED,

@@ -1,9 +1,9 @@
 import sys
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
@@ -83,22 +83,25 @@ class Comment(TimeCreateUpdateModel):
             self.status = CommentStatus.DRAFT
             self.save()
 
-    def publish(self, request) -> None:
+    def publish(self) -> None:
         if self.status == CommentStatus.DRAFT:
             self.status = CommentStatus.MODERATION
             self.save()
-            url = self.get_admin_url(request)
+            url = self.get_admin_url()
             if "test" not in sys.argv:
                 notify_about_moderation_task.delay(url)
 
-    def get_admin_url(self, request) -> str:
+    def get_admin_url(self) -> str:
         """Возвращает ссылку на экземпляр модели в админке."""
 
-        domain = get_current_site(request).domain
         app_name = self._meta.app_label
         name: str = self.__class__.__name__.lower()
         return "".join(
-            ["https://", domain, f"/admin/{app_name}/{name}/{self.id}/change/"]
+            [
+                "https://",
+                settings.DOMAIN,
+                f"/admin/{app_name}/{name}/{self.id}/change/",
+            ]
         )
 
 

@@ -51,7 +51,11 @@ def send_error_message(message: str) -> None:
     """
 
     send_telegram_message(
-        message=message[:4095],
+        message=(
+            message
+            if len(message) < 4095
+            else (message[0:2000] + "\n...\n" + message[-2080:])
+        ),
         chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
         message_thread_id=settings.TELEGRAM_SUPPORT_CHAT_TOPIC,
     )
@@ -65,7 +69,11 @@ async def send_error_message_async(message: str) -> None:
     """
 
     await send_telegram_message_async(
-        message=message[:4095],
+        message=(
+            message
+            if len(message) < 4095
+            else (message[0:2000] + "\n...\n" + message[-2080:])
+        ),
         chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
         message_thread_id=settings.TELEGRAM_SUPPORT_CHAT_TOPIC,
     )
