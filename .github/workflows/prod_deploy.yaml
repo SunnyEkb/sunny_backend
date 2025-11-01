@@ -49,7 +49,7 @@ jobs:
           envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
           envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
           envkey_ELASTICSEARCH_DSL_HOSTS: ${{ secrets.ELASTICSEARCH_DSL_HOSTS }}
-          envkey_ELASTICSEARCH_PASSWORD: ${{ secrets.ELASTICSEARCH_PASSWORD }}
+          envkey_ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
           envkey_ELASTIC_USERNAME: ${{ secrets.ELASTIC_USERNAME }}
 
       - name: Set up Docker Buildx
