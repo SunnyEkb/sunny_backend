@@ -260,7 +260,10 @@ class ServiceRetrieveSerializer(ServiceListSerializer):
         fields = ServiceListSerializer.Meta.fields + ("comments",)  # type: ignore  # noqa
 
     def get_comments(self, obj):
-        comments = obj.comments.all()[:3]
+        """Вовыод трех последних комментариев к услуге."""
+        comments = obj.comments.filter(
+            status=CommentStatus.PUBLISHED
+        ).order_by("-created_at")[:3]
         return [CommentReadSerializer(comment).data for comment in comments]
 
 
