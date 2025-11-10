@@ -24,7 +24,17 @@ from core.choices import APIResponses, CommentStatus
     },
 )
 @extend_schema_view(
-    list=extend_schema(summary="Список комментариев."),
+    list=extend_schema(
+        summary="Список комментариев.",
+        description=(
+            """
+            Параметр 'type' имеет два значения:
+                'ad' для получения комментариев к объявлениям;
+                'service' для получения комментариев к услугам;
+            Параметр 'obj_id' это идентификатор услуги или объявления.
+            """
+        ),
+    ),
 )
 class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список комментариев."""
