@@ -191,12 +191,20 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
 
 
 class AdRetrieveSerializer(AdListSerializer):
-    """Сериализатор для получения данных о конкретной услуге."""
+    """Сериализатор для получения данных о конкретном объявлении."""
 
-    comments = CommentReadSerializer(many=True)
+    comments = serializers.SerializerMethodField()
 
     class Meta(AdListSerializer.Meta):
         fields = AdListSerializer.Meta.fields + ("comments",)  # type: ignore  # noqa
+
+    def get_comments(self, obj):
+        """Вывод трех последних комментариев к объявлению."""
+
+        comments = obj.comments.filter(
+            status=CommentStatus.PUBLISHED
+        ).order_by("-created_at")[:3]
+        return [CommentReadSerializer(comment).data for comment in comments]
 
 
 class CategoryGetWithoutSubCatSerializer(serializers.ModelSerializer):

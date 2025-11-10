@@ -122,8 +122,10 @@ class AdViewSet(BaseServiceAdViewSet):
     filterset_class = AdFilter
 
     def get_serializer_class(self):
-        if self.action in ("list", "retrieve"):
+        if self.action == "list":
             return api_serializers.AdListSerializer
+        if self.action == "retrieve":
+            return api_serializers.AdRetrieveSerializer
         return api_serializers.AdCreateUpdateSerializer
 
     def get_queryset(self):
