@@ -1,4 +1,16 @@
 services:
+  es:
+    image: elasticsearch:8.10.1
+    container_name: es
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
   db:
     image: postgres:16.1-alpine
     container_name: db
@@ -72,7 +84,7 @@ services:
     container_name: flower
     command: ['celery', '--broker=redis://redis:6379/0', 'flower', '--port=5555', '--url_prefix=/flower']
     ports:
-      - "5555:5555"
+      - "5556:5556"
     depends_on:
       - celery
       - celery-beat

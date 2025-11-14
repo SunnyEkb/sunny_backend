@@ -26,13 +26,13 @@ class Service(AbstractAdvertisement):
     experience = models.PositiveIntegerField(
         "Опыт",
         default=0,
-        validators=[MaxValueValidator(Limits.MAXIMUM_EXPERIENCE.value)],
+        validators=[MaxValueValidator(Limits.MAXIMUM_EXPERIENCE)],
     )
     place_of_provision = models.CharField(
         "Место оказания услуги",
-        max_length=Limits.MAX_LENGTH_SERVICE_PLACE.value,
+        max_length=Limits.MAX_LENGTH_SERVICE_PLACE,
         choices=ServicePlace.choices,
-        default=ServicePlace.OPTIONS.value,
+        default=ServicePlace.OPTIONS,
     )
     type = models.ManyToManyField(
         Type,
@@ -41,13 +41,13 @@ class Service(AbstractAdvertisement):
     )
     address = models.CharField(
         "Адрес",
-        max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value,
+        max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS,
         null=True,
         blank=True,
     )
     salon_name = models.CharField(
         "Название салона",
-        max_length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value,
+        max_length=Limits.MAX_LENGTH_SERVICE_SALON_NAME,
         null=True,
         blank=True,
     )

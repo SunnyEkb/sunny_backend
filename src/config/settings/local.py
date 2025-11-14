@@ -6,16 +6,16 @@ if getenv("USE_SQLITE", default="False") == "True":  # noqa
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": str(BASE_DIR / "db.sqlite3"),  # noqa
+            "NAME": str(BASE_DIR / "sunny.sqlite3"),  # noqa
         }
     }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-LOGGING["handlers"].pop("telegram_logger", None)  # noqa
-LOGGING["loggers"]["django"]["handlers"] = ["file_logger"]  # noqa
+LOGGING["handlers"].pop("telegram_logger", None)  # type: ignore  # noqa
+LOGGING["loggers"]["django"]["handlers"] = ["file_logger"]  # type: ignore  # noqa
 
-LOGGING["loggers"].update(  # noqa
+LOGGING["loggers"].update(  # type: ignore  # noqa
     {
         "django.db.backends": {
             "level": "DEBUG",
@@ -32,7 +32,7 @@ CELERY_TASK_ALWAYS_EAGER = (
     if (getenv("CELERY_TASK_ALWAYS_EAGER", default="False") == "True")  # noqa
     else False
 )
-CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", default=None)  # noqa
+CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", default="")  # noqa
 CELERY_RESULT_BACKEND = getenv(  # noqa
     "CELERY_RESULT_BACKEND", default="cache"
 )

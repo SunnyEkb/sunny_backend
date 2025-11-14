@@ -15,6 +15,7 @@ from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import (
     validate_email,
+    validate_email_length,
     validate_file_size,
     validate_phone,
     validate_username,
@@ -66,7 +67,7 @@ class UserCreateSerializer(ModelSerializer):
     )
     confirmation = CharField(write_only=True, required=True)
     username = CharField(required=True, validators=[validate_username])
-    email = EmailField(validators=[validate_email])
+    email = EmailField(validators=[validate_email, validate_email_length])
 
     class Meta:
         model = User

@@ -48,6 +48,9 @@ jobs:
           envkey_TELEGRAM_SUPPORT_CHAT_TOPIC: ${{ secrets.TELEGRAM_SUPPORT_CHAT_TOPIC }}
           envkey_SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
           envkey_SOCIAL_AUTH_VK_OAUTH2_SECRET: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_SECRET }}
+          envkey_ELASTICSEARCH_DSL_HOSTS: ${{ secrets.ELASTICSEARCH_DSL_HOSTS }}
+          envkey_ELASTIC_PASSWORD: ${{ secrets.ELASTIC_PASSWORD }}
+          envkey_ELASTIC_USERNAME: ${{ secrets.ELASTIC_USERNAME }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
@@ -85,12 +88,12 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            cd ${{ secrets.TARGET_SERVER_PATH }} &&
-            docker compose exec -T backend python3 manage.py dumpdata --settings config.settings.dev --indent 2 --exclude admin.logentry --exclude sessions.session > dump_$(date +%Y%m%d_%H%M).json &&
-            docker compose stop &&
-            docker compose rm -f backend &&
-            docker compose rm -f celery &&
-            docker compose rm -f celery-beat &&
-            docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/sunny_ekb &&
-            docker compose up -d &&
+            cd ${{ secrets.TARGET_SERVER_PATH }}
+            docker compose exec -T backend python3 manage.py dumpdata --settings config.settings.dev --indent 2 --exclude admin.logentry --exclude sessions.session > dump_$(date +%Y%m%d_%H%M).json
+            docker compose stop
+            docker compose rm -f backend
+            docker compose rm -f celery
+            docker compose rm -f celery-beat
+            docker rmi ${{ secrets.DOCKER_HUB_USERNAME }}/sunny_ekb
+            docker compose up -d
             docker compose exec -T backend python manage.py migrate --settings config.settings.dev

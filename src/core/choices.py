@@ -88,10 +88,14 @@ class APIResponses(models.TextChoices):
     )
     WRONG_OBJECT_TYPE = "Неверный тип объекта."
     USERNAME_EXISTS = "Пользователь с таким именем уже существует."
+    INVALID_EMAIL_LENGTH = (
+        f"Длина email должна быть от {Limits.MIN_LENGTH_EAMIL} "
+        f"до {Limits.MAX_LENGTH_EAMIL} символов."
+    )
     EMAIL_EXISTS = "Пользователь с таким адресом электронной почты существует."
     PHONE_EXISTS = "Пользователь с таким номером телефона существует."
     WRONG_CONTENT = (
-        "Изображение должно быть передано в формате base64: "
+        "Изображения должны быть переданы в формате base64: "
         "data:<MIME-type>;base64,<data>"
     )
     WRONG_EXTENTION = (
@@ -124,6 +128,9 @@ class Notifications(models.TextChoices):
 class EmailSubjects(models.TextChoices):
     WELCOME = "Регистрация на сервие Солнечный Екатеринбург"
     PASSWORD_CHANGE = "Сброс пароля на сервисе Солнечный Екатеринбург"
+    PASSWORD_HAS_CHANGED = (
+        "Уведомление о смене пароля на сервисе Солнечный Екатеринбург"
+    )
 
 
 class AdState(models.TextChoices):

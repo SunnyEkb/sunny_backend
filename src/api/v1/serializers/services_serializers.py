@@ -10,7 +10,11 @@ from api.v1.serializers import (
     UserSearchSerializer,
 )
 from api.v1.serializers.image_fields import Base64ImageField
-from api.v1.validators import validate_file_size
+from api.v1.validators import (
+    validate_base64_field,
+    validate_file_size,
+    validate_extention,
+)
 from core.choices import CommentStatus
 from services.models import Service, ServiceImage, SubService, Type
 from users.models import Favorites
@@ -67,6 +71,30 @@ class ServiceImageRetrieveSerializer(serializers.ModelSerializer):
         fields = ("id", "image")
 
 
+class ServiceImageSerializer(serializers.Serializer):
+    """Сериализатор для добавления одного фото к услуге."""
+
+    image = serializers.CharField()
+
+    def validate_image(self, value):
+        validate_base64_field(value)
+        return value
+
+
+class ServiceImagesSerializer(serializers.Serializer):
+    """Сериализатор для добавления нескольких фото к услуге."""
+
+    images = ServiceImageSerializer(many=True)
+
+    def validate_images(self, data):
+        for img in data:
+            validate_base64_field(img["image"])
+            format, _ = img["image"].split(";base64,")
+            ext = format.split("/")[-1]
+            validate_extention(ext)
+        return data
+
+
 class SubServiceSerializer(serializers.ModelSerializer):
     """
     Сериализатор для подуслуг.
@@ -110,11 +138,9 @@ class ServiceListSerializer(serializers.ModelSerializer):
         )
 
     def get_comments_quantity(self, obj) -> int:
-        return obj.comments.filter(
-            status=CommentStatus.PUBLISHED.value
-        ).count()
+        return obj.comments.filter(status=CommentStatus.PUBLISHED).count()
 
-    def get_avg_rating(self, obj) -> int:
+    def get_avg_rating(self, obj) -> int | None:
         rating = obj.comments.aggregate(Avg("rating"))
         rating = rating["rating__avg"]
         if rating is None:
@@ -228,10 +254,18 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
 class ServiceRetrieveSerializer(ServiceListSerializer):
     """Сериализатор для получения данных о конкретной услуге."""
 
-    comments = CommentReadSerializer(many=True)
+    comments = serializers.SerializerMethodField()
 
     class Meta(ServiceListSerializer.Meta):
-        fields = ServiceListSerializer.Meta.fields + ("comments",)
+        fields = ServiceListSerializer.Meta.fields + ("comments",)  # type: ignore  # noqa
+
+    def get_comments(self, obj):
+        """Вывод трех последних комментариев к услуге."""
+
+        comments = obj.comments.filter(
+            status=CommentStatus.PUBLISHED
+        ).order_by("-created_at")[:3]
+        return [CommentReadSerializer(comment).data for comment in comments]
 
 
 class ServiceForModerationSerializer(serializers.ModelSerializer):

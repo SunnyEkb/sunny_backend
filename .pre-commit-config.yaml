@@ -1,3 +1,4 @@
+default_stages: [commit]
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -20,6 +21,12 @@ repos:
       args:
         - --line-length=79
         - --include=src/
+
+# Проверка mypy
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: ''
+    hooks:
+    -   id: mypy
 
 # Проверяет есть ли изменения в моделях незафиксированные в миграциях
 -   repo: local

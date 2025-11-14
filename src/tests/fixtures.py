@@ -65,10 +65,13 @@ class TestUserFixtures(BaseTestCase):
         cls.username = "some_user"
         cls.new_username = "new_user"
         cls.email_1 = "user@foo.com"
+        cls.email_short = "u@o.ru"
+        cls.email_long = f"{'a'*60}u@o.com"
         cls.email_2 = "user_2@foo.com"
         cls.password = "super_password"
         cls.new_password = "new_super_password"
         cls.new_phone = "+79000000000"
+        cls.phone = "+79000000223"
         cls.last_name = "last_name"
         cls.first_name = "first_name"
         cls.change_user_data = {
@@ -183,9 +186,35 @@ class TestServiceFixtures(TestUserFixtures):
             author=cls.user_3,
             status=CommentStatus.MODERATION.value,
         )
-        cls.comment_data = {
+        cls.comment_data_without_img = {
             "rating": 2,
             "feedback": "Some feadback",
+        }
+        cls.comment_data = cls.comment_data_without_img | {
+            "images": [
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+            ]
+        }
+        cls.comment_data_with_wrong_ext = cls.comment_data_without_img | {
+            "images": [
+                {"image": cls.wrong_base64_image},
+            ],
+        }
+        cls.comment_data_with_wrong_bs64 = cls.comment_data_without_img | {
+            "images": [
+                {"image": "some string"},
+            ],
+        }
+        cls.comment_data_with_too_many_img = cls.comment_data_without_img | {
+            "images": [
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+            ],
         }
         cls.image_data = {"image": cls.uploaded}
         Favorites.objects.create(
@@ -258,6 +287,41 @@ class TestAdsFixtures(TestUserFixtures):
         cls.comment_data = {
             "rating": 2,
             "feedback": "Some feadback",
+            "images": [
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+            ],
+        }
+        cls.comment_data_with_too_many_images = {
+            "rating": 2,
+            "feedback": "Some feadback",
+            "images": [
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+                {"image": cls.base64_image},
+            ],
+        }
+        cls.comment_data_without_images = {
+            "rating": 2,
+            "feedback": "Some feadback",
+        }
+        cls.comment_data_images_wrong_base64 = {
+            "rating": 2,
+            "feedback": "Some feadback",
+            "images": [
+                {"image": cls.wrong_base64_image},
+            ],
+        }
+        cls.comment_data_images_wrong_ext = {
+            "rating": 2,
+            "feedback": "Some feadback",
+            "images": [
+                {"image": "some_string"},
+            ],
         }
         cls.comment_1 = factories.CommentFactory(
             subject=cls.ad_2,

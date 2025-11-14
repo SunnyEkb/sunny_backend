@@ -66,7 +66,7 @@ class TypeViewSet(CategoryTypeViewSet):
     retrieve=extend_schema(
         summary="Информация о конкретной услуге.",
         responses={
-            status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
+            status.HTTP_200_OK: schemes.SERVICE_RETRIEVE_OK_200,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
         },
     ),
@@ -120,9 +120,7 @@ class ServiceViewSet(BaseServiceAdViewSet):
         queryset = Service.cstm_mng.all()
         if self.action == "list":
             params = self.request.query_params
-            queryset = queryset.filter(
-                status=AdvertisementStatus.PUBLISHED.value
-            )
+            queryset = queryset.filter(status=AdvertisementStatus.PUBLISHED)
             if "type_id" in params:
                 type_id = params.get("type_id")
                 validate_id(type_id)
@@ -130,8 +128,10 @@ class ServiceViewSet(BaseServiceAdViewSet):
         return queryset
 
     def get_serializer_class(self):
-        if self.action in ["list", "retrieve"]:
+        if self.action == "list":
             return api_serializers.ServiceListSerializer
+        if self.action == "retrieve":
+            return api_serializers.ServiceRetrieveSerializer
         return api_serializers.ServiceCreateUpdateSerializer
 
 
@@ -186,10 +186,8 @@ class ServiceImageViewSet(
 class ServiceModerationViewSet(BaseModeratorViewSet):
     """Модерация услуг."""
 
-    queryset = Service.cstm_mng.filter(
-        status=AdvertisementStatus.MODERATION.value
-    )
-    serializer_class = api_serializers.ServiceForModerationSerializer
+    queryset = Service.cstm_mng.filter(status=AdvertisementStatus.MODERATION)
+    serializer_class = api_serializers.ServiceForModerationSerializer  # type: ignore  # noqa
 
     def _get_receiver(self):
         return self.get_object().provider

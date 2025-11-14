@@ -175,8 +175,8 @@ SIMPLE_JWT = {
     "AUTH_COOKIE": getenv("AUTH_COOKIE", default="access"),
     "AUTH_REFRESH": getenv("AUTH_REFRESH", default="refresh"),
     "AUTH_COOKIE_DOMAIN": None,
-    "AUTH_COOKIE_SECURE": False,  # True заменить на проде
-    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_SECURE": True,
+    "AUTH_COOKIE_HTTP_ONLY": False,  # True заменить на проде
     "AUTH_COOKIE_PATH": "/",
     "AUTH_COOKIE_SAMESITE": "None",  # "Lax" заменить на проде
 }
@@ -189,10 +189,10 @@ SOCIAL_AUTH_VK_OAUTH2_KEY = getenv("SOCIAL_AUTH_VK_OAUTH2_KEY")
 SOCIAL_AUTH_VK_OAUTH2_SECRET = getenv("SOCIAL_AUTH_VK_OAUTH2_SECRET")
 
 CORS_ALLOW_CREDENTIALS = True
-CSRF_COOKIE_SECURE = False  # True заменить на проде
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False  # True заменить на проде
 CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
-SESSION_COOKIE_SECURE = False  # True заменить на проде
+SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SAMESITE = "None"
 CSRF_TRUSTED_ORIGINS = getenv(
@@ -338,4 +338,4 @@ CHANNEL_LAYERS = {
     },
 }
 
-ALLOWED_IMAGE_FILE_EXTENTIONS = ["jpg", "png"]
+ALLOWED_IMAGE_FILE_EXTENTIONS = ["jpg", "png", "jpeg", "webp", "bmp"]
