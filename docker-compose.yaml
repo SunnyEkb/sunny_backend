@@ -2,7 +2,7 @@ services:
   es:
     image: elasticsearch:8.10.1
     container_name: es
-    restart: always
+    restart: on-failure
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -60,7 +60,7 @@ services:
   celery:
     image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
     container_name: celery
-    restart: always
+    restart: on-failure
     entrypoint: "celery -A config worker -l INFO"
     env_file:
       - .env
@@ -71,7 +71,7 @@ services:
   celery-beat:
     image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
     container_name: beat
-    restart: always
+    restart: on-failure
     entrypoint: "celery -A config beat -l INFO"
     env_file:
       - .env
@@ -92,7 +92,7 @@ services:
   backend:
     image: ${DOCKER_HUB_USERNAME}/sunny_ekb:latest
     container_name: backend
-    restart: always
+    restart: on-failure
     volumes:
       - sunny_static_value:/app/static/
       - sunny_media_value:/app/media/
@@ -118,3 +118,4 @@ volumes:
   sunny_media_value:
   sunny_data_store_value:
   sunny_ekb_data:
+  elasticsearch_data:
