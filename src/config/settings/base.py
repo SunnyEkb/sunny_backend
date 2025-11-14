@@ -107,7 +107,7 @@ ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
 
 ELASTICSEARCH_DSL = {
     "default": {"hosts": (ELASTICSEARCH_DSL_HOSTS)},
-    #    "basic_auth": (ELASTIC_USERNAME, ELASTIC_PASSWORD),
+    "http_auth": (ELASTIC_USERNAME, ELASTIC_PASSWORD),
     "verify_certs": False,
 }
 
