@@ -1,4 +1,5 @@
 import copy
+import logging
 from typing import List, Optional
 
 from django.http import HttpResponse
@@ -9,6 +10,8 @@ from rest_framework import views, request, response, status
 from ads.documents import AdDocument
 from api.v1 import schemes, serializers
 from services.documents import ServiceDocument
+
+logger = logging.getLogger("django")
 
 
 @extend_schema(
@@ -62,4 +65,7 @@ class SearchView(views.APIView):
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
-            return HttpResponse(e, status=500)
+            logger.error(e, exc_info=True)
+            return HttpResponse(
+                "Поиск недоступен", status=status.HTTP_501_NOT_IMPLEMENTED
+            )
