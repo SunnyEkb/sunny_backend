@@ -200,14 +200,14 @@ class PasswordChangeSerializer(Serializer):
                 {"password": APIResponses.WRONG_PASSWORD.value}
             )
         if (
-            not self.initial_data["new_password"]
-            == self.initial_data["confirmation"]
+            not self.initial_data["new_password"].strip()
+            == self.initial_data["confirmation"].strip()
         ):
             raise ValidationError(
                 {"password": APIResponses.PASSWORD_DO_NOT_MATCH.value}
             )
         if (
-            self.initial_data["new_password"]
+            self.initial_data["new_password"].strip()
             == self.initial_data["current_password"]
         ):
             raise ValidationError(

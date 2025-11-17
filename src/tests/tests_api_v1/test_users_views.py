@@ -281,6 +281,17 @@ class TestUser(TestUserFixtures):
             response.data["password"][0], APIResponses.NOT_SAME_PASSWORD.value
         )
 
+    def test_password_change_wrong_body(self):
+        response = self.client_2.post(
+            reverse("change_password"),
+            data={
+                "new_password": self.password,
+                "confirmation": self.password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
     def test_password_change_by_wrong_password(self):
         response = self.client_2.post(
             reverse("change_password"),
