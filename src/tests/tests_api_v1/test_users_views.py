@@ -281,6 +281,32 @@ class TestUser(TestUserFixtures):
             response.data["password"][0], APIResponses.NOT_SAME_PASSWORD.value
         )
 
+    def test_password_change_wrong_body(self):
+        response = self.client_2.post(
+            reverse("change_password"),
+            data={
+                "new_password": self.password,
+                "confirmation": self.password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_password_change_delete_spaces_on_the_end_of_password(self):
+        response = self.client_1.post(
+            reverse("change_password"),
+            data={
+                "current_password": self.password,
+                "new_password": self.new_password + "   ",
+                "confirmation": self.new_password,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            response.data, {"Success": APIResponses.PASSWORD_CHANGED.value}
+        )
+
     def test_password_change_by_wrong_password(self):
         response = self.client_2.post(
             reverse("change_password"),

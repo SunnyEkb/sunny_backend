@@ -202,17 +202,11 @@ class ChangePassowrdView(GenericAPIView):
 
     def post(self, request):
         data = request.data
-
-        # убрать пробелы в начале и конец пароля refactor later
-        data["current_password"] = data["current_password"].strip()
-        data["new_password"] = data["new_password"].strip()
-        data["confirmation"] = data["confirmation"].strip()
-
         data["user"] = request.user
         serializer = api_serializers.PasswordChangeSerializer(data=data)
         if serializer.is_valid():
             user = request.user
-            user.set_password(request.data["new_password"])
+            user.set_password(request.data["new_password"].strip())
             user.save()
             return Response(
                 data={"Success": APIResponses.PASSWORD_CHANGED},
