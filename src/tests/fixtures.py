@@ -84,7 +84,7 @@ class TestUserFixtures(BaseTestCase):
             "last_name": cls.last_name,
             "phone": cls.new_phone,
         }
-        cls.user_1 = factories.CustomUserFactory()
+        cls.user_1 = factories.CustomUserFactory(password=cls.password)
         cls.user_2 = factories.CustomUserFactory(password=cls.password)
         cls.user_3 = factories.CustomUserFactory()
         cls.user_4 = factories.CustomUserFactory(password=cls.password)
