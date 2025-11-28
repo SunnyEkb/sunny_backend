@@ -154,7 +154,7 @@ REFRESH_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 TYPE_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Иерархический список типов услуг",
+    name="Иерархический список категорий услуг",
     value={
         "id": 1,
         "title": "Красота и здоровье",
@@ -177,7 +177,7 @@ TYPE_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 TYPE_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Cписок типов услуг при фильтрации по названию",
+    name="Cписок категорий услуг при фильтрации по названию",
     value={
         "id": 1,
         "title": "Красота и здоровье",
