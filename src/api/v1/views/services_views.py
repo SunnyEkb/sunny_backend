@@ -26,18 +26,18 @@ from services.models import Service, ServiceImage, Type
 
 
 @extend_schema(
-    tags=["Services types"],
+    tags=["Services"],
     responses={status.HTTP_200_OK: schemes.TYPES_GET_OK_200},
 )
 @extend_schema_view(
     list=extend_schema(
-        summary="Список типов услуг.",
+        summary="Список категорий услуг.",
         parameters=[OpenApiParameter("title", str)],
     ),
-    retrieve=extend_schema(summary="Тип услуги."),
+    retrieve=extend_schema(summary="Категория услуги."),
 )
 class TypeViewSet(CategoryTypeViewSet):
-    """Список типов услуг."""
+    """Список категорий услуг."""
 
     def get_queryset(self):
         queryset = Type.objects.all()
