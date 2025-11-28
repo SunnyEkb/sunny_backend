@@ -28,7 +28,7 @@ from core.choices import AdvertisementStatus
 
 
 @extend_schema(
-    tags=["Ads categories"],
+    tags=["Ads"],
     responses={status.HTTP_200_OK: schemes.CATEGORIES_GET_OK_200},
 )
 @extend_schema_view(

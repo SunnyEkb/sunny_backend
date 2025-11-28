@@ -21,7 +21,7 @@ from users.models import Favorites
 
 
 class TypeGetWithoutSubCatSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения типов услуг без подтипов."""
+    """Сериализатор для получения категорий услуг без подкатегорий."""
 
     class Meta:
         model = Type
@@ -29,7 +29,7 @@ class TypeGetWithoutSubCatSerializer(serializers.ModelSerializer):
 
 
 class TypeGetSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения типов услуг."""
+    """Сериализатор для получения категорий услуг."""
 
     subcategories = serializers.SerializerMethodField()
 
