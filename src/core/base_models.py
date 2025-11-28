@@ -34,6 +34,12 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
         choices=AdvertisementStatus.choices,
         default=AdvertisementStatus.DRAFT,
     )
+    address = models.CharField(
+        "Адрес",
+        max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS,
+        null=True,
+        blank=True,
+    )
     comments = GenericRelation(Comment)
 
     class Meta:
