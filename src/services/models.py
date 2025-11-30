@@ -39,12 +39,6 @@ class Service(AbstractAdvertisement):
         verbose_name="Тип услуги",
         related_name="types",
     )
-    address = models.CharField(
-        "Адрес",
-        max_length=Limits.MAX_LENGTH_SERVICE_ADDRESS,
-        null=True,
-        blank=True,
-    )
     salon_name = models.CharField(
         "Название салона",
         max_length=Limits.MAX_LENGTH_SERVICE_SALON_NAME,
