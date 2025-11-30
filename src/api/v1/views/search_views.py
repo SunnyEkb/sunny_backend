@@ -61,7 +61,7 @@ class SearchView(views.APIView):
                 services, many=True
             )
             return response.Response(
-                data=[ads_results.data + services_results.data],
+                data=ads_results.data + services_results.data,
                 status=status.HTTP_200_OK,
             )
         except Exception as e:
