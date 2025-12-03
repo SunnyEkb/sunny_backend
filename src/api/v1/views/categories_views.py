@@ -13,7 +13,7 @@ from api.v1 import serializers as api_serializers
 
 
 @extend_schema(
-    tags=["Ads"],
+    tags=["Categories"],
     responses={status.HTTP_200_OK: schemes.CATEGORIES_GET_OK_200},
 )
 @extend_schema_view(

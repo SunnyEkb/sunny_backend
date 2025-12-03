@@ -186,7 +186,7 @@ TYPE_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 CATEGORY_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Иерархический список категорий объявлений",
+    name="Иерархический список категорий",
     value={
         "id": 1,
         "title": "Красота и здоровье",
@@ -209,7 +209,7 @@ CATEGORY_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 CATEGORY_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Cписок категорий объявлений при фильтрации по названию",
+    name="Cписок категорий при фильтрации по названию",
     value={
         "id": 1,
         "title": "Красота и здоровье",
