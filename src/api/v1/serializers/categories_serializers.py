@@ -3,7 +3,7 @@ from rest_framework import serializers
 from categories.models import Category
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class CommonCategorySerializer(serializers.ModelSerializer):
     """Сериализатор для получения списка категорий."""
 
     subcategories = serializers.SerializerMethodField()
@@ -16,7 +16,15 @@ class CategorySerializer(serializers.ModelSerializer):
         if obj.subcategories.exists():
             subcat = []
             for subcategory in obj.subcategories.all():
-                subcat.append(CategorySerializer(subcategory).data)
+                subcat.append(CommonCategorySerializer(subcategory).data)
             return subcat
         else:
             return None
+
+
+class CommonCategoryNoSubCatSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения списка категорий без подкатегорий."""
+
+    class Meta:
+        model = Category
+        fields = ("id", "title", "image")
