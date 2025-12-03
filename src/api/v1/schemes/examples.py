@@ -154,7 +154,7 @@ REFRESH_SUCCESS_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 TYPE_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Иерархический список типов услуг",
+    name="Иерархический список категорий услуг",
     value={
         "id": 1,
         "title": "Красота и здоровье",
@@ -177,7 +177,7 @@ TYPE_LIST_HIERARCHY_EXAMPLE: OpenApiExample = OpenApiExample(
 )
 
 TYPE_LIST_FLAT_EXAMPLE: OpenApiExample = OpenApiExample(
-    name="Cписок типов услуг при фильтрации по названию",
+    name="Cписок категорий услуг при фильтрации по названию",
     value={
         "id": 1,
         "title": "Красота и здоровье",
@@ -413,6 +413,7 @@ AD_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "title": "Ботинки",
         "description": "Зимние ботинки",
         "price": "1000.00",
+        "address": "some address",
         "condition": "Б/у",
         "category_id": 4,
     },
@@ -424,6 +425,7 @@ AD_CREATED_EXAMPLE: OpenApiExample = OpenApiExample(
         "title": "Ботинки",
         "description": "Зимние ботинки",
         "price": "1000.00",
+        "address": "some address",
         "condition": "Б/у",
         "category_id": [1, 4],
     },
@@ -439,6 +441,7 @@ AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
         "category": [1, 2, 3],
         "condition": AdState.USED,
         "price": "500.00",
+        "address": "some address",
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
         "is_favorited": False,
@@ -459,6 +462,7 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "category": [1, 2, 3],
         "condition": AdState.USED,
         "price": "500.00",
+        "address": "some address",
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
         "is_favorited": False,

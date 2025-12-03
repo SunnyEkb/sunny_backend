@@ -35,6 +35,7 @@ class AdDocument(Document):
             "title",
             "description",
             "price",
+            "address",
         ]
 
         related_models = [User]
