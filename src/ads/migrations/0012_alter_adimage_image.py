@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("ads", "0011_rename_adcategory_category_ad_category"),
     ]

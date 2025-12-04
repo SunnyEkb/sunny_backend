@@ -57,7 +57,7 @@ class BaseTypeCategory(models.Model):
 
     title = models.CharField(
         "Название",
-        max_length=Limits.MAX_LENGTH_ADVMNT_CATEGORY,
+        max_length=Limits.MAX_LENGTH_CATEGORY_TITLE,
     )
     parent = models.ForeignKey(
         "self",
