@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("ads", "0016_alter_ad_options"),
         ("ads", "0016_alter_category_image"),

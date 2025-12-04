@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("services", "0019_alter_service_options"),
         ("services", "0019_alter_type_image"),

@@ -35,7 +35,7 @@ class Limits(IntEnum):
     """Предельная длина наименования объявления."""
     MAX_LENGTH_ADVMNT_DESCRIPTION = 500
     """Предельная длина описания объявления."""
-    MAX_LENGTH_ADVMNT_CATEGORY = 50
+    MAX_LENGTH_CATEGORY_TITLE = 50
     """Предельная длина наименования категории объявления."""
     MAX_LENGTH_ADVMNT_STATE = 15
     """Предельная длина типа состояния товара."""

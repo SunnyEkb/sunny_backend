@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("comments", "0002_comment_created_at_comment_updated_at"),
         ("contenttypes", "0002_remove_content_type_name"),

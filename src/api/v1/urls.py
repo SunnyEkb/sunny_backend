@@ -10,6 +10,7 @@ from api.v1.views import (
     CategoryViewSet,
     ChangePassowrdView,
     ChatViewSet,
+    CommonCategoriesViewSet,
     CommentDestroyViewSet,
     CommentModerationViewSet,
     CommentViewSet,
@@ -29,6 +30,9 @@ from api.v1.views import (
 )
 
 api_v1_router = DefaultRouter()
+api_v1_router.register(
+    "categories", CommonCategoriesViewSet, basename="common_categories"
+)
 api_v1_router.register(
     "ads/categories", CategoryViewSet, basename="categories"
 )
