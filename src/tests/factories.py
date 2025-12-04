@@ -8,6 +8,7 @@ from factory import (
 from factory.django import DjangoModelFactory
 
 from ads.models import Ad, Category
+from categories.models import Category as CommonCategory
 from core.choices import ServicePlace
 from core.enums import Limits
 from comments.models import Comment
@@ -37,6 +38,15 @@ class CategoryFactory(DjangoModelFactory):
 
     class Meta:
         model = Category
+
+    title = Faker("name")
+
+
+class CommonCategoryFactory(DjangoModelFactory):
+    """Фабрика для создания экзмпляров модели категория."""
+
+    class Meta:
+        model = CommonCategory
 
     title = Faker("name")
 

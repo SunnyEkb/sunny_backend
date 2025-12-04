@@ -230,6 +230,8 @@ class TestAdsFixtures(TestUserFixtures):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.common_category_1 = factories.CommonCategoryFactory()
+        cls.common_category_2 = factories.CommonCategoryFactory()
         cls.category_1 = factories.CategoryFactory()
         cls.category_2 = factories.CategoryFactory(parent=cls.category_1)
         cls.ad_1 = factories.AdFactory(provider=cls.user_1)
