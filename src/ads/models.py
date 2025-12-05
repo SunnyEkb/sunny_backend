@@ -4,18 +4,11 @@ from django.core.validators import MinValueValidator
 from django.db import models
 
 from ads.managers import AdManager
-from core.abstract_models import AbstractImage, BaseTypeCategory
+from categories.models import Category
+from core.abstract_models import AbstractImage
 from core.base_models import AbstractAdvertisement
 from core.choices import AdState
 from core.enums import Limits
-
-
-class Category(BaseTypeCategory):
-    """Категория объявления."""
-
-    class Meta:
-        verbose_name = "Категория объявления"
-        verbose_name_plural = "Категории объявлений"
 
 
 class Ad(AbstractAdvertisement):

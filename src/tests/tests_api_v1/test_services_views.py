@@ -5,50 +5,9 @@ from django.db.models import Avg
 from django.urls import reverse
 
 from core.choices import ServicePlace, AdvertisementStatus
-from services.models import Service, ServiceImage, Type  # noqa
+from services.models import Service, ServiceImage
 from tests.fixtures import TestServiceFixtures
 from users.models import Favorites
-
-
-""" class TestTypeView(TestServiceFixtures):
-    def test_get_types(self):
-        response_auth_user = self.client_1.get(reverse("types-list"))
-        self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            len(response_auth_user.json()),
-            len(Type.objects.filter(parent=None)),
-        )
-        response_anon_user = self.client_1.get(reverse("types-list"))
-        self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            len(response_anon_user.json()),
-            len(Type.objects.filter(parent=None)),
-        )
-
-    def test_get_type(self):
-        response_auth_user = self.client_1.get(
-            reverse("types-detail", kwargs={"pk": self.type_1.id})
-        )
-        self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
-
-        response_anon_user = self.client_1.get(
-            reverse("types-detail", kwargs={"pk": self.type_1.id})
-        )
-        self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
-
-    def test_types_filters(self):
-        templates = {
-            "title": [
-                self.type_1.title,
-                Type.objects.filter(title__icontains=self.type_1.title),
-            ],
-        }
-        for k, v in templates.items():
-            with self.subTest(filter=k):
-                response = self.client_1.get(
-                    reverse("types-list") + f"?{k}={v[0]}"
-                )
-                self.assertEqual(len(response.data), len(v[1])) """
 
 
 class TestServivecesView(TestServiceFixtures):
@@ -94,12 +53,12 @@ class TestServivecesView(TestServiceFixtures):
                     ).filter(description__icontains=self.service_1.description)
                 ),
             ],
-            "type_id": [
-                self.type_1.id,
+            "category_id": [
+                self.category_1.id,
                 (
                     Service.objects.filter(
                         status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(type__id=self.type_1.id)
+                    ).filter(category__id=self.category_1.id)
                 ),
             ],
             "experience_max": [
@@ -165,12 +124,12 @@ class TestServivecesView(TestServiceFixtures):
                 )
                 self.assertEqual(len(response.data["results"]), len(v[1]))
 
-    def test_get_services_with_wrong_type_id(self):
+    def test_get_services_with_wrong_category_id(self):
         wrong_parametres = [-1, "jsgfkjqegk"]
         for k in wrong_parametres:
             with self.subTest(filter=k):
                 response = self.client_1.get(
-                    reverse("services-list") + f"?type_id={k}"
+                    reverse("services-list") + f"?category_id={k}"
                 )
                 self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 

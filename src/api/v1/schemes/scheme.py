@@ -130,17 +130,9 @@ USER_PATCH_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.USER_PART_CHANGE_EXAMPLE],
 )
 
-TYPES_GET_OK_200: OpenApiResponse = OpenApiResponse(
-    response=serializers.TypeGetSerializer,
-    description="Получение списка категорий услуг",
-    examples=[
-        examples.TYPE_LIST_HIERARCHY_EXAMPLE,
-        examples.TYPE_LIST_FLAT_EXAMPLE,
-    ],
-)
 
 CATEGORIES_GET_OK_200: OpenApiResponse = OpenApiResponse(
-    response=serializers.TypeGetSerializer,
+    response=serializers.CategorySerializer,
     description="Получение списка категорий",
     examples=[
         examples.CATEGORY_LIST_HIERARCHY_EXAMPLE,

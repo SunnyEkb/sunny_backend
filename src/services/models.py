@@ -1,23 +1,13 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from core.abstract_models import (
-    AbstractImage,
-    BaseTypeCategory,
-)
+from categories.models import Category
+from core.abstract_models import AbstractImage
 from core.base_models import AbstractAdvertisement
 from core.choices import ServicePlace
 from core.constants import LimitsValues
 from core.enums import Limits
 from services.managers import ServiceManager
-
-
-class Type(BaseTypeCategory):
-    """Тип услуги."""
-
-    class Meta:
-        verbose_name = "Тип услуги"
-        verbose_name_plural = "Типы услуг"
 
 
 class Service(AbstractAdvertisement):
@@ -34,10 +24,10 @@ class Service(AbstractAdvertisement):
         choices=ServicePlace.choices,
         default=ServicePlace.OPTIONS,
     )
-    type = models.ManyToManyField(
-        Type,
-        verbose_name="Тип услуги",
-        related_name="types",
+    category = models.ManyToManyField(
+        Category,
+        verbose_name="Категория",
+        related_name="services",
     )
     salon_name = models.CharField(
         "Название салона",

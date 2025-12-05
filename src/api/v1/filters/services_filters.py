@@ -10,23 +10,7 @@ from django_filters import (
 )
 
 from core.choices import AdvertisementStatus, ServicePlace
-from services.models import Service, Type
-
-
-class TypeFilter(FilterSet):
-    """
-    Фильтры для типов услуг.
-    """
-
-    title = CharFilter(
-        field_name="title",
-        lookup_expr="icontains",
-        label="Тип услуги",
-    )
-
-    class Meta:
-        model = Type
-        fields = ("title",)
+from services.models import Service
 
 
 class ServiceFilter(FilterSet):
