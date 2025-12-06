@@ -7,7 +7,7 @@ from api.v1.views import (
     AdImageViewSet,
     AdModerationViewSet,
     AdViewSet,
-    CategoryViewSet,
+    #    CategoryViewSet,
     ChangePassowrdView,
     ChatViewSet,
     CommonCategoriesViewSet,
@@ -24,7 +24,7 @@ from api.v1.views import (
     ServiceModerationViewSet,
     ServiceViewSet,
     SearchView,
-    TypeViewSet,
+    #    TypeViewSet,
     VerificationView,
     UserViewSet,
 )
@@ -33,9 +33,9 @@ api_v1_router = DefaultRouter()
 api_v1_router.register(
     "categories", CommonCategoriesViewSet, basename="common_categories"
 )
-api_v1_router.register(
-    "ads/categories", CategoryViewSet, basename="categories"
-)
+# api_v1_router.register(
+#    "ads/categories", CategoryViewSet, basename="categories"
+# )
 api_v1_router.register("ads", AdViewSet, basename="ads")
 api_v1_router.register("chats", ChatViewSet, basename="chats")
 api_v1_router.register(
@@ -54,7 +54,7 @@ api_v1_router.register(
     basename="comments",
 )
 api_v1_router.register("favorite", FavoritesViewSet, "favorite")
-api_v1_router.register("services/categories", TypeViewSet, basename="types")
+# api_v1_router.register("services/categories", TypeViewSet, basename="types")
 api_v1_router.register("services", ServiceViewSet, basename="services")
 api_v1_router.register(
     "moderator/services",

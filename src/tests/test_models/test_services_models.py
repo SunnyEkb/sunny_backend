@@ -21,7 +21,7 @@ class ServiceModelsTest(BaseTestCase):
         cls.user = factories.CustomUserFactory()
         cls.service_1 = factories.ServiceFactory(provider=cls.user)
         cls.service_2 = factories.ServiceFactory()
-        cls.type_1 = factories.TypeFactory()
+        cls.category_1 = factories.CategoryFactory()
         cls.service_1_image = ServiceImage.objects.create(
             service=cls.service_1, image=cls.uploaded
         )
@@ -43,7 +43,7 @@ class ServiceModelsTest(BaseTestCase):
         model_str_name = {
             str(self.service_1): self.service_1.title,
             str(self.service_1_image): self.service_1_image.service.title,
-            str(self.type_1): self.type_1.title,
+            str(self.category_1): self.category_1.title,
         }
         for model, title in model_str_name.items():
             with self.subTest(model=model):

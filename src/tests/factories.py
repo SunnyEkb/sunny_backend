@@ -7,13 +7,13 @@ from factory import (
 )
 from factory.django import DjangoModelFactory
 
-from ads.models import Ad, Category
-from categories.models import Category as CommonCategory
+from ads.models import Ad
+from categories.models import Category
 from core.choices import ServicePlace
 from core.enums import Limits
 from comments.models import Comment
 from notifications.models import Notification
-from services.models import Service, Type
+from services.models import Service
 from users.models import CustomUser
 
 PASSWORD = "SoMePaSS_word_123"
@@ -34,19 +34,10 @@ class CustomUserFactory(DjangoModelFactory):
 
 
 class CategoryFactory(DjangoModelFactory):
-    """Фабрика для создания экзмпляров модели тип услуги."""
-
-    class Meta:
-        model = Category
-
-    title = Faker("name")
-
-
-class CommonCategoryFactory(DjangoModelFactory):
     """Фабрика для создания экзмпляров модели категория."""
 
     class Meta:
-        model = CommonCategory
+        model = Category
 
     title = Faker("name")
 
@@ -74,15 +65,6 @@ class CommentFactory(DjangoModelFactory):
     author = SubFactory(CustomUserFactory)
     rating = fuzzy.FuzzyInteger(1, 5)
     feedback = fuzzy.FuzzyText(length=Limits.MAX_COMMENT_TEXT.value)
-
-
-class TypeFactory(DjangoModelFactory):
-    """Фабрика для создания экзмпляров модели тип услуги."""
-
-    class Meta:
-        model = Type
-
-    title = Faker("name")
 
 
 class ServiceFactory(DjangoModelFactory):

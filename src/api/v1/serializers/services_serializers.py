@@ -15,36 +15,10 @@ from api.v1.validators import (
     validate_file_size,
     validate_extention,
 )
+from categories.models import Category
 from core.choices import CommentStatus
-from services.models import Service, ServiceImage, SubService, Type
+from services.models import Service, ServiceImage, SubService
 from users.models import Favorites
-
-
-class TypeGetWithoutSubCatSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения категорий услуг без подкатегорий."""
-
-    class Meta:
-        model = Type
-        fields = ("id", "title", "image")
-
-
-class TypeGetSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения категорий услуг."""
-
-    subcategories = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Type
-        fields = ("id", "title", "image", "subcategories")
-
-    def get_subcategories(self, obj):
-        if obj.subcategories.exists():
-            subcat = []
-            for subcategory in obj.subcategories.all():
-                subcat.append(TypeGetSerializer(subcategory).data)
-            return subcat
-        else:
-            return None
 
 
 class ServiceImageCreateSerializer(serializers.ModelSerializer):
@@ -124,7 +98,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
             "description",
             "experience",
             "place_of_provision",
-            "type",
+            "category",
             "status",
             "images",
             "salon_name",
@@ -166,7 +140,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
 class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания и изменения услуги."""
 
-    type_id = serializers.IntegerField(write_only=True)
+    category_id = serializers.IntegerField(write_only=True)
     price_list_entries = SubServiceSerializer(many=True, required=False)
 
     class Meta:
@@ -176,24 +150,26 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             "description",
             "experience",
             "place_of_provision",
-            "type_id",
-            "type",
+            "category_id",
+            "category",
             "salon_name",
             "address",
             "price_list_entries",
         )
-        read_only_fields = ("type",)
+        read_only_fields = ("category",)
 
     def create(self, validated_data):
         """Метод создания услуги."""
 
         with transaction.atomic():
-            type = get_object_or_404(Type, pk=validated_data.pop("type_id"))
+            category = get_object_or_404(
+                Category, pk=validated_data.pop("category_id")
+            )
             price_list_entries_data = validated_data.pop(
                 "price_list_entries", []
             )
             main_service = Service.objects.create(**validated_data)
-            self.__ad_type(main_service, type)
+            self.__ad_category(main_service, category)
             if price_list_entries_data:
                 self.__add_price_list_entries(
                     main_service, price_list_entries_data
@@ -203,15 +179,15 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         with transaction.atomic():
-            if "type_id" in validated_data:
-                type = get_object_or_404(
-                    Type, pk=validated_data.pop("type_id")
+            if "category_id" in validated_data:
+                category = get_object_or_404(
+                    Category, pk=validated_data.pop("category_id")
                 )
-                if type not in instance.type.all():
-                    types = instance.type.all()
-                    for t in types:
-                        instance.types.remove(t)
-                    self.__ad_type(instance, type)
+                if category not in instance.category.all():
+                    categories = instance.category.all()
+                    for t in categories:
+                        instance.categories.remove(t)
+                    self.__ad_category(instance, category)
 
             if "price_list_entries" in validated_data:
                 instance = self.__update_price_list_entries(
@@ -221,10 +197,10 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
             instance = super().update(instance, validated_data)
         return instance
 
-    def __ad_type(self, service: Service, type: Type) -> None:
-        service.type.add(type)
-        if type.parent:
-            self.__ad_type(service, type.parent)
+    def __ad_category(self, service: Service, category: Category) -> None:
+        service.category.add(category)
+        if category.parent:
+            self.__ad_category(service, category.parent)
 
     def __add_price_list_entries(
         self, instance: Service, price_list_entries_data: list[dict]

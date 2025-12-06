@@ -19,35 +19,9 @@ from api.v1.validators import validate_id
 from api.v1.views.base_views import (
     BaseModeratorViewSet,
     BaseServiceAdViewSet,
-    CategoryTypeViewSet,
 )
 from core.choices import AdvertisementStatus
-from services.models import Service, ServiceImage, Type
-
-
-@extend_schema(
-    tags=["Services"],
-    responses={status.HTTP_200_OK: schemes.TYPES_GET_OK_200},
-)
-@extend_schema_view(
-    list=extend_schema(
-        summary="Список категорий услуг.",
-        parameters=[OpenApiParameter("title", str)],
-    ),
-    retrieve=extend_schema(summary="Категория услуги."),
-)
-class TypeViewSet(CategoryTypeViewSet):
-    """Список категорий услуг."""
-
-    def get_queryset(self):
-        queryset = Type.objects.all()
-        return self.base_get_queryset(queryset)
-
-    def get_serializer_class(self):
-        params = self.request.query_params
-        if "title" in params:
-            return api_serializers.TypeGetWithoutSubCatSerializer
-        return api_serializers.TypeGetSerializer
+from services.models import Service, ServiceImage
 
 
 @extend_schema(tags=["Services"])
@@ -55,9 +29,9 @@ class TypeViewSet(CategoryTypeViewSet):
     list=extend_schema(
         summary=(
             "Список услуг. Для получения списка услуг по категориям необходимо"
-            " указать query параметр 'type_id'."
+            " указать query параметр 'category_id'."
         ),
-        parameters=[OpenApiParameter("type_id", int)],
+        parameters=[OpenApiParameter("category_id", int)],
         responses={
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_400_BAD_REQUEST: schemes.WRONG_PARAMETR_400,
@@ -121,10 +95,10 @@ class ServiceViewSet(BaseServiceAdViewSet):
         if self.action == "list":
             params = self.request.query_params
             queryset = queryset.filter(status=AdvertisementStatus.PUBLISHED)
-            if "type_id" in params:
-                type_id = params.get("type_id")
-                validate_id(type_id)
-                queryset = queryset.filter(type__id=type_id)
+            if "category_id" in params:
+                category_id = params.get("category_id")
+                validate_id(category_id)
+                queryset = queryset.filter(category__id=category_id)
         return queryset
 
     def get_serializer_class(self):

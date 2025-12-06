@@ -3,7 +3,7 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
-from ads.models import Ad, AdImage, Category
+from ads.models import Ad, AdImage
 from api.v1.serializers.comments_serializers import CommentReadSerializer
 from api.v1.serializers.users_serializers import (
     UserReadSerializer,
@@ -15,27 +15,9 @@ from api.v1.validators import (
     validate_file_size,
     validate_extention,
 )
+from categories.models import Category
 from core.choices import CommentStatus
 from users.models import Favorites
-
-
-class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор для получения списка категорий объявлений."""
-
-    subcategories = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Category
-        fields = ("id", "title", "image", "subcategories")
-
-    def get_subcategories(self, obj):
-        if obj.subcategories.exists():
-            subcat = []
-            for subcategory in obj.subcategories.all():
-                subcat.append(CategorySerializer(subcategory).data)
-            return subcat
-        else:
-            return None
 
 
 class AdImageCreateSerializer(serializers.ModelSerializer):
@@ -207,14 +189,6 @@ class AdRetrieveSerializer(AdListSerializer):
             status=CommentStatus.PUBLISHED
         ).order_by("-created_at")[:3]
         return [CommentReadSerializer(comment).data for comment in comments]
-
-
-class CategoryGetWithoutSubCatSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения категорий объявлений без подкатегорий."""
-
-    class Meta:
-        model = Category
-        fields = ("id", "title", "image")
 
 
 class AdForModerationSerializer(serializers.ModelSerializer):

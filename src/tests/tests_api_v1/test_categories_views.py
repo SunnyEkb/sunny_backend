@@ -30,7 +30,7 @@ class TestCategoriesView(TestAdsFixtures):
         response_auth_user = self.client_1.get(
             reverse(
                 "common_categories-detail",
-                kwargs={"pk": self.common_category_1.id},
+                kwargs={"pk": self.category_1.id},
             )
         )
         self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
@@ -38,7 +38,7 @@ class TestCategoriesView(TestAdsFixtures):
         response_anon_user = self.client_1.get(
             reverse(
                 "common_categories-detail",
-                kwargs={"pk": self.common_category_1.id},
+                kwargs={"pk": self.category_1.id},
             )
         )
         self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
@@ -46,9 +46,9 @@ class TestCategoriesView(TestAdsFixtures):
     def test_categories_filters(self):
         templates = {
             "title": [
-                self.common_category_1.title,
+                self.category_1.title,
                 Category.objects.filter(
-                    title__icontains=self.common_category_1.title
+                    title__icontains=self.category_1.title
                 ),
             ],
         }
