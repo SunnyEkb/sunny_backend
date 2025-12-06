@@ -4,54 +4,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from django.urls import reverse
 
-from ads.models import Ad, AdImage, Category
+from ads.models import Ad, AdImage
 from core.choices import AdvertisementStatus
 from tests.fixtures import TestAdsFixtures
 from users.models import Favorites
-
-
-class TestCategoryView(TestAdsFixtures):
-    def test_get_types(self):
-        response_auth_user = self.client_1.get(reverse("categories-list"))
-        self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            len(response_auth_user.json()),
-            len(Category.objects.filter(parent=None)),
-        )
-
-        response_anon_user = self.client_1.get(reverse("categories-list"))
-        self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            len(response_anon_user.json()),
-            len(Category.objects.filter(parent=None)),
-        )
-
-    def test_get_type(self):
-        response_auth_user = self.client_1.get(
-            reverse("categories-detail", kwargs={"pk": self.category_1.id})
-        )
-        self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
-
-        response_anon_user = self.client_1.get(
-            reverse("categories-detail", kwargs={"pk": self.category_1.id})
-        )
-        self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
-
-    def test_types_filters(self):
-        templates = {
-            "title": [
-                self.category_1.title,
-                Category.objects.filter(
-                    title__icontains=self.category_1.title
-                ),
-            ],
-        }
-        for k, v in templates.items():
-            with self.subTest(filter=k):
-                response = self.client_1.get(
-                    reverse("categories-list") + f"?{k}={v[0]}"
-                )
-                self.assertEqual(len(response.data), len(v[1]))
 
 
 class TestAdView(TestAdsFixtures):

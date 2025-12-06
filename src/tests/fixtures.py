@@ -116,10 +116,10 @@ class TestServiceFixtures(TestUserFixtures):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.type_1 = factories.TypeFactory()
-        cls.type_2 = factories.TypeFactory(parent=cls.type_1)
+        cls.category_1 = factories.CategoryFactory()
+        cls.category_2 = factories.CategoryFactory()
         cls.service_1 = factories.ServiceFactory(provider=cls.user_1)
-        cls.service_1.type.set([cls.type_1])
+        cls.service_1.category.set([cls.category_1])
         cls.service_2 = factories.ServiceFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.PUBLISHED.value,
@@ -132,14 +132,14 @@ class TestServiceFixtures(TestUserFixtures):
             status=AdvertisementStatus.HIDDEN.value,
         )
         cls.service_4 = factories.ServiceFactory(provider=cls.user_2)
-        cls.service_4.type.set([cls.type_2])
+        cls.service_4.category.set([cls.category_2])
         cls.service_5 = factories.ServiceFactory(provider=cls.user_2)
-        cls.service_5.type.set([cls.type_2])
+        cls.service_5.category.set([cls.category_2])
         cls.service_6 = factories.ServiceFactory(
             provider=cls.user_2,
             status=AdvertisementStatus.PUBLISHED.value,
         )
-        cls.service_6.type.set([cls.type_2])
+        cls.service_6.category.set([cls.category_2])
         cls.draft_service = factories.ServiceFactory(
             provider=cls.user_3, status=AdvertisementStatus.DRAFT.value
         )
@@ -159,7 +159,7 @@ class TestServiceFixtures(TestUserFixtures):
         cls.service_del_image = ServiceImage.objects.create(
             service=cls.service_del, image=cls.uploaded_2
         )
-        cls.service_del.type.set([cls.type_2])
+        cls.service_del.category.set([cls.category_2])
         cls.service_title = "Super_service"
         cls.new_service_title = "New_super_service"
         cls.service_data = {
@@ -167,7 +167,7 @@ class TestServiceFixtures(TestUserFixtures):
             "description": "Some_service",
             "experience": 12,
             "place_of_provision": "Выезд",
-            "type_id": cls.type_1.id,
+            "category_id": cls.category_1.id,
             "salon_name": "Some Name",
             "address": "Some Address",
         }
@@ -230,10 +230,8 @@ class TestAdsFixtures(TestUserFixtures):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.common_category_1 = factories.CommonCategoryFactory()
-        cls.common_category_2 = factories.CommonCategoryFactory()
         cls.category_1 = factories.CategoryFactory()
-        cls.category_2 = factories.CategoryFactory(parent=cls.category_1)
+        cls.category_2 = factories.CategoryFactory()
         cls.ad_1 = factories.AdFactory(provider=cls.user_1)
         cls.ad_1.category.set([cls.category_1])
         cls.ad_2 = factories.AdFactory(

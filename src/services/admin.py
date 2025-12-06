@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from services.models import Service, ServiceImage, Type
+from services.models import Service, ServiceImage
 
 
 @admin.register(Service)
@@ -14,8 +14,8 @@ class ServiceAdmin(admin.ModelAdmin):
         "updated_at",
         "status",
     ]
-    search_fields = ["title", "type__title"]
-    list_filter = ["type__title", "status"]
+    search_fields = ["title", "category__title"]
+    list_filter = ["category__title", "status"]
     ordering = ["-created_at"]
     readonly_fields = ["created_at"]
 
@@ -26,12 +26,3 @@ class ServiceImageAdmin(admin.ModelAdmin):
 
     list_display = ["service"]
     search_fields = ["service__title"]
-
-
-@admin.register(Type)
-class TypeAdmin(admin.ModelAdmin):
-    """Отображение модели типов услуг в админке."""
-
-    list_display = ["id", "title"]
-    search_fields = ["title"]
-    list_filter = ["parent"]

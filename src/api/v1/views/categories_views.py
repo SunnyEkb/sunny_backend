@@ -51,4 +51,4 @@ class CommonCategoriesViewSet(
         params = self.request.query_params
         if self.action == "list" and "title" in params:
             return api_serializers.CommonCategoryNoSubCatSerializer
-        return api_serializers.CommonCategorySerializer
+        return api_serializers.CategorySerializer
