@@ -7,6 +7,7 @@ from api.v1.views import (
     AdImageViewSet,
     AdModerationViewSet,
     AdViewSet,
+    AdvertisementView,
     ChangePassowrdView,
     ChatViewSet,
     CommonCategoriesViewSet,
@@ -103,5 +104,6 @@ urlpatterns = [
         r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
     ),
     path("search", SearchView.as_view()),
+    path("advertisement", AdvertisementView.as_view(), name="advertisements"),
     path("", include(api_v1_router.urls)),
 ]
