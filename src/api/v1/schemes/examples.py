@@ -472,6 +472,16 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
+ADVERTISEMENTS_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список объявлений",
+    value={
+        "count": 3,
+        "next": None,
+        "previous": None,
+        "results": [AD_LIST_EXAMPLE.value, SERVICE_LIST_EXAMPLE.value],
+    },
+)
+
 AD_CATEGORIES_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список категорий объявлений",
     value={

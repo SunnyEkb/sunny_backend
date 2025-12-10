@@ -25,6 +25,7 @@ from api.v1.views import (
     ServiceViewSet,
     SearchView,
     VerificationView,
+    UserAdvertisementView,
     UserViewSet,
 )
 
@@ -106,6 +107,11 @@ urlpatterns = [
     path("search", SearchView.as_view()),
     path(
         "advertisements/", AdvertisementView.as_view(), name="advertisements"
+    ),
+    path(
+        "my-advertisements/",
+        UserAdvertisementView.as_view(),
+        name="my-advertisements",
     ),
     path("", include(api_v1_router.urls)),
 ]

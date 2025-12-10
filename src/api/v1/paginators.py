@@ -9,4 +9,4 @@ class CustomPaginator(PageNumberPagination):
 
     page_size_query_param = "limit"
     page_size = 50
-    max_page_size = 100
+    max_page_size = 50
