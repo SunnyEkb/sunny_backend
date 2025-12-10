@@ -1,3 +1,5 @@
+from itertools import chain
+
 from drf_spectacular.utils import (
     OpenApiParameter,
     extend_schema,
@@ -8,6 +10,7 @@ from rest_framework.views import APIView, status
 from ads.models import Ad
 from api.v1 import serializers
 from api.v1 import schemes
+from api.v1.paginators import CustomPaginator
 from api.v1.validators import validate_id
 from core.choices import AdvertisementStatus
 from services.models import Service
@@ -35,8 +38,8 @@ class AdvertisementView(APIView):
 
         ads_query = Ad.objects.none()
         service_query = Ad.objects.none()
-        params = self.request.query_params
-        result = []
+        params = request.query_params
+        results: list = []
         if "category_id" in params:
             category_id = params.get("category_id")
             validate_id(category_id)
@@ -48,10 +51,17 @@ class AdvertisementView(APIView):
                 status=AdvertisementStatus.PUBLISHED,
                 category__id=category_id,
             )
-            ads = serializers.AdListSerializer(ads_query, many=True)
-            services = serializers.AdListSerializer(service_query, many=True)
-            result = services.data + ads.data
-        return Response(
-            data=result,
-            status=status.HTTP_200_OK,
-        )
+            result = list(chain(service_query, ads_query))
+            sorted_result = sorted(
+                result,
+                key=lambda item: item.created_at,
+                reverse=True,
+            )
+            for entry in sorted_result:
+                if isinstance(entry, Ad):
+                    serializer = serializers.AdListSerializer(entry)
+                if isinstance(entry, Service):
+                    serializer = serializers.ServiceListSerializer(entry)
+                results.append(serializer.data)
+
+        return Response(data=results, status=status.HTTP_200_OK)
