@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import extend_schema
 from rest_framework import (
-    exceptions,
+    #  exceptions,
     mixins,
     viewsets,
     permissions,
@@ -30,7 +30,7 @@ from users.models import Favorites
 
 
 class BaseServiceAdViewSet(
-    mixins.ListModelMixin,
+    #  mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
@@ -57,14 +57,14 @@ class BaseServiceAdViewSet(
     def perform_create(self, serializer):
         serializer.save(provider=self.request.user)
 
-    def list(self, request, *args, **kwargs):
-        try:
-            return super().list(request, *args, **kwargs)
-        except exceptions.ValidationError:
-            return response.Response(
-                data={"detail": APIResponses.INVALID_PARAMETR},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+    #    def list(self, request, *args, **kwargs):
+    #        try:
+    #            return super().list(request, *args, **kwargs)
+    #        except exceptions.ValidationError:
+    #            return response.Response(
+    #                data={"detail": APIResponses.INVALID_PARAMETR},
+    #                status=status.HTTP_400_BAD_REQUEST,
+    #            )
 
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
