@@ -277,11 +277,13 @@ class ServiceSearchSerializer(serializers.ModelSerializer):
     """Сериализатор для поиска услуг."""
 
     provider = UserSearchSerializer(read_only=True)
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
         fields = (
             "id",
+            "type",
             "title",
             "description",
             "address",
@@ -289,3 +291,6 @@ class ServiceSearchSerializer(serializers.ModelSerializer):
             "provider",
             "place_of_provision",
         )
+
+    def get_type(self, obj):
+        return self.Meta.model.__name__.lower()

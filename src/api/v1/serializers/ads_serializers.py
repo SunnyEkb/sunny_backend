@@ -222,11 +222,13 @@ class AdSearchSerializer(serializers.ModelSerializer):
     """Сериализатор для посика объявлений."""
 
     provider = UserSearchSerializer(read_only=True)
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Ad
         fields = [
             "id",
+            "type",
             "title",
             "address",
             "description",
@@ -234,3 +236,6 @@ class AdSearchSerializer(serializers.ModelSerializer):
             "provider",
             "condition",
         ]
+
+    def get_type(self, obj):
+        return self.Meta.model.__name__.lower()

@@ -292,6 +292,7 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Информация об услуге",
     value={
         "id": 1,
+        "type": "service",
         "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
@@ -436,6 +437,7 @@ AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Информация об объвлении",
     value={
         "id": 1,
+        "type": "ad",
         "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
