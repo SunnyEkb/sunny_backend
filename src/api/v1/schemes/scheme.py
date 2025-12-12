@@ -282,10 +282,16 @@ AD_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.AD_LIST_EXAMPLE],
 )
 
-ADVERTISEMENTS_LIST__OK_200: OpenApiResponse = OpenApiResponse(
+ADVERTISEMENTS_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     response=serializers.ServiceListSerializer,
     description="Получение списка объявлений",
-    examples=[examples.ADVERTISEMENTS_LIST_EXAMPLE],
+    examples=[examples.ADVERTISEMENTS_LIST_OK_EXAMPLE],
+)
+
+ADVERTISEMENTS_LIST_NOT_FOUND_404: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Не найдена категория",
+    examples=[examples.CATEGORY_NOT_FOUND_EXAMPLE],
 )
 
 AD_LIST_FOR_MODERATION_OK_200: OpenApiResponse = OpenApiResponse(
