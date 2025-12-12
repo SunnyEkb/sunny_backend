@@ -7,7 +7,7 @@ from api.v1.views import (
     AdImageViewSet,
     AdModerationViewSet,
     AdViewSet,
-    #    CategoryViewSet,
+    AdvertisementView,
     ChangePassowrdView,
     ChatViewSet,
     CommonCategoriesViewSet,
@@ -24,8 +24,8 @@ from api.v1.views import (
     ServiceModerationViewSet,
     ServiceViewSet,
     SearchView,
-    #    TypeViewSet,
     VerificationView,
+    UserAdvertisementView,
     UserViewSet,
 )
 
@@ -33,9 +33,6 @@ api_v1_router = DefaultRouter()
 api_v1_router.register(
     "categories", CommonCategoriesViewSet, basename="common_categories"
 )
-# api_v1_router.register(
-#    "ads/categories", CategoryViewSet, basename="categories"
-# )
 api_v1_router.register("ads", AdViewSet, basename="ads")
 api_v1_router.register("chats", ChatViewSet, basename="chats")
 api_v1_router.register(
@@ -54,7 +51,6 @@ api_v1_router.register(
     basename="comments",
 )
 api_v1_router.register("favorite", FavoritesViewSet, "favorite")
-# api_v1_router.register("services/categories", TypeViewSet, basename="types")
 api_v1_router.register("services", ServiceViewSet, basename="services")
 api_v1_router.register(
     "moderator/services",
@@ -109,5 +105,13 @@ urlpatterns = [
         r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
     ),
     path("search", SearchView.as_view()),
+    path(
+        "advertisements/", AdvertisementView.as_view(), name="advertisements"
+    ),
+    path(
+        "my-advertisements/",
+        UserAdvertisementView.as_view(),
+        name="my-advertisements",
+    ),
     path("", include(api_v1_router.urls)),
 ]
