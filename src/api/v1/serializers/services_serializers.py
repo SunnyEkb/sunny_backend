@@ -42,7 +42,7 @@ class ServiceImageRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ServiceImage
-        fields = ("id", "image")
+        fields = ("id", "image", "title_photo")
 
 
 class ServiceImageSerializer(serializers.Serializer):

@@ -65,7 +65,7 @@ class AdImageRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AdImage
-        fields = ("id", "image")
+        fields = ("id", "image", "title_photo")
 
 
 class AdListSerializer(serializers.ModelSerializer):
