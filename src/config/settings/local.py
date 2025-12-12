@@ -45,3 +45,5 @@ CHANNEL_LAYERS = {
 ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
     "django_elasticsearch_dsl.signals.RealTimeSignalProcessor"
 )
+
+INSTALLED_APPS.remove("django_elasticsearch_dsl")  # noqa

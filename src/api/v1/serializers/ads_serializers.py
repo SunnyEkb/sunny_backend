@@ -74,6 +74,7 @@ class AdListSerializer(serializers.ModelSerializer):
     provider = UserReadSerializer(read_only=True)
     images = AdImageRetrieveSerializer(many=True, read_only=True)
     is_favorited = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
     avg_rating = serializers.SerializerMethodField()
 
@@ -81,6 +82,7 @@ class AdListSerializer(serializers.ModelSerializer):
         model = Ad
         fields = (
             "id",
+            "type",
             "title",
             "description",
             "provider",
@@ -122,6 +124,9 @@ class AdListSerializer(serializers.ModelSerializer):
         if rating is None:
             return None
         return round(rating, 1)
+
+    def get_type(self, obj):
+        return self.Meta.model.__name__.lower()
 
 
 class AdCreateUpdateSerializer(serializers.ModelSerializer):
@@ -217,11 +222,13 @@ class AdSearchSerializer(serializers.ModelSerializer):
     """Сериализатор для посика объявлений."""
 
     provider = UserSearchSerializer(read_only=True)
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Ad
         fields = [
             "id",
+            "type",
             "title",
             "address",
             "description",
@@ -229,3 +236,6 @@ class AdSearchSerializer(serializers.ModelSerializer):
             "provider",
             "condition",
         ]
+
+    def get_type(self, obj):
+        return self.Meta.model.__name__.lower()

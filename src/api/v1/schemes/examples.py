@@ -269,12 +269,13 @@ SERVICE_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список услуг",
     value={
         "id": 1,
+        "type": "service",
         "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS,
-        "type": [1, 2, 3],
+        "category": [1, 2, 3],
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
         "address": "Lenina st, 8/13",
@@ -291,12 +292,13 @@ SERVICE_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Информация об услуге",
     value={
         "id": 1,
+        "type": "service",
         "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS,
-        "type": [1, 2, 3],
+        "category": [1, 2, 3],
         "status": AdvertisementStatus.DRAFT,
         "images": [{"id": 1, "image": "string"}],
         "address": "Lenina st, 8/13",
@@ -316,7 +318,7 @@ SERVICE_CREATE_UPDATE_EXAMPLE: OpenApiExample = OpenApiExample(
         "description": "string",
         "experience": 50,
         "place_of_provision": ServicePlace.OPTIONS,
-        "type_id": 2,
+        "category_id": 2,
         "address": "Lenina st, 8/13",
         "salon_name": "Salon",
         "price_list_entries": PRICE_LIST_ENTRIES_CREATE_UPDATE_EXAMPLE.value,
@@ -435,6 +437,7 @@ AD_RETRIEVE_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Информация об объвлении",
     value={
         "id": 1,
+        "type": "ad",
         "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
@@ -456,6 +459,7 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список объявлений",
     value={
         "id": 1,
+        "type": "ad",
         "provider": USER_INFO_EXAMPLE.value,
         "title": "string",
         "description": "string",
@@ -469,6 +473,16 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "avg_rating": 4.1,
         "comments_quantity": 15,
         "created_at": timezone.now(),
+    },
+)
+
+ADVERTISEMENTS_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Список объявлений",
+    value={
+        "count": 3,
+        "next": None,
+        "previous": None,
+        "results": [AD_LIST_EXAMPLE.value, SERVICE_LIST_EXAMPLE.value],
     },
 )
 

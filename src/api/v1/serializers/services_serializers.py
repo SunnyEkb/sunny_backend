@@ -85,6 +85,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
     provider = UserReadSerializer(read_only=True)
     images = ServiceImageRetrieveSerializer(many=True, read_only=True)
     avg_rating = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     price_list_entries = SubServiceSerializer(many=True, read_only=True)
@@ -93,6 +94,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
         model = Service
         fields = (
             "id",
+            "type",
             "provider",
             "title",
             "description",
@@ -135,6 +137,9 @@ class ServiceListSerializer(serializers.ModelSerializer):
                     object_id=obj.id,
                 ).exists()
         return False
+
+    def get_type(self, obj):
+        return self.Meta.model.__name__.lower()
 
 
 class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
@@ -272,11 +277,13 @@ class ServiceSearchSerializer(serializers.ModelSerializer):
     """Сериализатор для поиска услуг."""
 
     provider = UserSearchSerializer(read_only=True)
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
         fields = (
             "id",
+            "type",
             "title",
             "description",
             "address",
@@ -284,3 +291,6 @@ class ServiceSearchSerializer(serializers.ModelSerializer):
             "provider",
             "place_of_provision",
         )
+
+    def get_type(self, obj):
+        return self.Meta.model.__name__.lower()

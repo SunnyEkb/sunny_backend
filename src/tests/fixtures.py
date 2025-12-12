@@ -340,3 +340,41 @@ class TestNotificationsFixtures(TestUserFixtures):
         super().setUpClass()
         cls.notif_1 = factories.NotificationFactory(receiver=cls.user_1)
         cls.notif_2 = factories.NotificationFactory(receiver=cls.user_1)
+
+
+class TestAdvertisementsFixtures(TestUserFixtures):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.category_1 = factories.CategoryFactory()
+        cls.category_2 = factories.CategoryFactory()
+
+        cls.service_1 = factories.ServiceFactory(
+            provider=cls.user_2,
+            status=AdvertisementStatus.PUBLISHED.value,
+        )
+        cls.service_1.category.set([cls.category_1])
+        cls.service_2 = factories.ServiceFactory(
+            provider=cls.user_2,
+            status=AdvertisementStatus.HIDDEN.value,
+        )
+        cls.service_2.category.set([cls.category_2])
+        cls.service_3 = factories.ServiceFactory(
+            provider=cls.user_3, status=AdvertisementStatus.DRAFT.value
+        )
+        cls.service_3.category.set([cls.category_1])
+
+        cls.ad_1 = factories.ServiceFactory(
+            provider=cls.user_2,
+            status=AdvertisementStatus.PUBLISHED.value,
+        )
+        cls.ad_1.category.set([cls.category_1])
+        cls.ad_2 = factories.ServiceFactory(
+            provider=cls.user_2,
+            status=AdvertisementStatus.HIDDEN.value,
+        )
+        cls.ad_2.category.set([cls.category_2])
+        cls.ad_3 = factories.ServiceFactory(
+            provider=cls.user_3, status=AdvertisementStatus.DRAFT.value
+        )
+        cls.ad_3.category.set([cls.category_1])

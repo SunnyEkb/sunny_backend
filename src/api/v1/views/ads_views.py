@@ -9,7 +9,7 @@ from drf_spectacular.utils import (
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 
-from ads.models import Ad, AdImage, Category
+from ads.models import Ad, AdImage
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from api.v1.filters import AdFilter
@@ -22,34 +22,8 @@ from api.v1.validators import validate_id
 from api.v1.views.base_views import (
     BaseModeratorViewSet,
     BaseServiceAdViewSet,
-    CategoryTypeViewSet,
 )
 from core.choices import AdvertisementStatus
-
-
-@extend_schema(
-    tags=["Ads"],
-    responses={status.HTTP_200_OK: schemes.CATEGORIES_GET_OK_200},
-)
-@extend_schema_view(
-    list=extend_schema(
-        summary="Список категорий объявлений.",
-        parameters=[OpenApiParameter("title", str)],
-    ),
-    retrieve=extend_schema(summary="Категория объявления."),
-)
-class CategoryViewSet(CategoryTypeViewSet):
-    """Вьюсет для категорий объявлений."""
-
-    def get_serializer_class(self):
-        params = self.request.query_params
-        if self.action == "list" and "title" in params:
-            return api_serializers.CategoryGetWithoutSubCatSerializer
-        return api_serializers.CategorySerializer
-
-    def get_queryset(self):
-        queryset = Category.objects.all()
-        return self.base_get_queryset(queryset)
 
 
 @extend_schema(tags=["Ads"])
