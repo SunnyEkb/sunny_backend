@@ -63,7 +63,7 @@ class AdvertisementView(APIView):
         return self.get_paginated_response(advertisements)
 
     @property
-    def paginator(self) -> CustomPaginator | None:
+    def paginator(self):
         """Возвращает класс пагинатора."""
 
         if not hasattr(self, "_paginator"):

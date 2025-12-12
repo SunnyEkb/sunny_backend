@@ -12,7 +12,9 @@ from tests.fixtures import TestAdvertisementsFixtures
 class TestAdvertisementsView(TestAdvertisementsFixtures):
     def test_auth_user_get_advertisements_list(self):
         response = self.client_1.get(
-            reverse("advertisements") + f"?category_id={self.category_1.id}"
+            reverse(
+                "advertisements", kwargs={"category_id": self.category_1.id}
+            )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
@@ -35,7 +37,9 @@ class TestAdvertisementsView(TestAdvertisementsFixtures):
 
     def test_anon_user_get_advertisements_list(self):
         response = self.client_1.get(
-            reverse("advertisements") + f"?category_id={self.category_1.id}"
+            reverse(
+                "advertisements", kwargs={"category_id": self.category_1.id}
+            )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
@@ -57,16 +61,15 @@ class TestAdvertisementsView(TestAdvertisementsFixtures):
         )
 
     def test_get_advertisements_without_category_id_parametr(self):
-        response = self.client_1.get(reverse("advertisements"))
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(response.json(), list())
+        response = self.client_1.get(
+            reverse("advertisements", kwargs={"category_id": 1_000_000})
+        )
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
 
 class TestUserAdvertisementsView(TestAdvertisementsFixtures):
     def test_auth_user_get_own_advertisements(self):
-        response = self.client_1.get(
-            reverse("my-advertisements") + f"?category_id={self.category_1.id}"
-        )
+        response = self.client_1.get(reverse("my-advertisements"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response.json()["results"]),
