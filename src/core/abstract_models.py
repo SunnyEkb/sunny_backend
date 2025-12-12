@@ -43,6 +43,11 @@ class AbstractImage(models.Model):
         validators=[validate_image],
     )
 
+    title_photo = models.BooleanField(
+        "Заглавная фотография",
+        default=False,
+    )
+
     class Meta:
         abstract = True
 
