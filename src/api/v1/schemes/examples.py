@@ -476,7 +476,7 @@ AD_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
     },
 )
 
-ADVERTISEMENTS_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
+ADVERTISEMENTS_LIST_OK_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Список объявлений",
     value={
         "count": 3,
@@ -484,6 +484,11 @@ ADVERTISEMENTS_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
         "previous": None,
         "results": [AD_LIST_EXAMPLE.value, SERVICE_LIST_EXAMPLE.value],
     },
+)
+
+CATEGORY_NOT_FOUND_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Не найдена категория",
+    value={"detail": "No Category matches the given query."},
 )
 
 AD_CATEGORIES_EXAMPLE: OpenApiExample = OpenApiExample(
