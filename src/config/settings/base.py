@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "oauth2_provider",
     "social_django",
-    "drf_social_oauth2",
+    # "drf_social_oauth2",
     "corsheaders",
     "users",
     "notifications",
@@ -144,7 +144,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    "drf_social_oauth2.backends.DjangoOAuth2",
+    #  "drf_social_oauth2.backends.DjangoOAuth2",
     "django.contrib.auth.backends.ModelBackend",
 )
 
@@ -153,7 +153,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "api.v1.auth.CustomAuthentication",
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
-        "drf_social_oauth2.authentication.SocialAuthentication",
+        #  "drf_social_oauth2.authentication.SocialAuthentication",
     ),
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.UserRateThrottle",

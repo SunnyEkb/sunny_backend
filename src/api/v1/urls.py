@@ -101,9 +101,9 @@ urlpatterns = [
     path(
         "docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"
     ),
-    re_path(
-        r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
-    ),
+    # re_path(
+    #    r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
+    # ),
     path("search", SearchView.as_view()),
     path(
         "advertisements/<int:category_id>/",
