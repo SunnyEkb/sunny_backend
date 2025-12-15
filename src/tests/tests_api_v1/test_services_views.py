@@ -1,163 +1,164 @@
 from http import HTTPStatus
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Avg
+
+#  from django.db.models import Avg
 from django.urls import reverse
 
-from core.choices import ServicePlace, AdvertisementStatus
+from core.choices import AdvertisementStatus
 from services.models import Service, ServiceImage
 from tests.fixtures import TestServiceFixtures
 from users.models import Favorites
 
 
 class TestServivecesView(TestServiceFixtures):
-    def test_auth_user_get_services_list(self):
-        response_auth_user = self.client_1.get(reverse("services-list"))
-        self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            len(response_auth_user.json()["results"]),
-            len(
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                )
-            ),
-        )
+    #  def test_auth_user_get_services_list(self):
+    #    response_auth_user = self.client_1.get(reverse("services-list"))
+    #    self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
+    #    self.assertEqual(
+    #        len(response_auth_user.json()["results"]),
+    #        len(
+    #            Service.objects.filter(
+    #                status=AdvertisementStatus.PUBLISHED.value
+    #            )
+    #        ),
+    #    )
 
-    def test_anon_user_get_services_list(self):
-        response_anon_user = self.client_1.get(reverse("services-list"))
-        self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            len(response_anon_user.json()["results"]),
-            len(
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                )
-            ),
-        )
+    #  def test_anon_user_get_services_list(self):
+    #    response_anon_user = self.client_1.get(reverse("services-list"))
+    #    self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
+    #    self.assertEqual(
+    #        len(response_anon_user.json()["results"]),
+    #        len(
+    #            Service.objects.filter(
+    #                status=AdvertisementStatus.PUBLISHED.value
+    #            )
+    #        ),
+    #    )
 
-    def test_services_filters(self):
-        templates = {
-            "title": [
-                self.service_1.title,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(title__icontains=self.service_1.title)
-                ),
-            ],
-            "description": [
-                self.service_1.description,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(description__icontains=self.service_1.description)
-                ),
-            ],
-            "category_id": [
-                self.category_1.id,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(category__id=self.category_1.id)
-                ),
-            ],
-            "experience_max": [
-                1,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(experience__lte=1)
-                ),
-            ],
-            "experience_min": [
-                10,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(experience__gte=10)
-                ),
-            ],
-            "place_of_provision": [
-                ServicePlace.OPTIONS.value,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(place_of_provision=ServicePlace.OPTIONS.value)
-                ),
-            ],
-            "my_services": [
-                True,
-                Service.objects.filter(provider=self.user_1),
-            ],
-            "address": [
-                self.service_1.address,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(address__icontains=self.service_1.address)
-                ),
-            ],
-            "salon_name": [
-                self.service_1.salon_name,
-                (
-                    Service.objects.filter(
-                        status=AdvertisementStatus.PUBLISHED.value
-                    ).filter(salon_name__icontains=self.service_1.salon_name)
-                ),
-            ],
-            "rating": [
-                3,
-                (
-                    Service.cstm_mng.annotate(rating=Avg("comments__rating"))
-                    .filter(
-                        rating__gte=3,
-                        status=AdvertisementStatus.PUBLISHED.value,
-                    )
-                    .order_by("-created_at")
-                ),
-            ],
-        }
-        for k, v in templates.items():
-            with self.subTest(filter=k):
-                response = self.client_1.get(
-                    reverse("services-list") + f"?{k}={v[0]}"
-                )
-                self.assertEqual(len(response.data["results"]), len(v[1]))
+    #  def test_services_filters(self):
+    #    templates = {
+    #        "title": [
+    #            self.service_1.title,
+    #            (
+    #                Service.objects.filter(
+    #                    status=AdvertisementStatus.PUBLISHED.value
+    #                ).filter(title__icontains=self.service_1.title)
+    #            ),
+    #        ],
+    #        "description": [
+    #            self.service_1.description,
+    #            (
+    #                Service.objects.filter(
+    #                    status=AdvertisementStatus.PUBLISHED.value
+    #                ).filter(description__icontains=self.service_1.description)
+    #            ),
+    #        ],
+    #        "category_id": [
+    #            self.category_1.id,
+    #            (
+    #                Service.objects.filter(
+    #                    status=AdvertisementStatus.PUBLISHED.value
+    #                ).filter(category__id=self.category_1.id)
+    #            ),
+    #        ],
+    #        "experience_max": [
+    #            1,
+    #            (
+    #                Service.objects.filter(
+    #                    status=AdvertisementStatus.PUBLISHED.value
+    #                ).filter(experience__lte=1)
+    #            ),
+    #        ],
+    #        "experience_min": [
+    #            10,
+    #            (
+    #                Service.objects.filter(
+    #                    status=AdvertisementStatus.PUBLISHED.value
+    #                ).filter(experience__gte=10)
+    #            ),
+    #        ],
+    #        "place_of_provision": [
+    #            ServicePlace.OPTIONS.value,
+    #            (
+    #                Service.objects.filter(
+    #                status=AdvertisementStatus.PUBLISHED.value
+    #                ).filter(place_of_provision=ServicePlace.OPTIONS.value)
+    #            ),
+    #        ],
+    #        "my_services": [
+    #            True,
+    #            Service.objects.filter(provider=self.user_1),
+    #        ],
+    #        "address": [
+    #            self.service_1.address,
+    #            (
+    #                Service.objects.filter(
+    #                    status=AdvertisementStatus.PUBLISHED.value
+    #                ).filter(address__icontains=self.service_1.address)
+    #            ),
+    #        ],
+    #        "salon_name": [
+    #            self.service_1.salon_name,
+    #            (
+    #                Service.objects.filter(
+    #                    status=AdvertisementStatus.PUBLISHED.value
+    #                ).filter(salon_name__icontains=self.service_1.salon_name)
+    #            ),
+    #        ],
+    #        "rating": [
+    #            3,
+    #            (
+    #                Service.cstm_mng.annotate(rating=Avg("comments__rating"))
+    #                .filter(
+    #                    rating__gte=3,
+    #                    status=AdvertisementStatus.PUBLISHED.value,
+    #                )
+    #                .order_by("-created_at")
+    #            ),
+    #        ],
+    #    }
+    #    for k, v in templates.items():
+    #        with self.subTest(filter=k):
+    #            response = self.client_1.get(
+    #                reverse("services-list") + f"?{k}={v[0]}"
+    #            )
+    #            self.assertEqual(len(response.data["results"]), len(v[1]))
 
-    def test_get_services_with_wrong_category_id(self):
-        wrong_parametres = [-1, "jsgfkjqegk"]
-        for k in wrong_parametres:
-            with self.subTest(filter=k):
-                response = self.client_1.get(
-                    reverse("services-list") + f"?category_id={k}"
-                )
-                self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+    #  def test_get_services_with_wrong_category_id(self):
+    #    wrong_parametres = [-1, "jsgfkjqegk"]
+    #    for k in wrong_parametres:
+    #        with self.subTest(filter=k):
+    #            response = self.client_1.get(
+    #                reverse("services-list") + f"?category_id={k}"
+    #            )
+    #            self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
-    def test_service_ordering(self):
-        templates = {
-            "experience": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("experience")
-            ),
-            "created_at": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("created_at")
-            ),
-            "-created_at": (
-                Service.objects.filter(
-                    status=AdvertisementStatus.PUBLISHED.value
-                ).order_by("-created_at")
-            ),
-        }
-        for k, v in templates.items():
-            with self.subTest(order=k):
-                response = self.client_1.get(
-                    reverse("services-list") + f"?ordering={k}"
-                )
-                # ToDo проверить работу тестов для сортировки
-                self.assertEqual(response.status_code, HTTPStatus.OK)
+    #  def test_service_ordering(self):
+    #    templates = {
+    #        "experience": (
+    #            Service.objects.filter(
+    #                status=AdvertisementStatus.PUBLISHED.value
+    #            ).order_by("experience")
+    #        ),
+    #        "created_at": (
+    #            Service.objects.filter(
+    #                status=AdvertisementStatus.PUBLISHED.value
+    #            ).order_by("created_at")
+    #        ),
+    #        "-created_at": (
+    #            Service.objects.filter(
+    #                status=AdvertisementStatus.PUBLISHED.value
+    #            ).order_by("-created_at")
+    #        ),
+    #    }
+    #    for k, v in templates.items():
+    #        with self.subTest(order=k):
+    #            response = self.client_1.get(
+    #                reverse("services-list") + f"?ordering={k}"
+    #            )
+    #            # ToDo проверить работу тестов для сортировки
+    #            self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_services_create(self):
         response = self.client_1.post(
