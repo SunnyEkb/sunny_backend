@@ -83,7 +83,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
     """Сериализатор для получения списка услуг."""
 
     provider = UserReadSerializer(read_only=True)
-    title_image = serializers.SerializerMethodField()
+    title_photo = serializers.SerializerMethodField()
     avg_rating = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
@@ -110,7 +110,7 @@ class ServiceListSerializer(serializers.ModelSerializer):
             "updated_at",
             "is_favorited",
             "price_list_entries",
-            "title_image",
+            "title_photo",
         )
 
     def get_comments_quantity(self, obj) -> int:
@@ -141,9 +141,9 @@ class ServiceListSerializer(serializers.ModelSerializer):
     def get_type(self, obj):
         return self.Meta.model.__name__.lower()
 
-    def get_title_image(self, obj):
-        title_image = obj.images.filter(title_photo=True).first()
-        return ServiceImageRetrieveSerializer(title_image).data
+    def get_title_photo(self, obj):
+        title_photo = obj.images.filter(title_photo=True).first()
+        return ServiceImageRetrieveSerializer(title_photo).data
 
 
 class ServiceCreateUpdateSerializer(serializers.ModelSerializer):

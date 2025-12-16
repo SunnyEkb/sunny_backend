@@ -72,7 +72,7 @@ class AdListSerializer(serializers.ModelSerializer):
     """Сериализатор для просмотра объявления."""
 
     provider = UserReadSerializer(read_only=True)
-    images = AdImageRetrieveSerializer(many=True, read_only=True)
+    title_photo = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
@@ -89,13 +89,13 @@ class AdListSerializer(serializers.ModelSerializer):
             "price",
             "status",
             "address",
-            "images",
             "condition",
             "category",
             "is_favorited",
             "avg_rating",
             "comments_quantity",
             "created_at",
+            "title_photo",
         )
 
     def get_is_favorited(self, obj):
@@ -127,6 +127,10 @@ class AdListSerializer(serializers.ModelSerializer):
 
     def get_type(self, obj):
         return self.Meta.model.__name__.lower()
+
+    def get_title_photo(self, obj):
+        title_photo = obj.images.filter(title_photo=True).first()
+        return AdImageRetrieveSerializer(title_photo).data
 
 
 class AdCreateUpdateSerializer(serializers.ModelSerializer):
@@ -183,9 +187,10 @@ class AdRetrieveSerializer(AdListSerializer):
     """Сериализатор для получения данных о конкретном объявлении."""
 
     comments = serializers.SerializerMethodField()
+    images = AdImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta(AdListSerializer.Meta):
-        fields = AdListSerializer.Meta.fields + ("comments",)  # type: ignore  # noqa
+        fields = AdListSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
 
     def get_comments(self, obj):
         """Вывод трех последних комментариев к объявлению."""
