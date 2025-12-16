@@ -106,7 +106,7 @@ urlpatterns = [
     # ),
     path("search", SearchView.as_view()),
     path(
-        "advertisements/<int:category_id>/",
+        "advertisements/",
         AdvertisementView.as_view(),
         name="advertisements",
     ),

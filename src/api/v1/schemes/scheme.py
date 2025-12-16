@@ -288,7 +288,7 @@ ADVERTISEMENTS_LIST_OK_200: OpenApiResponse = OpenApiResponse(
     examples=[examples.ADVERTISEMENTS_LIST_OK_EXAMPLE],
 )
 
-ADVERTISEMENTS_LIST_NOT_FOUND_404: OpenApiResponse = OpenApiResponse(
+CATEGORY_NOT_FOUND_404: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Не найдена категория",
     examples=[examples.CATEGORY_NOT_FOUND_EXAMPLE],

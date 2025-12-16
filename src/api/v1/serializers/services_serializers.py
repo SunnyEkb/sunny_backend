@@ -70,9 +70,7 @@ class ServiceImagesSerializer(serializers.Serializer):
 
 
 class SubServiceSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для подуслуг.
-    """
+    """Сериализатор для подуслуг."""
 
     class Meta:
         model = SubService
