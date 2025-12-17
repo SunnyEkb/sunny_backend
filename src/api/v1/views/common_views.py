@@ -21,7 +21,18 @@ from services.models import Service
 @extend_schema(
     tags=["Advertisements"],
     request=None,
-    summary="Список объявлений по категориям.",
+    summary="Список опубликованных объявлений.",
+    description=(
+        """
+        Список опубликованных объявлений без разделения на категории,
+        отсортированный по дате создания (сначала новые), с пагинацией.
+
+        Query параметр "category_id" позволяет получить список объявлений,
+        относящихся к конкретной категории.
+
+        Query параметр limit - кол-во объявлений на странице (по умолчанию 50).
+        """
+    ),
     responses={
         status.HTTP_200_OK: schemes.ADVERTISEMENTS_LIST_OK_200,
         status.HTTP_400_BAD_REQUEST: schemes.WRONG_PARAMETR_400,
@@ -33,7 +44,10 @@ from services.models import Service
             int,
             description="Идентификатор категории",
         ),
-        OpenApiParameter("page", int, description="Номер страницы."),
+        OpenApiParameter("page", int, description="Номер страницы"),
+        OpenApiParameter(
+            "limit", int, description="Количество объявлений на странице"
+        ),
     ],
 )
 class AdvertisementView(APIView):
@@ -109,11 +123,24 @@ class AdvertisementView(APIView):
     tags=["Advertisements"],
     request=None,
     summary="Список объявлений объявлений пользователя",
+    description=(
+        """
+        Список объявлений, созданных текущим пользователем,
+        не зависимо от статуса объявления,
+        отсортированный по дате создания (сначала новые), с пагинацией.
+
+        Query параметр limit - кол-во объявлений на странице (по умолчанию 50).
+        """
+    ),
     responses={
         status.HTTP_200_OK: schemes.ADVERTISEMENTS_LIST_OK_200,
+        status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
     parameters=[
-        OpenApiParameter("page", int, description="Номер страницы."),
+        OpenApiParameter("page", int, description="Номер страницы"),
+        OpenApiParameter(
+            "limit", int, description="Количество объявлений на странице"
+        ),
     ],
 )
 class UserAdvertisementView(APIView):
