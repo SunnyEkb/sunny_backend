@@ -12,6 +12,7 @@ from ads.models import Ad
 from api.v1 import serializers
 from api.v1 import schemes
 from api.v1.paginators import CustomPaginator
+from api.v1.validators import validate_id
 from core.choices import AdvertisementStatus
 from categories.models import Category
 from services.models import Service
@@ -20,13 +21,33 @@ from services.models import Service
 @extend_schema(
     tags=["Advertisements"],
     request=None,
-    summary="Список объявлений по категориям.",
+    summary="Список опубликованных объявлений.",
+    description=(
+        """
+        Список опубликованных объявлений без разделения на категории,
+        отсортированный по дате создания (сначала новые), с пагинацией.
+
+        Query параметр "category_id" позволяет получить список объявлений,
+        относящихся к конкретной категории.
+
+        Query параметр limit - кол-во объявлений на странице (по умолчанию 50).
+        """
+    ),
     responses={
         status.HTTP_200_OK: schemes.ADVERTISEMENTS_LIST_OK_200,
-        status.HTTP_404_NOT_FOUND: schemes.ADVERTISEMENTS_LIST_NOT_FOUND_404,
+        status.HTTP_400_BAD_REQUEST: schemes.WRONG_PARAMETR_400,
+        status.HTTP_404_NOT_FOUND: schemes.CATEGORY_NOT_FOUND_404,
     },
     parameters=[
-        OpenApiParameter("page", int, description="Номер страницы."),
+        OpenApiParameter(
+            "category_id",
+            int,
+            description="Идентификатор категории",
+        ),
+        OpenApiParameter("page", int, description="Номер страницы"),
+        OpenApiParameter(
+            "limit", int, description="Количество объявлений на странице"
+        ),
     ],
 )
 class AdvertisementView(APIView):
@@ -34,18 +55,29 @@ class AdvertisementView(APIView):
 
     pagination_class = CustomPaginator
 
-    def get(self, request, category_id: int):
+    def get(self, request):
         """Получение списка объявлений."""
 
-        category = get_object_or_404(Category, pk=category_id)
-        ads_query = Ad.cstm_mng.filter(
-            status=AdvertisementStatus.PUBLISHED,
-            category=category,
-        )
-        service_query = Service.cstm_mng.filter(
-            status=AdvertisementStatus.PUBLISHED,
-            category=category,
-        )
+        params = request.query_params
+        if "category_id" in params:
+            category_id = params.get("category_id")
+            validate_id(category_id)
+            category = get_object_or_404(Category, pk=category_id)
+            ads_query = Ad.cstm_mng.filter(
+                status=AdvertisementStatus.PUBLISHED,
+                category=category,
+            )
+            service_query = Service.cstm_mng.filter(
+                status=AdvertisementStatus.PUBLISHED,
+                category=category,
+            )
+        else:
+            ads_query = Ad.cstm_mng.filter(
+                status=AdvertisementStatus.PUBLISHED,
+            )
+            service_query = Service.cstm_mng.filter(
+                status=AdvertisementStatus.PUBLISHED,
+            )
         queryset = list(chain(service_query, ads_query))
         paginated_queryset = self.paginate_queryset(queryset, request)
         sorted_result = sorted(
@@ -91,11 +123,24 @@ class AdvertisementView(APIView):
     tags=["Advertisements"],
     request=None,
     summary="Список объявлений объявлений пользователя",
+    description=(
+        """
+        Список объявлений, созданных текущим пользователем,
+        не зависимо от статуса объявления,
+        отсортированный по дате создания (сначала новые), с пагинацией.
+
+        Query параметр limit - кол-во объявлений на странице (по умолчанию 50).
+        """
+    ),
     responses={
         status.HTTP_200_OK: schemes.ADVERTISEMENTS_LIST_OK_200,
+        status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
     },
     parameters=[
-        OpenApiParameter("page", int, description="Номер страницы."),
+        OpenApiParameter("page", int, description="Номер страницы"),
+        OpenApiParameter(
+            "limit", int, description="Количество объявлений на странице"
+        ),
     ],
 )
 class UserAdvertisementView(APIView):
