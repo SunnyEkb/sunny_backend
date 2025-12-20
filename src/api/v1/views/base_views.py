@@ -228,19 +228,31 @@ class BaseServiceAdViewSet(
             ):
                 for image in img_serializer.validated_data["images"]:
                     photo_serializer = (
-                        api_serializers.ServiceImageCreateSerializer(  # noqa
+                        api_serializers.ServiceImageCreateSerializer(
                             data=image
                         )
                     )
                     if photo_serializer.is_valid(raise_exception=True):
-                        photo_serializer.save(service=object)
+                        if images.filter(
+                            title_photo=True
+                        ).exists():  # noqa Refactor this
+                            photo_serializer.save(service=object)
+                        else:
+                            photo_serializer.save(
+                                service=object, title_photo=True
+                            )  # noqa
             else:
                 for image in img_serializer.validated_data["images"]:
                     photo_serializer = api_serializers.AdImageCreateSerializer(
                         data=image
                     )
                     if photo_serializer.is_valid(raise_exception=True):
-                        photo_serializer.save(ad=object)
+                        if images.filter(
+                            title_photo=True
+                        ).exists():  # noqa Refactor this
+                            photo_serializer.save(ad=object)
+                        else:
+                            photo_serializer.save(ad=object, title_photo=True)
             object.set_draft()
             obj_serializer = self.get_serializer(object)
             return response.Response(obj_serializer.data)
