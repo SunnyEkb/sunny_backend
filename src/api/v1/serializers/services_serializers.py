@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Avg
@@ -146,9 +148,11 @@ class ServiceListSerializer(ServiceGetSerializer):
     class Meta(ServiceGetSerializer.Meta):
         fields = ServiceGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa
 
-    def get_title_photo(self, obj):
+    def get_title_photo(self, obj) -> Any | None:
         title_photo = obj.images.filter(title_photo=True).first()
-        return ServiceImageRetrieveSerializer(title_photo).data
+        if title_photo:
+            return ServiceImageRetrieveSerializer(title_photo).data
+        return None
 
 
 class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
