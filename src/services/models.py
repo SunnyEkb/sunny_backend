@@ -58,10 +58,6 @@ class ServiceImage(AbstractImage):
         verbose_name="Услуга",
         related_name="images",
     )
-    main_photo = models.BooleanField(
-        "Основное фото",
-        default=False,
-    )
 
     class Meta:
         verbose_name = "Фото к услуге"
