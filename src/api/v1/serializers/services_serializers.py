@@ -77,11 +77,10 @@ class SubServiceSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "price"]
 
 
-class ServiceListSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения списка услуг."""
+class ServiceGetSerializer(serializers.ModelSerializer):
+    """Базовый сериализатор для получения списка услуг."""
 
     provider = UserReadSerializer(read_only=True)
-    title_photo = serializers.SerializerMethodField()
     avg_rating = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
@@ -108,7 +107,6 @@ class ServiceListSerializer(serializers.ModelSerializer):
             "updated_at",
             "is_favorited",
             "price_list_entries",
-            "title_photo",
         )
 
     def get_comments_quantity(self, obj) -> int:
@@ -138,6 +136,15 @@ class ServiceListSerializer(serializers.ModelSerializer):
 
     def get_type(self, obj):
         return self.Meta.model.__name__.lower()
+
+
+class ServiceListSerializer(ServiceGetSerializer):
+    """Сериализатор для получения списка услуг."""
+
+    title_photo = serializers.SerializerMethodField()
+
+    class Meta(ServiceGetSerializer.Meta):
+        fields = ServiceGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa
 
     def get_title_photo(self, obj):
         title_photo = obj.images.filter(title_photo=True).first()
@@ -234,14 +241,14 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class ServiceRetrieveSerializer(ServiceListSerializer):
+class ServiceRetrieveSerializer(ServiceGetSerializer):
     """Сериализатор для получения данных о конкретной услуге."""
 
     comments = serializers.SerializerMethodField()
     images = ServiceImageRetrieveSerializer(many=True, read_only=True)
 
-    class Meta(ServiceListSerializer.Meta):
-        fields = ServiceListSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
+    class Meta(ServiceGetSerializer.Meta):
+        fields = ServiceGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
 
     def get_comments(self, obj):
         """Вывод трех последних комментариев к услуге."""
