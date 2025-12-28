@@ -122,7 +122,7 @@ class AdvertisementView(APIView):
 @extend_schema(
     tags=["Advertisements"],
     request=None,
-    summary="Список объявлений объявлений пользователя",
+    summary="Список объявлений пользователя",
     description=(
         """
         Список объявлений, созданных текущим пользователем,

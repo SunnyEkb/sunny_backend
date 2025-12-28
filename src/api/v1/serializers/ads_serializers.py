@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
@@ -68,11 +70,10 @@ class AdImageRetrieveSerializer(serializers.ModelSerializer):
         fields = ("id", "image", "title_photo")
 
 
-class AdListSerializer(serializers.ModelSerializer):
-    """Сериализатор для просмотра объявления."""
+class AdGetSerializer(serializers.ModelSerializer):
+    """Базовый сериализатор для просмотра объявления."""
 
     provider = UserReadSerializer(read_only=True)
-    title_photo = serializers.SerializerMethodField()
     is_favorited = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
@@ -95,7 +96,6 @@ class AdListSerializer(serializers.ModelSerializer):
             "avg_rating",
             "comments_quantity",
             "created_at",
-            "title_photo",
         )
 
     def get_is_favorited(self, obj):
@@ -128,9 +128,20 @@ class AdListSerializer(serializers.ModelSerializer):
     def get_type(self, obj):
         return self.Meta.model.__name__.lower()
 
-    def get_title_photo(self, obj):
+
+class AdListSerializer(AdGetSerializer):
+    """Сериализатор для просмотра объявления."""
+
+    title_photo = serializers.SerializerMethodField()
+
+    class Meta(AdGetSerializer.Meta):
+        fields = AdGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa
+
+    def get_title_photo(self, obj) -> Any | None:
         title_photo = obj.images.filter(title_photo=True).first()
-        return AdImageRetrieveSerializer(title_photo).data
+        if title_photo:
+            return AdImageRetrieveSerializer(title_photo).data
+        return None
 
 
 class AdCreateUpdateSerializer(serializers.ModelSerializer):
@@ -183,14 +194,14 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class AdRetrieveSerializer(AdListSerializer):
+class AdRetrieveSerializer(AdGetSerializer):
     """Сериализатор для получения данных о конкретном объявлении."""
 
     comments = serializers.SerializerMethodField()
     images = AdImageRetrieveSerializer(many=True, read_only=True)
 
-    class Meta(AdListSerializer.Meta):
-        fields = AdListSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
+    class Meta(AdGetSerializer.Meta):
+        fields = AdGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
 
     def get_comments(self, obj):
         """Вывод трех последних комментариев к объявлению."""

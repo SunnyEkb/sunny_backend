@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Avg
@@ -77,11 +79,10 @@ class SubServiceSerializer(serializers.ModelSerializer):
         fields = ["id", "title", "price"]
 
 
-class ServiceListSerializer(serializers.ModelSerializer):
-    """Сериализатор для получения списка услуг."""
+class ServiceGetSerializer(serializers.ModelSerializer):
+    """Базовый сериализатор для получения списка услуг."""
 
     provider = UserReadSerializer(read_only=True)
-    title_photo = serializers.SerializerMethodField()
     avg_rating = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     comments_quantity = serializers.SerializerMethodField()
@@ -108,7 +109,6 @@ class ServiceListSerializer(serializers.ModelSerializer):
             "updated_at",
             "is_favorited",
             "price_list_entries",
-            "title_photo",
         )
 
     def get_comments_quantity(self, obj) -> int:
@@ -139,9 +139,20 @@ class ServiceListSerializer(serializers.ModelSerializer):
     def get_type(self, obj):
         return self.Meta.model.__name__.lower()
 
-    def get_title_photo(self, obj):
+
+class ServiceListSerializer(ServiceGetSerializer):
+    """Сериализатор для получения списка услуг."""
+
+    title_photo = serializers.SerializerMethodField()
+
+    class Meta(ServiceGetSerializer.Meta):
+        fields = ServiceGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa
+
+    def get_title_photo(self, obj) -> Any | None:
         title_photo = obj.images.filter(title_photo=True).first()
-        return ServiceImageRetrieveSerializer(title_photo).data
+        if title_photo:
+            return ServiceImageRetrieveSerializer(title_photo).data
+        return None
 
 
 class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
@@ -234,14 +245,14 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class ServiceRetrieveSerializer(ServiceListSerializer):
+class ServiceRetrieveSerializer(ServiceGetSerializer):
     """Сериализатор для получения данных о конкретной услуге."""
 
     comments = serializers.SerializerMethodField()
     images = ServiceImageRetrieveSerializer(many=True, read_only=True)
 
-    class Meta(ServiceListSerializer.Meta):
-        fields = ServiceListSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
+    class Meta(ServiceGetSerializer.Meta):
+        fields = ServiceGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
 
     def get_comments(self, obj):
         """Вывод трех последних комментариев к услуге."""
