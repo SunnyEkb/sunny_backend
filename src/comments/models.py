@@ -50,7 +50,7 @@ class Comment(TimeCreateUpdateModel):
     status = models.IntegerField(
         "Статус комментария",
         choices=CommentStatus.choices,
-        default=CommentStatus.DRAFT,
+        default=CommentStatus.MODERATION,
     )
 
     cstm_mng = CommentManager()
@@ -80,8 +80,8 @@ class Comment(TimeCreateUpdateModel):
 
     def reject(self) -> None:
         if self.status == CommentStatus.MODERATION:
-            self.status = CommentStatus.DRAFT
-            self.save()
+            self.delete_images()
+            self.delete()
 
     def publish(self) -> None:
         if self.status == CommentStatus.DRAFT:
