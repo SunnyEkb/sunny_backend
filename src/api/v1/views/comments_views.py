@@ -174,7 +174,7 @@ class CommentModerationViewSet(
         permission_classes=(ModeratorOnly,),
     )
     def reject(self, request, *args, **kwargs):
-        object = self.get_object()
+        object: Comment = self.get_object()
         object.reject()
         return response.Response(
             status=status.HTTP_200_OK,
