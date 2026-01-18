@@ -290,6 +290,9 @@ class TestCommentsModerationView(TestServiceFixtures):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertFalse(
+            Comment.objects.filter(id=self.cmmnt_for_mdrtn.id).exists()
+        )
 
     def test_anon_can_not_reject_comment(self):
         response = self.anon_client.post(
