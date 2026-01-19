@@ -18,7 +18,6 @@ class ServicePlace(models.TextChoices):
 
 
 class CommentStatus(models.IntegerChoices):
-    DRAFT = 0
     PUBLISHED = 1
     MODERATION = 2
 
