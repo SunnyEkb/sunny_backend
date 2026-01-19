@@ -24,8 +24,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
     chat = None
 
     async def connect(self):
-        """
-        Установка соединения.
+        """Установка соединения.
+
         Создание группы чата и отправка в нее сообщений чата.
         """
 
@@ -89,8 +89,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             logger.exception(e)
 
     async def disconnect(self, close_code):
-        """
-        Отключение соединения. Удаление участника из группы чата.
+        """Отключение соединения.
+
+        Удаление участника из группы чата.
         """
         try:
             if getattr(self, "room_group_name"):
@@ -101,8 +102,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             logger.exception(e)
 
     async def receive(self, text_data=None, bytes_data=None):
-        """
-        Получение сообщения, Сохранение его в БД и отправка его в группу чата.
+        """Получение сообщения.
+
+        Сохранение его в БД и отправка его в группу чата.
         """
 
         try:
@@ -166,6 +168,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :param sender: отправитель сообщения
         :param message: текст сообщения
         :return: экземпляр сообщения
+        :rtype: Message
         """
 
         msg = Message.objects.create(
@@ -182,6 +185,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :param sender: отправитель сообщения
         :param message: текст сообщения
         :return: экземпляр сообщения
+        :rtype: Message
         """
 
         if not self.chat:
@@ -196,7 +200,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         Получение экземплярf ContentType.
 
         :param type: cтроковое название класса
-        :return: экземпляр ContentType
+        :return: экземпляр ContentType если найден
+        :rtype: ContentType | None
         """
 
         try:
@@ -234,6 +239,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         :param data: данные чата
         :return: экземпляр объекта чата
+        :rtype: Chat
         """
 
         chat = Chat.objects.create(**data)
@@ -245,7 +251,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         Получение объекта чата из БД.
 
         :param data: данные чата
-        :return: экземпляр объекта чата
+        :return: экземпляр объекта чата, есди найден
+        :rtype: Chat | None
         """
 
         try:
