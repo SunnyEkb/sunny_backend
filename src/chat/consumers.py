@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Any
 
 from channels.db import database_sync_to_async
 from channels.exceptions import DenyConnection
@@ -23,7 +24,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     chat_data = None
     chat = None
 
-    async def connect(self):
+    async def connect(self) -> None:
         """Установка соединения.
 
         Создание группы чата и отправка в нее сообщений чата.
@@ -88,10 +89,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.exception(e)
 
-    async def disconnect(self, close_code):
+    async def disconnect(self, close_code: Any) -> None:
         """Отключение соединения.
 
         Удаление участника из группы чата.
+
+        :param close_code: Код закрытия
+        :type close_code: Any
         """
         try:
             if getattr(self, "room_group_name"):
@@ -101,10 +105,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.exception(e)
 
-    async def receive(self, text_data=None, bytes_data=None):
+    async def receive(
+        self, text_data: str, bytes_data: bytes | None = None
+    ) -> None:
         """Получение сообщения.
 
         Сохранение его в БД и отправка его в группу чата.
+
+        :param text_data: Данные в текстовом формате
+        :type text_data: str
+        :param bytes_data: Данные в байтах
+        :type bytes_data: bytes | None
         """
 
         try:
@@ -127,9 +138,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.exception(e)
 
-    async def chat_message(self, event):
-        """
-        Отправка сообщения другим участникам группы чата.
+    async def chat_message(self, event: Any) -> None:
+        """Отправка сообщения другим участникам группы чата.
+
+        :param event: Событие
+        :type event: Any
         """
 
         try:
@@ -139,11 +152,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __get_messages(self, filters: dict) -> ReturnList:
-        """
-        Получение списка сообщений из БД.
+        """Получение списка сообщений из БД.
 
         :param filters: параметры фильтрации
+        :type filters: dict
         :return: экземпляр сообщения, если найден, или None
+        :rtype: ReturnList
         """
 
         messages = MessageSerializer(
@@ -162,11 +176,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __save_message(self, sender: AbstractUser, message: str) -> Message:
-        """
-        Сохренение нового сообщения в БД.
+        """Сохренение нового сообщения в БД.
 
         :param sender: отправитель сообщения
+        :type sender: AbstractUser
         :param message: текст сообщения
+        :type message: str
         :return: экземпляр сообщения
         :rtype: Message
         """
@@ -179,11 +194,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def __save_chat_message(
         self, sender: AbstractUser, message: str
     ) -> Message:
-        """
-        Сохренение нового сообщения в БД и создание чата в БД, если его нет.
+        """Сохренение сообщения в БД.
+
+        Если чат несуществует, создается новый.
 
         :param sender: отправитель сообщения
+        :type sender: AbstractUser
         :param message: текст сообщения
+        :type message: str
         :return: экземпляр сообщения
         :rtype: Message
         """
@@ -196,10 +214,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __get_content_type(self, type: str) -> ContentType | None:
-        """
-        Получение экземплярf ContentType.
+        """Получение экземплярf ContentType.
 
         :param type: cтроковое название класса
+        :type type: str
         :return: экземпляр ContentType если найден
         :rtype: ContentType | None
         """
@@ -215,11 +233,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def __get_object(
         self, cont_type_model: ContentType, object_id: int
     ) -> object | None:
-        """
-        Получение объекта из БД.
+        """Получение объекта из БД.
 
         :param cont_type_model: Экземпляр класса ContentType
-        :param cont_type_model: ID объекта
+        :type cont_type_model: ContentType
+        :param object_id: ID объекта
+        :type object_id: int
         :return: класс ORM
         """
 
@@ -234,10 +253,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __create_chat(self, data: dict) -> Chat:
-        """
-        Создание объекта чата в БД.
+        """Создание объекта чата в БД.
 
         :param data: данные чата
+        :type data: dict
         :return: экземпляр объекта чата
         :rtype: Chat
         """
@@ -247,10 +266,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __get_chat(self, data: dict) -> Chat | None:
-        """
-        Получение объекта чата из БД.
+        """Получение объекта чата из БД.
 
         :param data: данные чата
+        :type data: dict
         :return: экземпляр объекта чата, есди найден
         :rtype: Chat | None
         """
