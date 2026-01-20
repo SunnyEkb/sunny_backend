@@ -196,7 +196,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     ) -> Message:
         """Сохренение сообщения в БД.
 
-        Если чат несуществует, создается новый.
+        Если чат не существует, создается новый.
 
         :param sender: отправитель сообщения
         :type sender: AbstractUser
