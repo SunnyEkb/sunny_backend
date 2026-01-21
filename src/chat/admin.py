@@ -12,6 +12,7 @@ class MessageAdmin(admin.ModelAdmin):
         "message",
         "created_at",
         "updated_at",
+        "chat",
     ]
     search_fields = ["message"]
     ordering = ["chat", "created_at"]
