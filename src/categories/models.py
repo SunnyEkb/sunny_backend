@@ -38,10 +38,9 @@ class Category(models.Model):
         ordering = ["parent_id", "id"]
 
     def __str__(self) -> str:
-        """Получение строкового представления категории.
+        """Получить строкового представления категории.
 
-        :return: строковое представление категории
+        :returns: строковое представление категории
         :rtype: str
         """
-
         return self.title
