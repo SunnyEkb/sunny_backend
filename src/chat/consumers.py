@@ -1,9 +1,11 @@
 import json
 import logging
+from typing import Any
 
 from channels.db import database_sync_to_async
 from channels.exceptions import DenyConnection
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.db.models import Model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.utils.serializer_helpers import ReturnList
@@ -23,12 +25,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
     chat_data = None
     chat = None
 
-    async def connect(self):
-        """
-        Установка соединения.
+    async def connect(self) -> None:
+        """Установка соединения.
+
         Создание группы чата и отправка в нее сообщений чата.
         """
-
         try:
             sender_id = self.scope["user"].id
             object_id = self.scope["url_route"]["kwargs"]["object_id"]
@@ -88,9 +89,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.exception(e)
 
-    async def disconnect(self, close_code):
-        """
-        Отключение соединения. Удаление участника из группы чата.
+    async def disconnect(self, close_code: Any) -> None:
+        """Отключить соединение.
+
+        Удаляет участника из группы чата.
+
+        :param close_code: код закрытия
+        :type close_code: Any
         """
         try:
             if getattr(self, "room_group_name"):
@@ -100,11 +105,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.exception(e)
 
-    async def receive(self, text_data=None, bytes_data=None):
-        """
-        Получение сообщения, Сохранение его в БД и отправка его в группу чата.
-        """
+    async def receive(
+        self, text_data: str, bytes_data: bytes | None = None
+    ) -> None:
+        """Получить сообщения.
 
+        Сохраняет сообщение в БД и отправляет его в группу чата.
+
+        :param text_data: Данные в текстовом формате
+        :type text_data: str
+        :param bytes_data: Данные в байтах
+        :type bytes_data: bytes | None
+        """
         try:
             data = json.loads(text_data)
             message = data.get("message", None)
@@ -125,11 +137,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.exception(e)
 
-    async def chat_message(self, event):
-        """
-        Отправка сообщения другим участникам группы чата.
-        """
+    async def chat_message(self, event: Any) -> None:
+        """Отправить сообщения другим участникам группы чата.
 
+        :param event: Событие
+        :type event: Any
+        """
         try:
             await self.send(json.dumps(event["message"], ensure_ascii=False))
         except Exception as e:
@@ -137,13 +150,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __get_messages(self, filters: dict) -> ReturnList:
-        """
-        Получение списка сообщений из БД.
+        """Получить список сообщений из БД.
 
         :param filters: параметры фильтрации
-        :return: экземпляр сообщения, если найден, или None
-        """
+        :type filters: dict
 
+        :returns: экземпляр сообщения, если найден, или None
+        :rtype: ReturnList
+        """
         messages = MessageSerializer(
             Message.objects.filter(**filters)
             .select_related("sender")
@@ -160,14 +174,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __save_message(self, sender: AbstractUser, message: str) -> Message:
-        """
-        Сохренение нового сообщения в БД.
+        """Сохранить новое сообщение в БД.
 
         :param sender: отправитель сообщения
+        :type sender: AbstractUser
         :param message: текст сообщения
-        :return: экземпляр сообщения
-        """
+        :type message: str
 
+        :returns: экземпляр сообщения
+        :rtype: Message
+        """
         msg = Message.objects.create(
             sender=sender, message=message, chat=self.chat
         )
@@ -176,14 +192,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def __save_chat_message(
         self, sender: AbstractUser, message: str
     ) -> Message:
-        """
-        Сохренение нового сообщения в БД и создание чата в БД, если его нет.
+        """Сохранить сообщение в БД.
+
+        Если чат не существует, создается новый.
 
         :param sender: отправитель сообщения
+        :type sender: AbstractUser
         :param message: текст сообщения
-        :return: экземпляр сообщения
-        """
+        :type message: str
 
+        :returns: экземпляр сообщения
+        :rtype: Message
+        """
         if not self.chat:
             self.chat = await self.__create_chat(self.chat_data)
 
@@ -192,13 +212,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __get_content_type(self, type: str) -> ContentType | None:
-        """
-        Получение экземплярf ContentType.
+        """Получить экземпляр ContentType.
 
         :param type: cтроковое название класса
-        :return: экземпляр ContentType
-        """
+        :type type: str
 
+        :returns: экземпляр ContentType если найден
+        :rtype: ContentType | None
+        """
         try:
             return ContentType.objects.get(
                 app_label=f"{type}s", model=f"{type}"
@@ -209,15 +230,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def __get_object(
         self, cont_type_model: ContentType, object_id: int
-    ) -> object | None:
-        """
-        Получение объекта из БД.
+    ) -> Model | None:
+        """Получить объект из БД.
 
         :param cont_type_model: Экземпляр класса ContentType
-        :param cont_type_model: ID объекта
-        :return: класс ORM
-        """
+        :type cont_type_model: ContentType
+        :param object_id: ID объекта
+        :type object_id: int
 
+        :returns: класс ORM
+        :rtype: Model | None
+        """
         try:
             return (
                 cont_type_model.model_class()
@@ -229,25 +252,27 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def __create_chat(self, data: dict) -> Chat:
-        """
-        Создание объекта чата в БД.
+        """Создать объект чата в БД.
 
         :param data: данные чата
-        :return: экземпляр объекта чата
-        """
+        :type data: dict
 
+        :returns: экземпляр объекта чата
+        :rtype: Chat
+        """
         chat = Chat.objects.create(**data)
         return chat
 
     @database_sync_to_async
     def __get_chat(self, data: dict) -> Chat | None:
-        """
-        Получение объекта чата из БД.
+        """Получить объект чата из БД.
 
         :param data: данные чата
-        :return: экземпляр объекта чата
-        """
+        :type data: dict
 
+        :return: экземпляр объекта чата, есди найден
+        :rtype: Chat | None
+        """
         try:
             chat = Chat.objects.get(**data)
             return chat

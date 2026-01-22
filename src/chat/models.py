@@ -38,6 +38,14 @@ class Chat(models.Model):
         limit_choices_to={"is_active": True},
     )
 
+    def __str__(self) -> str:
+        """Получить строковое представление чата.
+
+        :returns: строковое представление чата
+        :rtype: str
+        """
+        return f"{self.room_group_name}"
+
     class Meta:
         verbose_name = "Чат"
         verbose_name_plural = "Чаты"
@@ -66,6 +74,11 @@ class Message(TimeCreateUpdateModel):
     )
 
     def __str__(self) -> str:
+        """Получить строковое представление сообщения.
+
+        :returns: строковое представление сообщения
+        :rtype: str
+        """
         return f"{self.message}"
 
     class Meta:

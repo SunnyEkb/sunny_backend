@@ -18,5 +18,13 @@ class MessageSerializer(ModelSerializer):
             "updated_at",
         )
 
-    def get_sender_username(self, obj):
+    def get_sender_username(self, obj: Message) -> str:
+        """Получить имя пользователя, отправившего сообщение.
+
+        :param obj: сообщение
+        :type obj: Message
+
+        :returns: имя пользователя
+        :rtype: str
+        """
         return obj.sender.username
