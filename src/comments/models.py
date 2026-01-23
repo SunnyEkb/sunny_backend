@@ -62,17 +62,15 @@ class Comment(TimeCreateUpdateModel):
         unique_together = ("author", "content_type", "object_id")
 
     def __str__(self) -> str:
-        """Возвращает строковое представление комментария.
+        """Получить строковое представление комментария.
 
-        :return: строковое представление комментария
+        :returns: строковое представление комментария
         :rtype: str
         """
-
         return self.feedback[:30]
 
     def delete_images(self) -> None:
-        """Создание задачи по удалению фото к комментарию."""
-
+        """Создать задачу по удалению фото к комментарию."""
         images = self.images.all()
         if images:
             for image in images:
@@ -84,7 +82,6 @@ class Comment(TimeCreateUpdateModel):
 
         Статус комментария меняется на 'PUBLISHED'.
         """
-
         if self.status == CommentStatus.MODERATION:
             self.status = CommentStatus.PUBLISHED
             self.save()
@@ -95,17 +92,15 @@ class Comment(TimeCreateUpdateModel):
         Создается задача по удалению фото к комментарию. \
         Сам комменарий удаляется.
         """
-
         if self.status == CommentStatus.MODERATION:
             self.delete_images()
             self.delete()
 
     def notify_about_comment_creation(self) -> None:
-        """Уведомление о создании комментария.
+        """Создать уведомление о создании комментария.
 
         Создает задачу о необходимости модерации комментария.
         """
-
         url = self.get_admin_url()
         if "test" not in sys.argv:
             notify_about_moderation_task.delay(url)
@@ -113,10 +108,9 @@ class Comment(TimeCreateUpdateModel):
     def get_admin_url(self) -> str:
         """Возвращает ссылку на экземпляр модели в админке.
 
-        :return: ссылка на экземпляр модели в админке
+        :returns: ссылка на экземпляр модели в админке
         :rtype: str
         """
-
         app_name = self._meta.app_label
         name: str = self.__class__.__name__.lower()
         return "".join(
@@ -143,10 +137,9 @@ class CommentImage(AbstractImage):
         verbose_name_plural = "Фото к комментариям"
 
     def __str__(self) -> str:
-        """Возвращает строковое представление фото к комментарию.
+        """Получить строковое представление фото к комментарию.
 
-        :return: строковое представление фото к комментарию
+        :returns: строковое представление фото к комментарию
         :rtype: str
         """
-
         return self.comment.feedback[:30]
