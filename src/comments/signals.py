@@ -10,7 +10,14 @@ from comments.models import Comment
 def notify_about_comment_creation(
     sender: Any, instance: Comment, created: bool, **kwargs
 ) -> None:
-    """Уведомить о создании комментария."""
+    """Уведомить о создании комментария.
 
+    :param sender: класс модели
+    :type sender: Any
+    :param instance: экземпляр класса
+    :type instance: Comment
+    :param created: отметка о создании экземпляра класса
+    :type created: bool
+    """
     if created:
         instance.notify_about_comment_creation()
