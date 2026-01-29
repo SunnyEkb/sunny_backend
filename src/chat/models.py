@@ -84,4 +84,4 @@ class Message(TimeCreateUpdateModel):
     class Meta:
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщения"
-        ordering = ["-created_at"]
+        ordering = ["created_at"]
