@@ -122,7 +122,6 @@ class ServiceGetSerializer(serializers.ModelSerializer):
         return round(rating, 1)
 
     def get_is_favorited(self, obj) -> bool:
-        user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user

@@ -99,7 +99,6 @@ class AdGetSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
-        user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             user = request.user
