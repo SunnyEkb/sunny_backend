@@ -99,7 +99,7 @@ class AdGetSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj):
-        request = self.context.get("request")
+        request = self.context.get("request", None)
         if request and hasattr(request, "user"):
             user = request.user
             if user.is_authenticated:
@@ -238,6 +238,7 @@ class AdSearchSerializer(serializers.ModelSerializer):
 
     provider = UserSearchSerializer(read_only=True)
     type = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
 
     class Meta:
         model = Ad
@@ -250,7 +251,22 @@ class AdSearchSerializer(serializers.ModelSerializer):
             "price",
             "provider",
             "condition",
+            "is_favorited",
         ]
 
     def get_type(self, obj):
         return self.Meta.model.__name__.lower()
+
+    def get_is_favorited(self, obj):
+        request = self.context.get("request", None)
+        if request and hasattr(request, "user"):
+            user = request.user
+            if user.is_authenticated:
+                return Favorites.objects.filter(
+                    user=user,
+                    content_type=ContentType.objects.get(
+                        app_label="ads", model="ad"
+                    ),
+                    object_id=obj.id,
+                ).exists()
+        return False
