@@ -88,9 +88,13 @@ class AdvertisementView(APIView):
         advertisements = list()
         for entry in sorted_result:
             if isinstance(entry, Ad):
-                serializer = serializers.AdListSerializer(entry)
+                serializer = serializers.AdListSerializer(
+                    entry, context={"request": request}
+                )
             if isinstance(entry, Service):
-                serializer = serializers.ServiceListSerializer(entry)
+                serializer = serializers.ServiceListSerializer(
+                    entry, context={"request": request}
+                )
             advertisements.append(serializer.data)
         return self.get_paginated_response(advertisements)
 
