@@ -291,6 +291,7 @@ class ServiceSearchSerializer(serializers.ModelSerializer):
 
     provider = UserSearchSerializer(read_only=True)
     type = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
 
     class Meta:
         model = Service
@@ -303,7 +304,22 @@ class ServiceSearchSerializer(serializers.ModelSerializer):
             "salon_name",
             "provider",
             "place_of_provision",
+            "is_favorited",
         )
 
     def get_type(self, obj):
         return self.Meta.model.__name__.lower()
+
+    def get_is_favorited(self, obj) -> bool:
+        request = self.context.get("request", None)
+        if request and hasattr(request, "user"):
+            user = request.user
+            if user.is_authenticated:
+                return Favorites.objects.filter(
+                    user=user,
+                    content_type=ContentType.objects.get(
+                        app_label="services", model="service"
+                    ),
+                    object_id=obj.id,
+                ).exists()
+        return False
