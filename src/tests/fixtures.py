@@ -312,16 +312,12 @@ class TestAdsFixtures(TestUserFixtures):
         cls.comment_data_images_wrong_base64 = {
             "rating": 2,
             "feedback": "Some feadback",
-            "images": [
-                {"image": cls.wrong_base64_image},
-            ],
+            "images": [{"image": cls.wrong_base64_image}],
         }
         cls.comment_data_images_wrong_ext = {
             "rating": 2,
             "feedback": "Some feadback",
-            "images": [
-                {"image": "some_string"},
-            ],
+            "images": [{"image": "some_string"}],
         }
         cls.comment_1 = factories.CommentFactory(
             subject=cls.ad_2,

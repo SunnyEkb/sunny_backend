@@ -311,3 +311,38 @@ class TestCommentsModerationView(TestServiceFixtures):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+
+    def test_get_comments_of_crnt_user(self):
+        response = self.client_2.get(reverse("comments_destroy-list"))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            len(response.json()["results"]),
+            len(Comment.objects.filter(author=self.user_2)),
+        )
+
+    def test_get_comments_of_crnt_user_with_type_ads(self):
+        response = self.client_2.get(
+            reverse("comments_destroy-list") + "?type=ad"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(
+            len(response.json()["results"]),
+            len(
+                Comment.objects.filter(
+                    author=self.user_2,
+                    content_type=ContentType.objects.get(
+                        app_label="ads", model="ad"
+                    ),
+                )
+            ),
+        )
+
+    def test_get_comments_of_crnt_user_with_wrong_type(self):
+        response = self.client_2.get(
+            reverse("comments_destroy-list") + "?type=abc"
+        )
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+
+    def test_get_comments_of_crnt_user_by_anon_client(self):
+        response = self.anon_client.get(reverse("comments_destroy-list"))
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)

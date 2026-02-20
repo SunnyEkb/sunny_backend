@@ -110,7 +110,7 @@ class CommentDestroyViewSet(
 
     def get_queryset(self):
         if self.action == "list":
-            type = self.kwargs.get("type", None)
+            type = self.request.query_params.get("type", None)
             if not type:
                 return Comment.cstm_mng.filter(
                     author=self.request.user
@@ -119,7 +119,7 @@ class CommentDestroyViewSet(
                 raise WrongObjectType()
             return Comment.cstm_mng.filter(
                 author=self.request.user,
-                content_type=ContentType.objects.filter(
+                content_type=ContentType.objects.get(
                     app_label=f"{type}s", model=f"{type}"
                 ),
             ).order_by("-created_at")
