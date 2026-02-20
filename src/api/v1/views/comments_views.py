@@ -112,7 +112,9 @@ class CommentDestroyViewSet(
         if self.action == "list":
             type = self.kwargs.get("type", None)
             if not type:
-                return Comment.cstm_mng.filter(author=self.request.user)
+                return Comment.cstm_mng.filter(
+                    author=self.request.user
+                ).order_by("-created_at")
             if type not in ["ad", "service"]:
                 raise WrongObjectType()
             return Comment.cstm_mng.filter(
@@ -120,7 +122,7 @@ class CommentDestroyViewSet(
                 content_type=ContentType.objects.filter(
                     app_label=f"{type}s", model=f"{type}"
                 ),
-            )
+            ).order_by("-created_at")
         return Comment.objects.all()
 
     def get_permissions(self):
