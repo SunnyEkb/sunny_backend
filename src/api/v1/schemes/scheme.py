@@ -190,6 +190,12 @@ WRONG_PARAMETR_400: OpenApiResponse = OpenApiResponse(
     examples=[examples.WRONG_PARAMETR_EXAMPLE],
 )
 
+WRONG_OBJECT_TYPE_400: OpenApiResponse = OpenApiResponse(
+    response=serializers.NonErrorFieldSerializer,
+    description="Неверный тип объекта",
+    examples=[examples.WRONG_OBJ_TYPE_EXAMPLE],
+)
+
 COMMENT_FORBIDDEN_403: OpenApiResponse = OpenApiResponse(
     response=serializers.NonErrorFieldSerializer,
     description="Только автор может удалить комментарий",

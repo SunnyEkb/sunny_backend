@@ -1,6 +1,4 @@
-#  from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
-    #  OpenApiParameter,
     extend_schema,
     extend_schema_view,
 )
@@ -9,15 +7,11 @@ from rest_framework.decorators import action
 
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
-
-#  from api.v1.filters import ServiceFilter
 from api.v1.permissions import (
     ModeratorOnly,
     PhotoOwnerOrReadOnly,
     PhotoReadOnly,
 )
-
-#  from api.v1.validators import validate_id
 from api.v1.views.base_views import (
     BaseModeratorViewSet,
     BaseServiceAdViewSet,
@@ -28,17 +22,6 @@ from services.models import Service, ServiceImage
 
 @extend_schema(tags=["Services"])
 @extend_schema_view(
-    #  ist=extend_schema(
-    #    summary=(
-    #        "Список услуг. Для получения списка услуг по категориям "
-    #        "необходимо указать query параметр 'category_id'."
-    #    ),
-    #    parameters=[OpenApiParameter("category_id", int)],
-    #    responses={
-    #        status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
-    #        status.HTTP_400_BAD_REQUEST: schemes.WRONG_PARAMETR_400,
-    #    },
-    #  ),
     retrieve=extend_schema(
         summary="Информация о конкретной услуге.",
         responses={
@@ -89,23 +72,11 @@ from services.models import Service, ServiceImage
 class ServiceViewSet(BaseServiceAdViewSet):
     """Операции с услугами."""
 
-    #  filter_backends = (DjangoFilterBackend,)
-    #  filterset_class = ServiceFilter
-
     def get_queryset(self):
         queryset = Service.cstm_mng.all()
-        #  if self.action == "list":
-        #    params = self.request.query_params
-        #    queryset = queryset.filter(status=AdvertisementStatus.PUBLISHED)
-        #    if "category_id" in params:
-        #        category_id = params.get("category_id")
-        #        validate_id(category_id)
-        #        queryset = queryset.filter(category__id=category_id)
         return queryset
 
     def get_serializer_class(self):
-        #  if self.action == "list":
-        #     return api_serializers.ServiceListSerializer
         if self.action == "retrieve":
             return api_serializers.ServiceRetrieveSerializer
         return api_serializers.ServiceCreateUpdateSerializer

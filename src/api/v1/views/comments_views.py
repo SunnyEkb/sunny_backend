@@ -1,6 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import (
+    OpenApiParameter,
     extend_schema,
     extend_schema_view,
 )
@@ -21,6 +22,7 @@ from core.choices import APIResponses, CommentStatus
     examples=[schemes.COMMENT_LIST_EXAMPLE],
     responses={
         status.HTTP_200_OK: schemes.COMMENT_LIST_200_OK,
+        status.HTTP_400_BAD_REQUEST: schemes.WRONG_OBJECT_TYPE_400,
     },
 )
 @extend_schema_view(
@@ -79,20 +81,50 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             status.HTTP_403_FORBIDDEN: schemes.COMMENT_FORBIDDEN_403,
         },
     ),
+    list=extend_schema(
+        summary="Список комментариев текущего пользователя.",
+        responses={
+            status.HTTP_200_OK: schemes.COMMENT_LIST_200_OK,
+            status.HTTP_400_BAD_REQUEST: schemes.WRONG_OBJECT_TYPE_400,
+            status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
+        },
+        parameters=[OpenApiParameter("type", str)],
+        description=(
+            """
+            Query параметр 'type' имеет два значения:
+                'ad' для получения комментариев к объявлениям;
+                'service' для получения комментариев к услугам;
+            """
+        ),
+    ),
 )
 class CommentDestroyViewSet(
     mixins.DestroyModelMixin,
+    mixins.ListModelMixin,
     viewsets.GenericViewSet,
 ):
-    """Удалить комментарий."""
+    """Вьюсет для комментариев."""
 
+    pagination_class = CustomPaginator
     serializer_class = api_serializers.CommentReadSerializer
 
     def get_queryset(self):
+        if self.action == "list":
+            type = self.kwargs.get("type", None)
+            if not type:
+                return Comment.cstm_mng.filter(author=self.request.user)
+            if type not in ["ad", "service"]:
+                raise WrongObjectType()
+            return Comment.cstm_mng.filter(
+                author=self.request.user,
+                content_type=ContentType.objects.filter(
+                    app_label=f"{type}s", model=f"{type}"
+                ),
+            )
         return Comment.objects.all()
 
     def get_permissions(self):
-        if self.action == "create":
+        if self.action == "list":
             return [permissions.IsAuthenticated()]
         return [CommentAuthorOnly()]
 
@@ -100,6 +132,15 @@ class CommentDestroyViewSet(
         instance: Comment = self.get_object()
         instance.delete_images()
         return super().destroy(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except WrongObjectType:
+            return response.Response(
+                status=status.HTTP_400_BAD_REQUEST,
+                data=APIResponses.WRONG_OBJECT_TYPE,
+            )
 
 
 @extend_schema(tags=["Moderator"])
