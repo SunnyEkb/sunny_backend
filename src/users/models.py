@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import (
     GenericForeignKey,
@@ -16,9 +18,7 @@ from users.managers import UserManager, VerificationTokenManager
 
 
 class CustomUser(AbstractUser):
-    """
-    Кастомная модель пользователя.
-    """
+    """Кастомная модель пользователя."""
 
     first_name = models.CharField(
         verbose_name="Имя",
@@ -64,32 +64,58 @@ class CustomUser(AbstractUser):
     objects = UserManager()
 
     class Meta:
+        """Настройки модели пользователя."""
+
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
         default_related_name = "user"
         ordering = ["email"]
 
     def __str__(self) -> str:
+        """Получить строковое представление пользователя.
+
+        Returns:
+            str: email пользователя
+
+        """
         return self.email
 
     @property
-    def is_admin(self):
+    def is_admin(self) -> bool:
+        """Определить является ли пользователь администратором.
+
+        Returns:
+            bool: пользователь является администратором
+
+        """
         return self.role == Role.ADMIN
 
     @property
-    def is_moderator(self):
+    def is_moderator(self) -> bool:
+        """Определить является ли пользователь модератором.
+
+        Returns:
+            bool: пользователь является модератором
+
+        """
         return self.role == Role.MODERATOR
 
-    def get_group_id(self):
-        return "user_{0}_notifications".format(self.id)
+    def get_group_id(self) -> str:
+        """Получить идентификатор группы пользователя.
 
-    def delete_avatar_image(self):
-        """Удаление файла аватара."""
+        Returns:
+            str: идентификатор группы пользователя
 
+        """
+        return f"user_{self.id}_notifications"
+
+    def delete_avatar_image(self) -> None:
+        """Удалить файл с аватаром."""
         if self.avatar is not None:
             delete_images_dir_task.delay(f"users/{self.id}")
 
-    def serialize_data(self):
+    def serialize_data(self) -> Any:
+        """Сериализовать данные пользователя."""
         return serializers.serialize("json", [self])
 
 
@@ -115,16 +141,30 @@ class Favorites(models.Model):
     subject = GenericForeignKey("content_type", "object_id")
 
     class Meta:
+        """Настройки модели избранного."""
+
         verbose_name = "Избранное"
         verbose_name_plural = "Избранное"
         unique_together = ("user", "content_type", "object_id")
         ordering = ["user", "content_type"]
 
     def __str__(self) -> str:
+        """Получить строковое представление модели избранного.
+
+        Returns:
+            str: строковое представление модели избранного
+
+        """
         return f"Избранное {self.user}"
 
     @staticmethod
-    def clear_favorites(instance):
+    def clear_favorites(instance: models.Model) -> None:
+        """Удалить объкт из избранного.
+
+        Args:
+            instcnse (Model): экземпляр класса
+
+        """
         Favorites.objects.filter(
             content_type=ContentType.objects.get_for_model(instance).id,
             object_id=instance.id,
@@ -132,9 +172,7 @@ class Favorites(models.Model):
 
 
 class VerificationToken(models.Model):
-    """
-    Токен для подтверждения регистрации.
-    """
+    """Токен для подтверждения регистрации."""
 
     user = models.OneToOneField(
         CustomUser,
@@ -153,5 +191,7 @@ class VerificationToken(models.Model):
     cstm_mng = VerificationTokenManager()
 
     class Meta:
+        """Настройки модели токена."""
+
         verbose_name = "Токен для подтверждения регистрации"
         verbose_name_plural = "Токены для подтверждения регистрации"

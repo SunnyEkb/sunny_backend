@@ -22,8 +22,7 @@ User = get_user_model()
 def password_reset_token_created(
     sender, instance, reset_password_token, *args, **kwargs
 ):
-    """
-    Handles password reset tokens
+    """Handles password reset tokens
     When a token is created, an e-mail needs to be sent to the user
     :param sender: View Class that sent the signal
     :param instance: View Instance that sent the signal
@@ -32,7 +31,6 @@ def password_reset_token_created(
     :param kwargs:
     :return:
     """
-
     key = reset_password_token.key
     mail_to = reset_password_token.user.email
     username = reset_password_token.user.username
@@ -54,9 +52,7 @@ def notification_created(sender, instance, created, **kwargs):
 def send_welcome_email_signal(sender, instance, created, **kwargs):
     if created:
         token = uuid4()
-        ver_token = VerificationToken.objects.create(
-            user=instance, token=token
-        )
+        ver_token = VerificationToken.objects.create(user=instance, token=token)
         ver_token.save()
         send_welcome_email_task.delay(
             username=instance.username,

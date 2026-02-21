@@ -31,9 +31,13 @@ class UserManager(BaseUserManager):
 
 
 class VerificationTokenManager(models.Manager):
-    """
-    Пользовательский менеджер для модели Токена для подтверждения регистрации.
-    """
+    """Пользовательский менеджер для модели Токена для подтверждения регистрации."""
 
     def get_queryset(self) -> models.QuerySet:
+        """Сформировать запрос к БД по умолчанию.
+
+        Returns:
+            QuerySet: запрос к БД по умолчанию
+
+        """
         return super().get_queryset().select_related("user")

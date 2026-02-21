@@ -7,9 +7,7 @@ from users.models import CustomUser, Favorites, VerificationToken
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    """
-    Отображение модели пользователя в админке.
-    """
+    """Отображение модели пользователя в админке."""
 
     form = UserChangeForm
     add_form = UserCreationForm
@@ -45,9 +43,7 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Favorites)
 class FavoritesAdmin(admin.ModelAdmin):
-    """
-    Отображение модели избранное в админке.
-    """
+    """Отображение модели избранное в админке."""
 
     list_display = ["user", "content_type", "object_id"]
     list_filter = ["content_type"]
@@ -56,9 +52,7 @@ class FavoritesAdmin(admin.ModelAdmin):
 
 @admin.register(VerificationToken)
 class VerificationTokenAdmin(admin.ModelAdmin):
-    """
-    Отображение модели токена для подтверждения регистрации в админке.
-    """
+    """Отображение модели токена для подтверждения регистрации в админке."""
 
     list_display = ["user"]
     search_fields = ["user__email"]
