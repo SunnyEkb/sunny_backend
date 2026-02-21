@@ -2,27 +2,27 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.transaction import atomic
 from django.urls import reverse
-from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework import (
     mixins,
-    viewsets,
     permissions,
     response,
     status,
+    viewsets,
 )
 from rest_framework.decorators import action
 
 from ads.models import Ad
-from api.v1.paginators import CustomPaginator
-from api.v1.permissions import ModeratorOnly, OwnerOrReadOnly, ReadOnly
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from api.v1.paginators import CustomPaginator
+from api.v1.permissions import ModeratorOnly, OwnerOrReadOnly, ReadOnly
 from bad_word_filter.tasks import moderate_comment_task
-from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from core.choices import AdvertisementStatus, APIResponses, Notifications
 from notifications.models import Notification
 from services.models import Service
@@ -106,7 +106,6 @@ class BaseServiceAdViewSet(
     )
     def hide(self, request, *args, **kwargs):
         """Скрыть услугу или объявление."""
-
         object = self.get_object()
         if not object.status == AdvertisementStatus.PUBLISHED:
             return response.Response(
@@ -143,7 +142,6 @@ class BaseServiceAdViewSet(
     )
     def publish_object(self, request, *args, **kwargs):
         """Опубликовать услугу или объявление."""
-
         object = self.get_object()
         obj_status = object.status
         if obj_status not in [
@@ -186,7 +184,6 @@ class BaseServiceAdViewSet(
     )
     def add_photo(self, request, *args, **kwargs):
         """Добавить фото к услуге (объявлению)."""
-
         object = self.get_object()
 
         # Проверяем, что объект не находится на модерации
@@ -224,12 +221,12 @@ class BaseServiceAdViewSet(
                     if photo_serializer.is_valid(raise_exception=True):
                         if images.filter(
                             title_photo=True
-                        ).exists():  # noqa Refactor this
+                        ).exists():
                             photo_serializer.save(service=object)
                         else:
                             photo_serializer.save(
                                 service=object, title_photo=True
-                            )  # noqa
+                            )
             else:
                 for image in img_serializer.validated_data["images"]:
                     photo_serializer = api_serializers.AdImageCreateSerializer(
@@ -238,7 +235,7 @@ class BaseServiceAdViewSet(
                     if photo_serializer.is_valid(raise_exception=True):
                         if images.filter(
                             title_photo=True
-                        ).exists():  # noqa Refactor this
+                        ).exists():
                             photo_serializer.save(ad=object)
                         else:
                             photo_serializer.save(ad=object, title_photo=True)
@@ -270,7 +267,6 @@ class BaseServiceAdViewSet(
     )
     def add_to_favorites(self, request, *args, **kwargs):
         """Добавить в избранное."""
-
         object = self.get_object()
         if object.status != AdvertisementStatus.PUBLISHED:
             return response.Response(
@@ -339,7 +335,6 @@ class BaseServiceAdViewSet(
     )
     def add_comment(self, request, *args, **kwargs):
         """Добавить комментарий."""
-
         serializer = api_serializers.CommentCreateSerializer(data=request.data)
         if not serializer.is_valid():
             return response.Response(
@@ -411,7 +406,6 @@ class BaseServiceAdViewSet(
     )
     def delete_from_favorites(self, request, *args, **kwargs):
         """Удалить из избранного."""
-
         object = self.get_object()
 
         if isinstance(object, Service):
@@ -484,7 +478,6 @@ class BaseModeratorViewSet(
 
     def approve(self, request, *args, **kwargs):
         """Одобрить."""
-
         object = self.get_object()
         with atomic():
             self._create_notification(text=Notifications.APPROVE_OBJECT)
@@ -496,7 +489,6 @@ class BaseModeratorViewSet(
 
     def reject(self, request, *args, **kwargs):
         """Отклонить."""
-
         object = self.get_object()
         with atomic():
             self._create_notification(text=Notifications.REJECT_OBJECT)

@@ -27,8 +27,7 @@ User = get_user_model()
 
 
 class UserReadSerializer(ModelSerializer):
-    """
-    Сериализатор для получения данных о пользователе.
+    """Сериализатор для получения данных о пользователе.
     """
 
     avatar = Base64ImageField(required=True, allow_null=False)
@@ -48,8 +47,7 @@ class UserReadSerializer(ModelSerializer):
 
 
 class UserSearchSerializer(ModelSerializer):
-    """
-    Сериализатор для получения данных о пользователе.
+    """Сериализатор для получения данных о пользователе.
     """
 
     class Meta:
@@ -58,8 +56,7 @@ class UserSearchSerializer(ModelSerializer):
 
 
 class UserCreateSerializer(ModelSerializer):
-    """
-    Сериализатор для создания пользователя.
+    """Сериализатор для создания пользователя.
     """
 
     phone = PhoneNumberField(
@@ -114,8 +111,7 @@ class UserCreateSerializer(ModelSerializer):
 
 
 class UserUpdateSerializer(ModelSerializer):
-    """
-    Сериализатор для изменения данных о пользователе.
+    """Сериализатор для изменения данных о пользователе.
     """
 
     phone = PhoneNumberField(region="RU")
@@ -135,8 +131,7 @@ class UserUpdateSerializer(ModelSerializer):
 
 
 class UserAdAvatarSerializer(ModelSerializer):
-    """
-    Сериализатор для изменения фото пользователя.
+    """Сериализатор для изменения фото пользователя.
     """
 
     avatar = Base64ImageField(
@@ -155,8 +150,7 @@ class UserAdAvatarSerializer(ModelSerializer):
 
 
 class NonErrorFieldSerializer(Serializer):
-    """
-    Сериализатор для ошибок валидации вводимых данных.
+    """Сериализатор для ошибок валидации вводимых данных.
     """
 
     non_error_field = ListField(read_only=True)
@@ -180,13 +174,11 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
         )
         if attrs["refresh"]:
             return super().validate(attrs)
-        else:
-            raise InvalidToken(APIResponses.INVALID_TOKEN.value)
+        raise InvalidToken(APIResponses.INVALID_TOKEN.value)
 
 
 class PasswordChangeSerializer(Serializer):
-    """
-    Сериализатор для смены пароля.
+    """Сериализатор для смены пароля.
     """
 
     current_password = CharField(required=True)
@@ -228,8 +220,7 @@ class PasswordChangeSerializer(Serializer):
 
 
 class VerificationTokenSerialiser(ModelSerializer):
-    """
-    Сериализатор для подтверждения регистрации.
+    """Сериализатор для подтверждения регистрации.
     """
 
     class Meta:

@@ -16,12 +16,10 @@ User = get_user_model()
 
 
 def verify_user(token: UUID) -> None:
-    """
-    Активация аккаунта пользователя.
+    """Активация аккаунта пользователя.
 
     :param token: токен активации
     """
-
     ver_token = VerificationToken.cstm_mng.filter(token=token)
     if ver_token.exists() is False:
         raise TokenDoesNotExists()
@@ -39,11 +37,10 @@ def verify_user(token: UUID) -> None:
 
 
 def delete_expired_tokens() -> None:
-    """
-    Удаление просроченных токенов активации пользователя
-    и данных неподтвержденных пользователей из БД.
-    """
+    """Удаление просроченных токенов активации пользователя.
 
+    Также удаляются данные неподтвержденных пользователей из БД.
+    """
     tokens = VerificationToken.cstm_mng.filter(
         created_at__lt=datetime.now(timezone.utc)
         - timedelta(hours=Limits.REGISTRY_TOKEN_LIFETIME.value)
@@ -56,13 +53,11 @@ def delete_expired_tokens() -> None:
 
 
 def save_file_with_user_data(email: str, data: Any) -> None:
-    """
-    Сохранение сведений о пользователе после удаления его аккаунта.
+    """Сохранение сведений о пользователе после удаления его аккаунта.
 
     :param email: email пользователя
     :param data: данные пользователя
     """
-
     date = (
         datetime.now(timezone.utc) + settings.DATA_RETENTION_PERIOD
     ).strftime("%Y-%m-%d")
@@ -75,11 +70,10 @@ def save_file_with_user_data(email: str, data: Any) -> None:
 
 
 def delete_files_after_expiration_date() -> None:
-    """
-    Удаление сведений об удаленных пользователях \
-        после истечения срока хранения данных.
-    """
+    """Удаление сведений об удаленных пользователях.
 
+    После истечения срока хранения данных.
+    """
     files = os.listdir(settings.PATH_TO_SAVE_DELETED_USERS_DATA.location)
     for file in files:
         if datetime.now(timezone.utc).date() > datetime.strptime(
@@ -89,10 +83,7 @@ def delete_files_after_expiration_date() -> None:
 
 
 def del_exprd_rfrsh_tokens_from_blck_lst() -> None:
-    """
-    Удаление просроченных refresh токенов из черного списка.
-    """
-
+    """Удаление просроченных refresh токенов из черного списка."""
     black_listed_tokens = BlacklistedToken.objects.filter(
         token__expires_at__lt=datetime.now(timezone.utc)
     )

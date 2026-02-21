@@ -34,15 +34,14 @@ from api.v1.validators import (
     validate_phone_updating,
     validate_username_updating,
 )
-from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from comments.models import Comment
+from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from core.choices import APIResponses
 from services.models import Service
 from services.tasks import delete_image_files_task
 from users.exceptions import TokenDoesNotExists, TokenExpired
-from users.utils import verify_user
 from users.tasks import save_file_with_user_data_task
-
+from users.utils import verify_user
 
 User = get_user_model()
 
@@ -58,8 +57,7 @@ User = get_user_model()
     },
 )
 class RegisrtyView(APIView):
-    """
-    Регистрация пользователей.
+    """Регистрация пользователей.
     """
 
     def post(self, request):
@@ -81,8 +79,7 @@ class RegisrtyView(APIView):
     },
 )
 class LoginView(APIView):
-    """
-    Вход пользователя в систему.
+    """Вход пользователя в систему.
     """
 
     authentication_classes = ()
@@ -102,13 +99,11 @@ class LoginView(APIView):
                     response["X-CSRFToken"] = csrf.get_token(request)
                     response.data = {"Success": APIResponses.SUCCESS_LOGIN}
                     return response
-                else:
-                    return Response(
-                        {"No active": APIResponses.ACCOUNT_IS_INACTIVE},
-                        status=status.HTTP_403_FORBIDDEN,
-                    )
-            else:
-                raise AuthenticationFailed(APIResponses.INVALID_CREDENTIALS)
+                return Response(
+                    {"No active": APIResponses.ACCOUNT_IS_INACTIVE},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+            raise AuthenticationFailed(APIResponses.INVALID_CREDENTIALS)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -121,8 +116,7 @@ class LoginView(APIView):
     },
 )
 class LogoutView(APIView):
-    """
-    Выход из системы.
+    """Выход из системы.
     """
 
     permission_classes = [IsAuthenticated]
@@ -158,8 +152,7 @@ class LogoutView(APIView):
     },
 )
 class CookieTokenRefreshView(TokenRefreshView):
-    """
-    Обновление refresh и access токена.
+    """Обновление refresh и access токена.
     """
 
     serializer_class = api_serializers.CookieTokenRefreshSerializer  # type: ignore  # noqa
@@ -193,8 +186,7 @@ class CookieTokenRefreshView(TokenRefreshView):
     },
 )
 class ChangePassowrdView(GenericAPIView):
-    """
-    Изменение пароля пользователя.
+    """Изменение пароля пользователя.
     """
 
     permission_classes = [IsAuthenticated]
@@ -253,8 +245,7 @@ class ChangePassowrdView(GenericAPIView):
 class UserViewSet(
     DestroyModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet
 ):
-    """
-    Изменение и получение данных о пользователе.
+    """Изменение и получение данных о пользователе.
     """
 
     permission_classes = (SelfOnly,)
@@ -349,8 +340,7 @@ class UserViewSet(
     ),
 )
 class AdAvatarView(generics.UpdateAPIView):
-    """
-    Добавление аватара пользователя.
+    """Добавление аватара пользователя.
     """
 
     permission_classes = (SelfOnly,)
@@ -378,8 +368,7 @@ class AdAvatarView(generics.UpdateAPIView):
     },
 )
 class VerificationView(APIView):
-    """
-    Подтверждение регистрации пользователя.
+    """Подтверждение регистрации пользователя.
     """
 
     def post(self, request):

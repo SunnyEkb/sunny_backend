@@ -7,15 +7,15 @@ from rest_framework import serializers
 
 from ads.models import Ad, AdImage
 from api.v1.serializers.comments_serializers import CommentReadSerializer
+from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.serializers.users_serializers import (
     UserReadSerializer,
     UserSearchSerializer,
 )
-from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import (
     validate_base64_field,
-    validate_file_size,
     validate_extention,
+    validate_file_size,
 )
 from categories.models import Category
 from core.choices import CommentStatus
@@ -204,7 +204,6 @@ class AdRetrieveSerializer(AdGetSerializer):
 
     def get_comments(self, obj):
         """Вывод трех последних комментариев к объявлению."""
-
         comments = obj.comments.filter(
             status=CommentStatus.PUBLISHED
         ).order_by("-created_at")[:3]

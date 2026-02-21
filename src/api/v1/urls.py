@@ -1,32 +1,32 @@
 from django.urls import include, path, re_path
-from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from rest_framework.routers import DefaultRouter
 
 from api.v1.views import (
     AdAvatarView,
     AdImageViewSet,
     AdModerationViewSet,
-    AdViewSet,
     AdvertisementView,
+    AdViewSet,
     ChangePassowrdView,
     ChatViewSet,
-    CommonCategoriesViewSet,
     CommentDestroyViewSet,
     CommentModerationViewSet,
     CommentViewSet,
+    CommonCategoriesViewSet,
     CookieTokenRefreshView,
     FavoritesViewSet,
     LoginView,
     LogoutView,
     NotificationViewSet,
     RegisrtyView,
+    SearchView,
     ServiceImageViewSet,
     ServiceModerationViewSet,
     ServiceViewSet,
-    SearchView,
-    VerificationView,
     UserAdvertisementView,
     UserViewSet,
+    VerificationView,
 )
 
 api_v1_router = DefaultRouter()

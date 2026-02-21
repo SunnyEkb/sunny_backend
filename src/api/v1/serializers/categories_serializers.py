@@ -18,8 +18,7 @@ class CategorySerializer(serializers.ModelSerializer):
             for subcategory in obj.subcategories.all():
                 subcat.append(CategorySerializer(subcategory).data)
             return subcat
-        else:
-            return None
+        return None
 
 
 class CommonCategoryNoSubCatSerializer(serializers.ModelSerializer):

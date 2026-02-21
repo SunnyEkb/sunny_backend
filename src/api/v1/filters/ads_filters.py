@@ -1,4 +1,4 @@
-from django.db.models import Avg
+from django.db.models import Avg, QuerySet
 from django_filters import (
     BooleanFilter,
     CharFilter,
@@ -12,9 +12,7 @@ from core.choices import AdvertisementStatus
 
 
 class AdFilter(FilterSet):
-    """
-    Фильтры для объявлений.
-    """
+    """Фильтры для объявлений."""
 
     title = CharFilter(
         field_name="title",
@@ -50,6 +48,8 @@ class AdFilter(FilterSet):
     )
 
     class Meta:
+        """Настройки фильтра."""
+
         model = Ad
         fields = (
             "title",
@@ -60,26 +60,43 @@ class AdFilter(FilterSet):
             "updated_at",
         )
 
-    def get_my_ads(self, queryset, name, value):
-        """
-        Возвращает список объявлений с любым статусом
-        для авторизованного пользователя.
-        """
+    def get_my_ads(
+        self, queryset: QuerySet, name: str, value: bool  # noqa: ARG002, FBT001
+    ) -> QuerySet:
+        """Возвращает список объявлений текущего пользователя.
 
+        Статус объявлений любой.
+
+        Args:
+            queryset (QuerySet): запрос
+            name (str): название поля
+            value (bool): значение параметра
+
+        Returns:
+            QuerySet: измененный запрос
+
+        """
         user = self.request.user
         if value is False or not user.is_authenticated:
             return queryset
         return Ad.cstm_mng.filter(provider=user)
 
-    def get_rating(self, queryset, name, value):
-        """
-        Возвращает список объявлений,
-        у которых рейтинг больше или равен значению.
+    def get_rating(
+        self, queryset: QuerySet, name: str, value: int  # noqa: ARG002
+    ) -> QuerySet:
+        """Возвращает список объявлений, с рейтингом больше value.
+
+        Args:
+            queryset (QuerySet): запрос
+            name (str): название поля
+            value (int): значение рейтнига
+
+        Returns:
+            QuerySet: измененный запрос
+
         """
         return (
             Ad.cstm_mng.annotate(rating=Avg("comments__rating"))
-            .filter(
-                rating__gte=value, status=AdvertisementStatus.PUBLISHED.value
-            )
+            .filter(rating__gte=value, status=AdvertisementStatus.PUBLISHED.value)
             .order_by("-created_at")
         )

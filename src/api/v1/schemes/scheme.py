@@ -1,4 +1,5 @@
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
+from drf_spectacular.openapi import AutoSchema
 from drf_spectacular.utils import OpenApiResponse
 
 from api.v1 import serializers
@@ -6,10 +7,12 @@ from api.v1.schemes import examples
 
 
 class CookieTokenScheme(OpenApiAuthenticationExtension):
+    """Описание аутентификации."""
     target_class = "api.v1.auth.CustomAuthentication"
     name = "CookieTokenAuth"
 
-    def get_security_definition(self, auto_schema):
+    def get_security_definition(self, auto_schema: AutoSchema) -> dict:  # noqa: ARG002
+        """Получить описание аутентификации."""
         return {
             "type": "apiKey",
             "in": "cookie",

@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 from ads.models import AdImage
 from core.choices import AdvertisementStatus
@@ -6,8 +6,7 @@ from services.models import ServiceImage
 
 
 class SelfOnly(BasePermission):
-    """
-    Редактирование данных только о себе.
+    """Редактирование данных только о себе.
     """
 
     def has_permission(self, request, view):
@@ -18,8 +17,7 @@ class SelfOnly(BasePermission):
 
 
 class OwnerOrReadOnly(BasePermission):
-    """
-    Редактирование только своих услуг и объявлений.
+    """Редактирование только своих услуг и объявлений.
     """
 
     def has_permission(self, request, view):
@@ -30,8 +28,7 @@ class OwnerOrReadOnly(BasePermission):
 
 
 class PhotoOwnerOrReadOnly(BasePermission):
-    """
-    Редактирование только фото своих услуг.
+    """Редактирование только фото своих услуг.
     """
 
     def has_permission(self, request, view):
@@ -46,8 +43,7 @@ class PhotoOwnerOrReadOnly(BasePermission):
 
 
 class PhotoReadOnly(BasePermission):
-    """
-    Разрешение на просмотр фото услуги или объявления
+    """Разрешение на просмотр фото услуги или объявления
     незарегистрированному пользователю.
     """
 
@@ -63,8 +59,7 @@ class PhotoReadOnly(BasePermission):
 
 
 class ReadOnly(BasePermission):
-    """
-    Разрешение на просмотр услуги или объявления
+    """Разрешение на просмотр услуги или объявления
     незарегистрированному пользователю.
     """
 
@@ -79,8 +74,7 @@ class ReadOnly(BasePermission):
 
 
 class CommentAuthorOnly(BasePermission):
-    """
-    Разрешения на удаление комментария автору.
+    """Разрешения на удаление комментария автору.
     """
 
     def has_permission(self, request, view):
@@ -91,8 +85,7 @@ class CommentAuthorOnly(BasePermission):
 
 
 class ModeratorOnly(BasePermission):
-    """
-    Разрешения на совершение действий только модератору.
+    """Разрешения на совершение действий только модератору.
     """
 
     def has_permission(self, request, view):
@@ -103,8 +96,7 @@ class ModeratorOnly(BasePermission):
 
 
 class NotificationRecieverOnly(BasePermission):
-    """
-    Только получатель уведомления.
+    """Только получатель уведомления.
     """
 
     def has_permission(self, request, view):

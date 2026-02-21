@@ -8,27 +8,23 @@ from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from core.choices import APIResponses
 from core.enums import Limits
 
-
 User = get_user_model()
 
 
 def validate_file_size(temp_file):
     """Валидация размера загружаемого файла."""
-
     if temp_file.size > Limits.MAX_FILE_SIZE:
         raise ValidationError(APIResponses.MAX_FILE_SIZE_EXEED)
 
 
 def validate_file_quantity(value):
     """Валидация количества загружаемых файлов."""
-
     if len(value) > Limits.MAX_FILE_QUANTITY:
         raise ValidationError(APIResponses.MAX_IMAGE_QUANTITY_EXEED)
 
 
 def validate_username(value):
     """Валидация имени пользователя."""
-
     if (
         len(value) < Limits.USERNAME_MIN_LENGTH
         or len(value) > Limits.USERNAME_MAX_LENGTH
@@ -42,7 +38,6 @@ def validate_username(value):
 
 def validate_username_updating(instance, value):
     """Валидация имени пользователя."""
-
     if (
         len(value) < Limits.USERNAME_MIN_LENGTH
         or len(value) > Limits.USERNAME_MAX_LENGTH
@@ -58,14 +53,12 @@ def validate_username_updating(instance, value):
 
 def validate_email(value: str):
     """Валидация email."""
-
     if User.objects.filter(email=value.lower()).exists():
         raise ValidationError(APIResponses.EMAIL_EXISTS)
 
 
 def validate_email_length(email: str):
     """Валидация длины email."""
-
     if (
         len(email) < Limits.MIN_LENGTH_EAMIL
         or len(email) > Limits.MAX_LENGTH_EAMIL
@@ -75,14 +68,12 @@ def validate_email_length(email: str):
 
 def validate_phone(value: str):
     """Валидация номера телефона."""
-
     if User.objects.filter(phone=value).exists():
         raise ValidationError(APIResponses.PHONE_EXISTS)
 
 
 def validate_phone_updating(instance, value: str):
     """Валидация номера телефона."""
-
     user = User.objects.filter(phone=value)
     if user.exists() and instance != user.first():
         raise ValidationError(APIResponses.PHONE_EXISTS)

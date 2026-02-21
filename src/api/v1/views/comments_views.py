@@ -5,7 +5,7 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import mixins, viewsets, permissions, response, status
+from rest_framework import mixins, permissions, response, status, viewsets
 from rest_framework.decorators import action
 
 from api.v1 import schemes
@@ -191,7 +191,6 @@ class CommentModerationViewSet(
     )
     def approve(self, request, *args, **kwargs):
         """Одобрить."""
-
         object = self.get_object()
         object.approve()
         return response.Response(
