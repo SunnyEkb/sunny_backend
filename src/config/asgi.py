@@ -19,9 +19,7 @@ application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
         "websocket": AllowedHostsOriginValidator(
-            CookieAuthMiddleware(
-                URLRouter(websocket_urlpatterns + chat_urlpatterns)
-            )
+            CookieAuthMiddleware(URLRouter(websocket_urlpatterns + chat_urlpatterns))
         ),
     }
 )

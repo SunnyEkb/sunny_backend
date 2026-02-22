@@ -112,9 +112,9 @@ class CommentDestroyViewSet(
         if self.action == "list":
             type = self.request.query_params.get("type", None)
             if not type:
-                return Comment.cstm_mng.filter(
-                    author=self.request.user
-                ).order_by("-created_at")
+                return Comment.cstm_mng.filter(author=self.request.user).order_by(
+                    "-created_at"
+                )
             if type not in ["ad", "service"]:
                 raise WrongObjectType()
             return Comment.cstm_mng.filter(
@@ -162,9 +162,9 @@ class CommentModerationViewSet(
 ):
     """Модерация комментариев."""
 
-    queryset = Comment.cstm_mng.filter(
-        status=CommentStatus.MODERATION
-    ).order_by("-created_at")
+    queryset = Comment.cstm_mng.filter(status=CommentStatus.MODERATION).order_by(
+        "-created_at"
+    )
     serializer_class = api_serializers.CommentForModerationSerializer
     permission_classes = (ModeratorOnly,)
     pagination_class = CustomPaginator

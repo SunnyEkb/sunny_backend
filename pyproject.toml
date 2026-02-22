@@ -13,13 +13,24 @@ exclude = [
 [tool.ruff]
 line-length = 88
 target-version = "py312"
+exclude = [
+    "__pycache__",
+    ".venv",
+    "src/users/migrations",
+    "src/categories/migrations",
+    "src/chats/migrations",
+    "src/ads/migrations",
+    "src/services/migrations",
+    "src/notifications/migrations",
+]
 [tool.ruff.lint]
 ignore = ["D100", "D102", "D104", "RUF002", "RUF001", "COM812"]
 select = ["ALL"]
 # Исключить папки из проверок
 exclude = [
     "__pycache__",
-    ".venv"
+    ".venv",
+    "migrations/.*"
 ]
 [tool.ruff.lint.pydocstyle]
 convention = "google"

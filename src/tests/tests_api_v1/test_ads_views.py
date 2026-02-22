@@ -62,9 +62,7 @@ class TestAdView(TestAdsFixtures):
     #    )
 
     def test_owner_hides_ad(self):
-        response = self.client_2.post(
-            reverse("ads-hide", kwargs={"pk": self.ad_2.id})
-        )
+        response = self.client_2.post(reverse("ads-hide", kwargs={"pk": self.ad_2.id}))
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
             Ad.objects.get(pk=self.ad_2.pk).status,
@@ -72,9 +70,7 @@ class TestAdView(TestAdsFixtures):
         )
 
     def test_not_owner_cant_hide_an_ad(self):
-        response = self.client_1.post(
-            reverse("ads-hide", kwargs={"pk": self.ad_2.id})
-        )
+        response = self.client_1.post(reverse("ads-hide", kwargs={"pk": self.ad_2.id}))
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_anon_user_cant_hide_an_ad(self):
@@ -216,9 +212,7 @@ class TestAdView(TestAdsFixtures):
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
 
     def test_an_ad_is_favorited(self):
-        response = self.client_3.get(
-            reverse("ads-detail", kwargs={"pk": self.ad_2.id})
-        )
+        response = self.client_3.get(reverse("ads-detail", kwargs={"pk": self.ad_2.id}))
         self.assertTrue(response.json()["is_favorited"])
 
     def test_get_ad_image(self):
@@ -232,23 +226,17 @@ class TestAdView(TestAdsFixtures):
             reverse("adimage-detail", kwargs={"pk": self.ad_2_image.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
-        self.assertFalse(
-            AdImage.objects.filter(id=self.ad_2_image.id).exists()
-        )
+        self.assertFalse(AdImage.objects.filter(id=self.ad_2_image.id).exists())
 
     def test_ad_deletion_when_provider_is_deleted(self):
         self.assertTrue(Ad.objects.filter(id=self.ad_to_del.id).exists())
-        self.assertTrue(
-            AdImage.objects.filter(id=self.ad_to_del_image.id).exists()
-        )
+        self.assertTrue(AdImage.objects.filter(id=self.ad_to_del_image.id).exists())
         response = self.client_for_deletion.delete(
             reverse("users-detail", kwargs={"pk": self.user_for_deletion.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
         self.assertFalse(Ad.objects.filter(id=self.ad_to_del.id).exists())
-        self.assertFalse(
-            AdImage.objects.filter(id=self.ad_to_del_image.id).exists()
-        )
+        self.assertFalse(AdImage.objects.filter(id=self.ad_to_del_image.id).exists())
 
     #  def test_ads_filters(self):
     #    templates = {
@@ -296,9 +284,7 @@ class TestAdView(TestAdsFixtures):
         self.assertFalse(
             Favorites.objects.filter(
                 object_id=self.ad_2.id,
-                content_type=ContentType.objects.get(
-                    app_label="ads", model="ad"
-                ),
+                content_type=ContentType.objects.get(app_label="ads", model="ad"),
             ).exists()
         )
 
@@ -310,9 +296,7 @@ class TestAdView(TestAdsFixtures):
         self.assertFalse(
             Favorites.objects.filter(
                 object_id=self.ad_2.id,
-                content_type=ContentType.objects.get(
-                    app_label="ads", model="ad"
-                ),
+                content_type=ContentType.objects.get(app_label="ads", model="ad"),
             ).exists()
         )
 
@@ -389,9 +373,7 @@ class TestAdsModerationView(TestAdsFixtures):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response.json()["results"]),
-            len(
-                Ad.objects.filter(status=AdvertisementStatus.MODERATION.value)
-            ),
+            len(Ad.objects.filter(status=AdvertisementStatus.MODERATION.value)),
         )
 
     def test_only_moderator_can_get_list_of_ads_for_moderation(self):

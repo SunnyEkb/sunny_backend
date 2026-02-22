@@ -105,17 +105,13 @@ class AdGetSerializer(serializers.ModelSerializer):
             if user.is_authenticated:
                 return Favorites.objects.filter(
                     user=user,
-                    content_type=ContentType.objects.get(
-                        app_label="ads", model="ad"
-                    ),
+                    content_type=ContentType.objects.get(app_label="ads", model="ad"),
                     object_id=obj.id,
                 ).exists()
         return False
 
     def get_comments_quantity(self, obj):
-        return obj.comments.filter(
-            status=CommentStatus.PUBLISHED.value
-        ).count()
+        return obj.comments.filter(status=CommentStatus.PUBLISHED.value).count()
 
     def get_avg_rating(self, obj):
         rating = obj.comments.aggregate(Avg("rating"))
@@ -162,18 +158,14 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ("category",)
 
     def create(self, validated_data):
-        category = get_object_or_404(
-            Category, pk=validated_data.pop("category_id")
-        )
+        category = get_object_or_404(Category, pk=validated_data.pop("category_id"))
         ad = Ad.objects.create(**validated_data)
         self.__ad_category(ad, category)
         return ad
 
     def update(self, instance, validated_data):
         if "category_id" in validated_data:
-            category = get_object_or_404(
-                Category, pk=validated_data.pop("category_id")
-            )
+            category = get_object_or_404(Category, pk=validated_data.pop("category_id"))
             if category not in instance.category.all():
                 categories = instance.category.all()
                 for cat in categories:
@@ -204,9 +196,9 @@ class AdRetrieveSerializer(AdGetSerializer):
 
     def get_comments(self, obj):
         """Вывод трех последних комментариев к объявлению."""
-        comments = obj.comments.filter(
-            status=CommentStatus.PUBLISHED
-        ).order_by("-created_at")[:3]
+        comments = obj.comments.filter(status=CommentStatus.PUBLISHED).order_by(
+            "-created_at"
+        )[:3]
         return [CommentReadSerializer(comment).data for comment in comments]
 
 
@@ -263,9 +255,7 @@ class AdSearchSerializer(serializers.ModelSerializer):
             if user.is_authenticated:
                 return Favorites.objects.filter(
                     user=user,
-                    content_type=ContentType.objects.get(
-                        app_label="ads", model="ad"
-                    ),
+                    content_type=ContentType.objects.get(app_label="ads", model="ad"),
                     object_id=obj.id,
                 ).exists()
         return False

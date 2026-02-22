@@ -6,8 +6,7 @@ from services.models import ServiceImage
 
 
 class SelfOnly(BasePermission):
-    """Редактирование данных только о себе.
-    """
+    """Редактирование данных только о себе."""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated
@@ -17,8 +16,7 @@ class SelfOnly(BasePermission):
 
 
 class OwnerOrReadOnly(BasePermission):
-    """Редактирование только своих услуг и объявлений.
-    """
+    """Редактирование только своих услуг и объявлений."""
 
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS or request.user.is_authenticated
@@ -28,8 +26,7 @@ class OwnerOrReadOnly(BasePermission):
 
 
 class PhotoOwnerOrReadOnly(BasePermission):
-    """Редактирование только фото своих услуг.
-    """
+    """Редактирование только фото своих услуг."""
 
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS or request.user.is_authenticated
@@ -68,14 +65,12 @@ class ReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (
-            obj.provider == request.user
-            or obj.status == AdvertisementStatus.PUBLISHED
+            obj.provider == request.user or obj.status == AdvertisementStatus.PUBLISHED
         )
 
 
 class CommentAuthorOnly(BasePermission):
-    """Разрешения на удаление комментария автору.
-    """
+    """Разрешения на удаление комментария автору."""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated
@@ -85,8 +80,7 @@ class CommentAuthorOnly(BasePermission):
 
 
 class ModeratorOnly(BasePermission):
-    """Разрешения на совершение действий только модератору.
-    """
+    """Разрешения на совершение действий только модератору."""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_moderator
@@ -96,8 +90,7 @@ class ModeratorOnly(BasePermission):
 
 
 class NotificationRecieverOnly(BasePermission):
-    """Только получатель уведомления.
-    """
+    """Только получатель уведомления."""
 
     def has_permission(self, request, view):
         return request.user.is_authenticated

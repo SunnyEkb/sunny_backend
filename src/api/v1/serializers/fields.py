@@ -16,8 +16,7 @@ from services.models import Service
 
 
 class FavoriteObjectRelatedField(serializers.RelatedField):
-    """Поле для вывода объектов избранного.
-    """
+    """Поле для вывода объектов избранного."""
 
     def to_representation(self, value):
         if isinstance(value, Service):
@@ -30,8 +29,7 @@ class FavoriteObjectRelatedField(serializers.RelatedField):
 
 
 class SearchObjectRelatedField(serializers.RelatedField):
-    """Поле для вывода результатов поиска.
-    """
+    """Поле для вывода результатов поиска."""
 
     def to_representation(self, value):
         if isinstance(value, ServiceDocument):

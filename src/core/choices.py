@@ -49,9 +49,7 @@ class APIResponses(models.TextChoices):
     AD_OR_SERVICE_CANT_BE_SENT_TO_MODERATION = (
         "Данная услуга (объявление) уже на модерации."
     )
-    AD_OR_SERVICE_SENT_MODERATION = (
-        "Услуга (объявление) отправлены на модерацию."
-    )
+    AD_OR_SERVICE_SENT_MODERATION = "Услуга (объявление) отправлены на модерацию."
     AD_OR_SERVICE_IS_UNDER_MODERATION = (
         "Услуга (объявление) не может быть изменена, т.к. она на модерации."
     )
@@ -66,12 +64,8 @@ class APIResponses(models.TextChoices):
     MAX_IMAGE_QUANTITY_EXEED = (
         f"Можно добавить только {Limits.MAX_FILE_QUANTITY} фотографий."
     )
-    MAX_FILE_SIZE_EXEED = (
-        f"Максимальный размер файла - {Limits.MAX_FILE_SIZE} байт."
-    )
-    COMMENT_ALREADY_EXISTS = (
-        "Комментарий от данного пользователя уже существует."
-    )
+    MAX_FILE_SIZE_EXEED = f"Максимальный размер файла - {Limits.MAX_FILE_SIZE} байт."
+    COMMENT_ALREADY_EXISTS = "Комментарий от данного пользователя уже существует."
     COMMENTS_BY_PROVIDER_PROHIBITED = (
         "Лицо, оказывающее услуги не может оставлять комментарий."
     )
@@ -117,9 +111,7 @@ class SystemMessages(models.TextChoices):
 
 
 class Notifications(models.TextChoices):
-    WELCOME = (
-        "{0}, приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
-    )
+    WELCOME = "{0}, приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
     APPROVE_OBJECT = "Модерация успешно пройдена."
     REJECT_OBJECT = "Модерация не пройдена."
 

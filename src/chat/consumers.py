@@ -105,9 +105,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         except Exception as e:
             logger.exception(e)
 
-    async def receive(
-        self, text_data: str, bytes_data: bytes | None = None
-    ) -> None:
+    async def receive(self, text_data: str, bytes_data: bytes | None = None) -> None:
         """Получить сообщения.
 
         Сохраняет сообщение в БД и отправляет его в группу чата.
@@ -184,14 +182,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :returns: экземпляр сообщения
         :rtype: Message
         """
-        msg = Message.objects.create(
-            sender=sender, message=message, chat=self.chat
-        )
+        msg = Message.objects.create(sender=sender, message=message, chat=self.chat)
         return msg
 
-    async def __save_chat_message(
-        self, sender: AbstractUser, message: str
-    ) -> Message:
+    async def __save_chat_message(self, sender: AbstractUser, message: str) -> Message:
         """Сохранить сообщение в БД.
 
         Если чат не существует, создается новый.
@@ -221,9 +215,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :rtype: ContentType | None
         """
         try:
-            return ContentType.objects.get(
-                app_label=f"{type}s", model=f"{type}"
-            )
+            return ContentType.objects.get(app_label=f"{type}s", model=f"{type}")
         except ContentType.DoesNotExist:
             return None
 

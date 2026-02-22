@@ -124,22 +124,16 @@ AUTH_PASSWORD_VALIDATORS = [
         ),
     },
     {
-        "NAME": (
-            "django.contrib.auth.password_validation.MinimumLengthValidator"
-        ),
+        "NAME": ("django.contrib.auth.password_validation.MinimumLengthValidator"),
         "OPTIONS": {
             "min_length": 8,
         },
     },
     {
-        "NAME": (
-            "django.contrib.auth.password_validation.CommonPasswordValidator"
-        ),
+        "NAME": ("django.contrib.auth.password_validation.CommonPasswordValidator"),
     },
     {
-        "NAME": (
-            "django.contrib.auth.password_validation.NumericPasswordValidator"
-        ),
+        "NAME": ("django.contrib.auth.password_validation.NumericPasswordValidator"),
     },
 ]
 
@@ -198,12 +192,12 @@ CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "None"
 SESSION_COOKIE_SAMESITE = "None"
-CSRF_TRUSTED_ORIGINS = getenv(
-    "CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1"
-).split(", ")
-CORS_ALLOWED_ORIGINS = getenv(
-    "CORS_ALLOWED_ORIGINS", default="http://127.0.0.1"
-).split(", ")
+CSRF_TRUSTED_ORIGINS = getenv("CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1").split(
+    ", "
+)
+CORS_ALLOWED_ORIGINS = getenv("CORS_ALLOWED_ORIGINS", default="http://127.0.0.1").split(
+    ", "
+)
 CORS_ALLOW_METHODS = (
     "DELETE",
     "GET",

@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.fields import (
     GenericForeignKey,
@@ -20,13 +18,13 @@ from users.managers import UserManager, VerificationTokenManager
 class CustomUser(AbstractUser):
     """Кастомная модель пользователя."""
 
-    first_name = models.CharField(
+    first_name = models.CharField(  # noqa: DJ001
         verbose_name="Имя",
         max_length=Limits.MAX_LENGTH_FIRST_NAME.value,
         blank=True,
         null=True,
     )
-    last_name = models.CharField(
+    last_name = models.CharField(  # noqa: DJ001
         verbose_name="Фамилия",
         max_length=Limits.MAX_LENGTH_LAST_NAME.value,
         blank=True,
@@ -69,7 +67,7 @@ class CustomUser(AbstractUser):
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
         default_related_name = "user"
-        ordering = ["email"]
+        ordering = ["email"]  # noqa: RUF012
 
     def __str__(self) -> str:
         """Получить строковое представление пользователя.
@@ -114,7 +112,7 @@ class CustomUser(AbstractUser):
         if self.avatar is not None:
             delete_images_dir_task.delay(f"users/{self.id}")
 
-    def serialize_data(self) -> Any:
+    def serialize_data(self):  # noqa: ANN201
         """Сериализовать данные пользователя."""
         return serializers.serialize("json", [self])
 
@@ -146,7 +144,7 @@ class Favorites(models.Model):
         verbose_name = "Избранное"
         verbose_name_plural = "Избранное"
         unique_together = ("user", "content_type", "object_id")
-        ordering = ["user", "content_type"]
+        ordering = ["user", "content_type"]  # noqa: RUF012
 
     def __str__(self) -> str:
         """Получить строковое представление модели избранного.
@@ -162,7 +160,7 @@ class Favorites(models.Model):
         """Удалить объкт из избранного.
 
         Args:
-            instcnse (Model): экземпляр класса
+            instance (Model): экземпляр класса
 
         """
         Favorites.objects.filter(
@@ -195,3 +193,12 @@ class VerificationToken(models.Model):
 
         verbose_name = "Токен для подтверждения регистрации"
         verbose_name_plural = "Токены для подтверждения регистрации"
+
+    def __str__(self) -> str:
+        """Получить строковое представление модели токена.
+
+        Returns:
+            str: строковое представление модели токена
+
+        """
+        return f"Избранное {self.token}"

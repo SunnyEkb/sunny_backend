@@ -8,6 +8,7 @@ from api.v1.schemes import examples
 
 class CookieTokenScheme(OpenApiAuthenticationExtension):
     """Описание аутентификации."""
+
     target_class = "api.v1.auth.CustomAuthentication"
     name = "CookieTokenAuth"
 

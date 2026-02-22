@@ -59,10 +59,7 @@ def validate_email(value: str):
 
 def validate_email_length(email: str):
     """Валидация длины email."""
-    if (
-        len(email) < Limits.MIN_LENGTH_EAMIL
-        or len(email) > Limits.MAX_LENGTH_EAMIL
-    ):
+    if len(email) < Limits.MIN_LENGTH_EAMIL or len(email) > Limits.MAX_LENGTH_EAMIL:
         raise ValidationError(APIResponses.INVALID_EMAIL_LENGTH)
 
 
@@ -104,6 +101,4 @@ def validate_base64_field(value):
 
 def validate_extention(value: str):
     if value.lower() not in ALLOWED_IMAGE_FILE_EXTENTIONS:
-        raise exceptions.ValidationError(
-            APIResponses.WRONG_EXTENTION.format(value)
-        )
+        raise exceptions.ValidationError(APIResponses.WRONG_EXTENTION.format(value))

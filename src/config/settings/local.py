@@ -33,14 +33,10 @@ CELERY_TASK_ALWAYS_EAGER = (
     else False
 )
 CELERY_BROKER_URL = getenv("CELERY_BROKER_URL", default="")  # noqa
-CELERY_RESULT_BACKEND = getenv(  # noqa
-    "CELERY_RESULT_BACKEND", default="cache"
-)
+CELERY_RESULT_BACKEND = getenv("CELERY_RESULT_BACKEND", default="cache")  # noqa
 CELERY_CACHE_BACKEND = getenv("CELERY_CACHE_BACKEND", default="memory")  # noqa
 
-CHANNEL_LAYERS = {
-    "default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
-}
+CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 
 ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
     "django_elasticsearch_dsl.signals.RealTimeSignalProcessor"

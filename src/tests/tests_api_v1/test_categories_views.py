@@ -8,18 +8,14 @@ from tests.fixtures import TestAdsFixtures
 
 class TestCategoriesView(TestAdsFixtures):
     def test_get_categories(self):
-        response_auth_user = self.client_1.get(
-            reverse("common_categories-list")
-        )
+        response_auth_user = self.client_1.get(reverse("common_categories-list"))
         self.assertEqual(response_auth_user.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response_auth_user.json()),
             len(Category.objects.filter(parent=None)),
         )
 
-        response_anon_user = self.client_1.get(
-            reverse("common_categories-list")
-        )
+        response_anon_user = self.client_1.get(reverse("common_categories-list"))
         self.assertEqual(response_anon_user.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response_anon_user.json()),
@@ -47,9 +43,7 @@ class TestCategoriesView(TestAdsFixtures):
         templates = {
             "title": [
                 self.category_1.title,
-                Category.objects.filter(
-                    title__icontains=self.category_1.title
-                ),
+                Category.objects.filter(title__icontains=self.category_1.title),
             ],
         }
         for k, v in templates.items():

@@ -27,8 +27,7 @@ User = get_user_model()
 
 
 class UserReadSerializer(ModelSerializer):
-    """Сериализатор для получения данных о пользователе.
-    """
+    """Сериализатор для получения данных о пользователе."""
 
     avatar = Base64ImageField(required=True, allow_null=False)
 
@@ -47,8 +46,7 @@ class UserReadSerializer(ModelSerializer):
 
 
 class UserSearchSerializer(ModelSerializer):
-    """Сериализатор для получения данных о пользователе.
-    """
+    """Сериализатор для получения данных о пользователе."""
 
     class Meta:
         model = User
@@ -56,12 +54,9 @@ class UserSearchSerializer(ModelSerializer):
 
 
 class UserCreateSerializer(ModelSerializer):
-    """Сериализатор для создания пользователя.
-    """
+    """Сериализатор для создания пользователя."""
 
-    phone = PhoneNumberField(
-        required=True, region="RU", validators=[validate_phone]
-    )
+    phone = PhoneNumberField(required=True, region="RU", validators=[validate_phone])
     confirmation = CharField(write_only=True, required=True)
     username = CharField(required=True, validators=[validate_username])
     email = EmailField(validators=[validate_email, validate_email_length])
@@ -90,9 +85,7 @@ class UserCreateSerializer(ModelSerializer):
         user = User(**data)
 
         try:
-            password_validation.validate_password(
-                password=attrs["password"], user=user
-            )
+            password_validation.validate_password(password=attrs["password"], user=user)
         except ValidationError as e:
             errors["password"] = list(e.messages)
 
@@ -111,8 +104,7 @@ class UserCreateSerializer(ModelSerializer):
 
 
 class UserUpdateSerializer(ModelSerializer):
-    """Сериализатор для изменения данных о пользователе.
-    """
+    """Сериализатор для изменения данных о пользователе."""
 
     phone = PhoneNumberField(region="RU")
 
@@ -131,8 +123,7 @@ class UserUpdateSerializer(ModelSerializer):
 
 
 class UserAdAvatarSerializer(ModelSerializer):
-    """Сериализатор для изменения фото пользователя.
-    """
+    """Сериализатор для изменения фото пользователя."""
 
     avatar = Base64ImageField(
         required=True,
@@ -150,8 +141,7 @@ class UserAdAvatarSerializer(ModelSerializer):
 
 
 class NonErrorFieldSerializer(Serializer):
-    """Сериализатор для ошибок валидации вводимых данных.
-    """
+    """Сериализатор для ошибок валидации вводимых данных."""
 
     non_error_field = ListField(read_only=True)
 
@@ -178,8 +168,7 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
 
 
 class PasswordChangeSerializer(Serializer):
-    """Сериализатор для смены пароля.
-    """
+    """Сериализатор для смены пароля."""
 
     current_password = CharField(required=True)
     new_password = CharField(required=True)
@@ -188,9 +177,7 @@ class PasswordChangeSerializer(Serializer):
     def validate(self, attrs):
         user = self.initial_data["user"]
         if not user.check_password(attrs["current_password"]):
-            raise ValidationError(
-                {"password": APIResponses.WRONG_PASSWORD.value}
-            )
+            raise ValidationError({"password": APIResponses.WRONG_PASSWORD.value})
         if (
             not self.initial_data["new_password"].strip()
             == self.initial_data["confirmation"].strip()
@@ -202,9 +189,7 @@ class PasswordChangeSerializer(Serializer):
             self.initial_data["new_password"].strip()
             == self.initial_data["current_password"]
         ):
-            raise ValidationError(
-                {"password": APIResponses.NOT_SAME_PASSWORD.value}
-            )
+            raise ValidationError({"password": APIResponses.NOT_SAME_PASSWORD.value})
 
         errors = dict()
         try:
@@ -220,8 +205,7 @@ class PasswordChangeSerializer(Serializer):
 
 
 class VerificationTokenSerialiser(ModelSerializer):
-    """Сериализатор для подтверждения регистрации.
-    """
+    """Сериализатор для подтверждения регистрации."""
 
     class Meta:
         model = VerificationToken

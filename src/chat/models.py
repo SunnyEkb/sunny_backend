@@ -69,9 +69,7 @@ class Message(TimeCreateUpdateModel):
         limit_choices_to={"is_active": True},
     )
     message = models.TextField(null=False, blank=False)
-    chat = models.ForeignKey(
-        Chat, on_delete=models.PROTECT, related_name="messages"
-    )
+    chat = models.ForeignKey(Chat, on_delete=models.PROTECT, related_name="messages")
 
     def __str__(self) -> str:
         """Получить строковое представление сообщения.

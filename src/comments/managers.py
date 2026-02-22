@@ -11,8 +11,5 @@ class CommentManager(models.Manager):
         :rtype: QuerySet
         """
         return (
-            super()
-            .get_queryset()
-            .select_related("author")
-            .prefetch_related("images")
+            super().get_queryset().select_related("author").prefetch_related("images")
         )

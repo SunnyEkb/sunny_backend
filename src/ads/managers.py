@@ -6,8 +6,5 @@ class AdManager(models.Manager):
 
     def get_queryset(self) -> models.QuerySet:
         return (
-            super()
-            .get_queryset()
-            .select_related("provider")
-            .prefetch_related("images")
+            super().get_queryset().select_related("provider").prefetch_related("images")
         )

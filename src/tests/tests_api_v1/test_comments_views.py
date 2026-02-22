@@ -71,25 +71,19 @@ class TestCommentsView(TestServiceFixtures):
 
     def test_not_author_cant_delete_comment(self):
         response = self.client_1.delete(
-            reverse(
-                "comments_destroy-detail", kwargs={"pk": self.comment_2.id}
-            ),
+            reverse("comments_destroy-detail", kwargs={"pk": self.comment_2.id}),
         )
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
 
     def test_anon_user_cant_delete_comment(self):
         response = self.anon_client.delete(
-            reverse(
-                "comments_destroy-detail", kwargs={"pk": self.comment_2.id}
-            ),
+            reverse("comments_destroy-detail", kwargs={"pk": self.comment_2.id}),
         )
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
 
     def test_comment_delete(self):
         response = self.client_2.delete(
-            reverse(
-                "comments_destroy-detail", kwargs={"pk": self.comment_2.id}
-            ),
+            reverse("comments_destroy-detail", kwargs={"pk": self.comment_2.id}),
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
 
@@ -238,9 +232,7 @@ class TestCommentsToServicesCreationView(TestServiceFixtures):
 
 class TestCommentsModerationView(TestServiceFixtures):
     def test_get_list_of_comments_for_moderation(self):
-        response = self.client_moderator.get(
-            reverse("moderation_comments-list")
-        )
+        response = self.client_moderator.get(reverse("moderation_comments-list"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response.json()["results"]),
@@ -290,9 +282,7 @@ class TestCommentsModerationView(TestServiceFixtures):
             )
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertFalse(
-            Comment.objects.filter(id=self.cmmnt_for_mdrtn.id).exists()
-        )
+        self.assertFalse(Comment.objects.filter(id=self.cmmnt_for_mdrtn.id).exists())
 
     def test_anon_can_not_reject_comment(self):
         response = self.anon_client.post(
@@ -321,26 +311,20 @@ class TestCommentsModerationView(TestServiceFixtures):
         )
 
     def test_get_comments_of_crnt_user_with_type_ads(self):
-        response = self.client_2.get(
-            reverse("comments_destroy-list") + "?type=ad"
-        )
+        response = self.client_2.get(reverse("comments_destroy-list") + "?type=ad")
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response.json()["results"]),
             len(
                 Comment.objects.filter(
                     author=self.user_2,
-                    content_type=ContentType.objects.get(
-                        app_label="ads", model="ad"
-                    ),
+                    content_type=ContentType.objects.get(app_label="ads", model="ad"),
                 )
             ),
         )
 
     def test_get_comments_of_crnt_user_with_wrong_type(self):
-        response = self.client_2.get(
-            reverse("comments_destroy-list") + "?type=abc"
-        )
+        response = self.client_2.get(reverse("comments_destroy-list") + "?type=abc")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
     def test_get_comments_of_crnt_user_by_anon_client(self):

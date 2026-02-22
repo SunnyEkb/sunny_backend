@@ -67,9 +67,7 @@ api_v1_router.register(
     CommentModerationViewSet,
     basename="moderation_comments",
 )
-api_v1_router.register(
-    "serviceimage", ServiceImageViewSet, basename="serviceimage"
-)
+api_v1_router.register("serviceimage", ServiceImageViewSet, basename="serviceimage")
 api_v1_router.register("adimage", AdImageViewSet, basename="adimage")
 api_v1_router.register("users", UserViewSet, basename="users")
 
@@ -98,9 +96,7 @@ urlpatterns = [
         name="change_password",
     ),
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
-    path(
-        "docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"
-    ),
+    path("docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"),
     # re_path(
     #    r"^auth/", include("drf_social_oauth2.urls", namespace="social_auth")
     # ),

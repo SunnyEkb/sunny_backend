@@ -52,7 +52,7 @@ def send_password_changed_email_task(username: str, mail_to: str) -> None:
 
     Args:
         username (str): имя пользователя, которому отправляется письмо
-        email (str): адрес отправки письма
+        mail_to (str): адрес отправки письма
 
     """
     send_password_changed_email(username=username, email=mail_to)

@@ -12,7 +12,7 @@ class CustomUserAdmin(UserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
-    list_display = [
+    list_display = [  # noqa: RUF012
         "email",
         "username",
         "first_name",
@@ -22,12 +22,12 @@ class CustomUserAdmin(UserAdmin):
         "role",
         "date_joined",
     ]
-    fieldsets = [
+    fieldsets = [  # noqa: RUF012
         (None, {"fields": ["email", "password", "phone", "username"]}),
         ("Персональная информация", {"fields": ["first_name", "last_name"]}),
         ("Разрешения", {"fields": ["is_active", "role", "is_staff"]}),
     ]
-    add_fieldsets = [
+    add_fieldsets = [  # noqa: RUF012
         (
             None,
             {
@@ -36,24 +36,24 @@ class CustomUserAdmin(UserAdmin):
             },
         ),
     ]
-    list_filter = ["role", "is_active"]
-    search_fields = ["email"]
-    ordering = ["email"]
+    list_filter = ["role", "is_active"]  # noqa: RUF012
+    search_fields = ["email"]  # noqa: RUF012
+    ordering = ["email"]  # noqa: RUF012
 
 
 @admin.register(Favorites)
 class FavoritesAdmin(admin.ModelAdmin):
     """Отображение модели избранное в админке."""
 
-    list_display = ["user", "content_type", "object_id"]
-    list_filter = ["content_type"]
-    search_fields = ["user", "object_id"]
+    list_display = ["user", "content_type", "object_id"]  # noqa: RUF012
+    list_filter = ["content_type"]  # noqa: RUF012
+    search_fields = ["user", "object_id"]  # noqa: RUF012
 
 
 @admin.register(VerificationToken)
 class VerificationTokenAdmin(admin.ModelAdmin):
     """Отображение модели токена для подтверждения регистрации в админке."""
 
-    list_display = ["user"]
-    search_fields = ["user__email"]
-    readonly_fields = ["created_at"]
+    list_display = ["user"]  # noqa: RUF012
+    search_fields = ["user__email"]  # noqa: RUF012
+    readonly_fields = ["created_at"]  # noqa: RUF012

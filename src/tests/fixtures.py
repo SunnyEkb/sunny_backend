@@ -220,9 +220,7 @@ class TestServiceFixtures(TestUserFixtures):
         Favorites.objects.create(
             user=cls.user_2,
             object_id=cls.published_service.id,
-            content_type=ContentType.objects.get(
-                app_label="services", model="service"
-            ),
+            content_type=ContentType.objects.get(app_label="services", model="service"),
         )
 
 
@@ -239,9 +237,7 @@ class TestAdsFixtures(TestUserFixtures):
             status=AdvertisementStatus.PUBLISHED.value,
         )
         cls.ad_2.category.set([cls.category_2])
-        cls.ad_2_image = AdImage.objects.create(
-            ad=cls.ad_2, image=cls.uploaded
-        )
+        cls.ad_2_image = AdImage.objects.create(ad=cls.ad_2, image=cls.uploaded)
         cls.ad_draft = factories.AdFactory(
             provider=cls.user_2,
         )

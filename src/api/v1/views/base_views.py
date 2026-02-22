@@ -67,9 +67,7 @@ class BaseServiceAdViewSet(
                 data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION,
             )
 
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial
-        )
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         if getattr(instance, "_prefetched_objects_cache", None):
@@ -92,9 +90,7 @@ class BaseServiceAdViewSet(
             status.HTTP_200_OK: schemes.SERVICE_LIST_OK_200,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_HIDE_SERVICE_OR_AD_406
-            ),
+            status.HTTP_406_NOT_ACCEPTABLE: (schemes.CANT_HIDE_SERVICE_OR_AD_406),
         },
     )
     @action(
@@ -128,9 +124,7 @@ class BaseServiceAdViewSet(
             status.HTTP_200_OK: schemes.AD_SERVICE_SENT_TO_MODERATION,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
             status.HTTP_403_FORBIDDEN: schemes.SERVICE_AD_FORBIDDEN_403,
-            status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_PUBLISH_SERVICE_OR_AD_406
-            ),
+            status.HTTP_406_NOT_ACCEPTABLE: (schemes.CANT_PUBLISH_SERVICE_OR_AD_406),
         },
     )
     @action(
@@ -209,33 +203,23 @@ class BaseServiceAdViewSet(
             img_serializer = api_serializers.AdImagesSerializer(data=data)
 
         if img_serializer.is_valid():
-            if isinstance(
-                img_serializer, api_serializers.ServiceImagesSerializer
-            ):
+            if isinstance(img_serializer, api_serializers.ServiceImagesSerializer):
                 for image in img_serializer.validated_data["images"]:
-                    photo_serializer = (
-                        api_serializers.ServiceImageCreateSerializer(
-                            data=image
-                        )
+                    photo_serializer = api_serializers.ServiceImageCreateSerializer(
+                        data=image
                     )
                     if photo_serializer.is_valid(raise_exception=True):
-                        if images.filter(
-                            title_photo=True
-                        ).exists():
+                        if images.filter(title_photo=True).exists():
                             photo_serializer.save(service=object)
                         else:
-                            photo_serializer.save(
-                                service=object, title_photo=True
-                            )
+                            photo_serializer.save(service=object, title_photo=True)
             else:
                 for image in img_serializer.validated_data["images"]:
                     photo_serializer = api_serializers.AdImageCreateSerializer(
                         data=image
                     )
                     if photo_serializer.is_valid(raise_exception=True):
-                        if images.filter(
-                            title_photo=True
-                        ).exists():
+                        if images.filter(title_photo=True).exists():
                             photo_serializer.save(ad=object)
                         else:
                             photo_serializer.save(ad=object, title_photo=True)
@@ -253,9 +237,7 @@ class BaseServiceAdViewSet(
         responses={
             status.HTTP_201_CREATED: schemes.ADDED_TO_FAVORITES_201,
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_ADD_TO_FAVORITES_406
-            ),
+            status.HTTP_406_NOT_ACCEPTABLE: (schemes.CANT_ADD_TO_FAVORITES_406),
         },
     )
     @action(
@@ -282,9 +264,7 @@ class BaseServiceAdViewSet(
             model = "ad"
 
         if Favorites.objects.filter(
-            content_type=ContentType.objects.get(
-                app_label=app_label, model=model
-            ),
+            content_type=ContentType.objects.get(app_label=app_label, model=model),
             object_id=object.id,
             user=request.user,
         ).exists():
@@ -298,9 +278,7 @@ class BaseServiceAdViewSet(
                 data=APIResponses.OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE,
             )
         Favorites.objects.create(
-            content_type=ContentType.objects.get(
-                app_label=app_label, model=model
-            ),
+            content_type=ContentType.objects.get(app_label=app_label, model=model),
             object_id=object.id,
             user=request.user,
         )
@@ -356,9 +334,7 @@ class BaseServiceAdViewSet(
             model = "ad"
 
         if Comment.objects.filter(
-            content_type=ContentType.objects.get(
-                app_label=app_label, model=model
-            ),
+            content_type=ContentType.objects.get(app_label=app_label, model=model),
             object_id=object.id,
             author=request.user,
         ).exists():
@@ -373,9 +349,7 @@ class BaseServiceAdViewSet(
             )
 
         comment: Comment = serializer.save(
-            content_type=ContentType.objects.get(
-                app_label=app_label, model=model
-            ),
+            content_type=ContentType.objects.get(app_label=app_label, model=model),
             object_id=object.id,
             author=request.user,
         )
@@ -392,9 +366,7 @@ class BaseServiceAdViewSet(
         responses={
             status.HTTP_204_NO_CONTENT: (schemes.DELETED_FROM_FAVORITES_204),
             status.HTTP_401_UNAUTHORIZED: schemes.UNAUTHORIZED_401,
-            status.HTTP_406_NOT_ACCEPTABLE: (
-                schemes.CANT_DELETE_FROM_FAVORITES_406
-            ),
+            status.HTTP_406_NOT_ACCEPTABLE: (schemes.CANT_DELETE_FROM_FAVORITES_406),
         },
     )
     @action(
@@ -416,9 +388,7 @@ class BaseServiceAdViewSet(
             model = "ad"
 
         if not Favorites.objects.filter(
-            content_type=ContentType.objects.get(
-                app_label=app_label, model=model
-            ),
+            content_type=ContentType.objects.get(app_label=app_label, model=model),
             object_id=object.id,
             user=request.user,
         ).exists():
@@ -427,9 +397,7 @@ class BaseServiceAdViewSet(
                 data=APIResponses.OBJECT_NOT_IN_FAVORITES,
             )
         Favorites.objects.get(
-            content_type=ContentType.objects.get(
-                app_label=app_label, model=model
-            ),
+            content_type=ContentType.objects.get(app_label=app_label, model=model),
             object_id=object.id,
             user=request.user,
         ).delete()

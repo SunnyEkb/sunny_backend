@@ -44,9 +44,7 @@ from services.models import Service
             description="Идентификатор категории",
         ),
         OpenApiParameter("page", int, description="Номер страницы"),
-        OpenApiParameter(
-            "limit", int, description="Количество объявлений на странице"
-        ),
+        OpenApiParameter("limit", int, description="Количество объявлений на странице"),
     ],
 )
 class AdvertisementView(APIView):
@@ -137,9 +135,7 @@ class AdvertisementView(APIView):
     },
     parameters=[
         OpenApiParameter("page", int, description="Номер страницы"),
-        OpenApiParameter(
-            "limit", int, description="Количество объявлений на странице"
-        ),
+        OpenApiParameter("limit", int, description="Количество объявлений на странице"),
     ],
 )
 class UserAdvertisementView(APIView):

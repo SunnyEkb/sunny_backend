@@ -39,7 +39,7 @@ from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from core.choices import APIResponses
 from services.models import Service
 from services.tasks import delete_image_files_task
-from users.exceptions import TokenDoesNotExists, TokenExpired
+from users.exceptions import TokenDoesNotExistsError, TokenExpiredError
 from users.tasks import save_file_with_user_data_task
 from users.utils import verify_user
 
@@ -57,8 +57,7 @@ User = get_user_model()
     },
 )
 class RegisrtyView(APIView):
-    """Регистрация пользователей.
-    """
+    """Регистрация пользователей."""
 
     def post(self, request):
         serializer = api_serializers.UserCreateSerializer(data=request.data)
@@ -79,8 +78,7 @@ class RegisrtyView(APIView):
     },
 )
 class LoginView(APIView):
-    """Вход пользователя в систему.
-    """
+    """Вход пользователя в систему."""
 
     authentication_classes = ()
 
@@ -116,17 +114,14 @@ class LoginView(APIView):
     },
 )
 class LogoutView(APIView):
-    """Выход из системы.
-    """
+    """Выход из системы."""
 
     permission_classes = [IsAuthenticated]
     serializer_class = None
 
     def post(self, request, format=None):
         try:
-            refreshToken = request.COOKIES.get(
-                settings.SIMPLE_JWT["AUTH_REFRESH"]
-            )
+            refreshToken = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_REFRESH"])
             token = RefreshToken(refreshToken)
             token.blacklist()
 
@@ -152,8 +147,7 @@ class LogoutView(APIView):
     },
 )
 class CookieTokenRefreshView(TokenRefreshView):
-    """Обновление refresh и access токена.
-    """
+    """Обновление refresh и access токена."""
 
     serializer_class = api_serializers.CookieTokenRefreshSerializer  # type: ignore  # noqa
 
@@ -186,8 +180,7 @@ class CookieTokenRefreshView(TokenRefreshView):
     },
 )
 class ChangePassowrdView(GenericAPIView):
-    """Изменение пароля пользователя.
-    """
+    """Изменение пароля пользователя."""
 
     permission_classes = [IsAuthenticated]
     serializer_class = api_serializers.PasswordChangeSerializer
@@ -245,8 +238,7 @@ class ChangePassowrdView(GenericAPIView):
 class UserViewSet(
     DestroyModelMixin, RetrieveModelMixin, UpdateModelMixin, GenericViewSet
 ):
-    """Изменение и получение данных о пользователе.
-    """
+    """Изменение и получение данных о пользователе."""
 
     permission_classes = (SelfOnly,)
 
@@ -285,9 +277,7 @@ class UserViewSet(
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial
-        )
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         phone = self.request.data.get("phone", None)
         if phone is not None:
@@ -340,8 +330,7 @@ class UserViewSet(
     ),
 )
 class AdAvatarView(generics.UpdateAPIView):
-    """Добавление аватара пользователя.
-    """
+    """Добавление аватара пользователя."""
 
     permission_classes = (SelfOnly,)
     serializer_class = api_serializers.UserAdAvatarSerializer
@@ -368,13 +357,10 @@ class AdAvatarView(generics.UpdateAPIView):
     },
 )
 class VerificationView(APIView):
-    """Подтверждение регистрации пользователя.
-    """
+    """Подтверждение регистрации пользователя."""
 
     def post(self, request):
-        serializer = api_serializers.VerificationTokenSerialiser(
-            data=request.data
-        )
+        serializer = api_serializers.VerificationTokenSerialiser(data=request.data)
         if serializer.is_valid():
             try:
                 token = serializer.validated_data.get("token")
@@ -383,12 +369,12 @@ class VerificationView(APIView):
                     status=status.HTTP_200_OK,
                     data=APIResponses.VERIFICATION_SUCCESS,
                 )
-            except TokenDoesNotExists:
+            except TokenDoesNotExistsError:
                 return Response(
                     status=status.HTTP_403_FORBIDDEN,
                     data=APIResponses.VERIFICATION_FAILED,
                 )
-            except TokenExpired:
+            except TokenExpiredError:
                 return Response(
                     status=status.HTTP_403_FORBIDDEN,
                     data=APIResponses.TOKEN_EXPIRED,

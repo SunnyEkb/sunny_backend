@@ -36,9 +36,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "updated_at",
-                    models.DateTimeField(
-                        auto_now=True, verbose_name="Время изменения"
-                    ),
+                    models.DateTimeField(auto_now=True, verbose_name="Время изменения"),
                 ),
                 (
                     "title",
@@ -82,9 +80,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "main_photo",
-                    models.BooleanField(
-                        default=False, verbose_name="Основное фото"
-                    ),
+                    models.BooleanField(default=False, verbose_name="Основное фото"),
                 ),
                 (
                     "service",

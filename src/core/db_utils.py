@@ -39,9 +39,7 @@ def service_image_path(instance: Model, filename: str) -> str:
     :return: путь для сохранения файла
     """
 
-    return "services/{}/{}".format(instance.service.id, filename).replace(
-        "\\\\", "/"
-    )
+    return "services/{}/{}".format(instance.service.id, filename).replace("\\\\", "/")
 
 
 def comment_image_path(instance: Model, filename: str) -> str:
@@ -53,9 +51,7 @@ def comment_image_path(instance: Model, filename: str) -> str:
     :return: путь для сохранения файла
     """
 
-    return "comments/{}/{}".format(instance.comment.id, filename).replace(
-        "\\\\", "/"
-    )
+    return "comments/{}/{}".format(instance.comment.id, filename).replace("\\\\", "/")
 
 
 def ad_image_path(instance: Model, filename: str) -> str:

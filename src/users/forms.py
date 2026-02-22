@@ -18,7 +18,7 @@ class UserCreationForm(forms.ModelForm):
         """Настройки формы."""
 
         model = CustomUser
-        fields = ["email", "username"]
+        fields = ["email", "username"]  # noqa: RUF012
 
     def clean_password2(self) -> str:
         """Проверить пароль.
@@ -33,7 +33,7 @@ class UserCreationForm(forms.ModelForm):
             raise ValidationError(SystemMessages.PASSWORD_DO_NOT_MATCH)
         return password2
 
-    def save(self, commit: bool = True) -> CustomUser:
+    def save(self, commit: bool = True) -> CustomUser:  # noqa: FBT001, FBT002
         """Сохранить пользователя в БД.
 
         Args:
@@ -59,7 +59,7 @@ class UserChangeForm(forms.ModelForm):
         """Настройки Формы."""
 
         model = CustomUser
-        fields = [
+        fields = [  # noqa: RUF012
             "email",
             "password",
             "username",

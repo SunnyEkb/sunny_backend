@@ -50,9 +50,7 @@ class AdFactory(DjangoModelFactory):
 
     provider = SubFactory(CustomUserFactory)
     title = Sequence(lambda o: "ad_{0}".format(o))
-    description = fuzzy.FuzzyText(
-        length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION.value
-    )
+    description = fuzzy.FuzzyText(length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION.value)
     price = fuzzy.FuzzyDecimal(0, 1000)
 
 
@@ -77,12 +75,8 @@ class ServiceFactory(DjangoModelFactory):
     title = Sequence(lambda o: "service_{0}".format(o))
     experience = fuzzy.FuzzyInteger(0, 25)
     place_of_provision = fuzzy.FuzzyChoice(ServicePlace.choices)
-    description = fuzzy.FuzzyText(
-        length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION.value
-    )
-    salon_name = fuzzy.FuzzyText(
-        length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value
-    )
+    description = fuzzy.FuzzyText(length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION.value)
+    salon_name = fuzzy.FuzzyText(length=Limits.MAX_LENGTH_SERVICE_SALON_NAME.value)
     address = fuzzy.FuzzyText(length=Limits.MAX_LENGTH_SERVICE_ADDRESS.value)
 
 

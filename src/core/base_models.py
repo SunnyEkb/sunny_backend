@@ -23,9 +23,7 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
         on_delete=models.CASCADE,
         verbose_name="Исполнитель",
     )
-    title = models.CharField(
-        "Название", max_length=Limits.MAX_LENGTH_ADVMNT_TITLE
-    )
+    title = models.CharField("Название", max_length=Limits.MAX_LENGTH_ADVMNT_TITLE)
     description = models.TextField(
         "Описание", max_length=Limits.MAX_LENGTH_ADVMNT_DESCRIPTION
     )
