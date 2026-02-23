@@ -1,6 +1,6 @@
 import os
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from pathlib import Path
 from uuid import UUID
 
 from django.conf import settings
@@ -54,20 +54,19 @@ def delete_expired_tokens() -> None:
             token.delete()
 
 
-def save_file_with_user_data(email: str, data: Any) -> None:
+def save_file_with_user_data(email: str, data: dict) -> None:
     """Сохранить сведения о пользователе после удаления его аккаунта.
 
     Args:
         email (str): email пользователя
-        data (str): данные пользователя
+        data (dict): данные пользователя
 
     """
     date = (datetime.now(UTC) + settings.DATA_RETENTION_PERIOD).strftime("%Y-%m-%d")
-    file_path = os.path.join(
-        settings.PATH_TO_SAVE_DELETED_USERS_DATA.location,
-        f"{email}_{date}.json",
-    ).replace("\\\\", "/")
-    with open(file_path, "w") as file:
+    file_path = (
+        Path(settings.PATH_TO_SAVE_DELETED_USERS_DATA.location) / f"{email}_{date}.json"
+    )
+    with Path.open(file_path, "w") as file:
         file.write(data)
 
 
@@ -76,7 +75,7 @@ def delete_files_after_expiration_date() -> None:
 
     После истечения срока хранения данных.
     """
-    files = os.listdir(settings.PATH_TO_SAVE_DELETED_USERS_DATA.location)
+    files = Path.iterdir(settings.PATH_TO_SAVE_DELETED_USERS_DATA.location)
     for file in files:
         if datetime.now(UTC).date() > datetime.strptime(
             str(file).split("_")[-1].replace(".json", ""), "%Y-%m-%d"

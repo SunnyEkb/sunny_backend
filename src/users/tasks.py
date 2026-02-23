@@ -1,5 +1,3 @@
-from typing import Any
-
 from celery import shared_task
 
 from core.email_services import (
@@ -83,12 +81,12 @@ def delete_files_after_expiration_date_task() -> None:
 
 
 @shared_task
-def save_file_with_user_data_task(email: str, data: Any) -> None:
+def save_file_with_user_data_task(email: str, data: dict) -> None:
     """Создать задачу по сохранению сведений о пользователе после удаления аккаунта.
 
     Args:
         email (str): email пользователя
-        data (str): данные пользователя
+        data (dict): данные пользователя
 
     """
     save_file_with_user_data(email=email, data=data)
