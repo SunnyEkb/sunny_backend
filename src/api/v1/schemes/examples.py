@@ -344,6 +344,11 @@ WRONG_PARAMETR_EXAMPLE: OpenApiExample = OpenApiExample(
     value={"detail": APIResponses.INVALID_PARAMETR},
 )
 
+WRONG_OBJ_TYPE_EXAMPLE: OpenApiExample = OpenApiExample(
+    name="Неверный тип объекта",
+    value={"detail": APIResponses.WRONG_OBJECT_TYPE},
+)
+
 CANT_HIDE_SERVICE_OR_AD_EXAMPLE: OpenApiExample = OpenApiExample(
     name="Услуга/объявление не может быть скрыта",
     value={"detail": APIResponses.CAN_NOT_HIDE_SERVICE_OR_AD},
