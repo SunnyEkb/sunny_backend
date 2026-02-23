@@ -54,11 +54,13 @@ class SearchView(views.APIView):
             q = self.generate_q_expression(search_terms_list=search_terms)
             search_for_ads = AdDocument.search().query(q)
             ads = search_for_ads.execute()
-            ads_results = serializers.AdSearchSerializer(ads, many=True)
+            ads_results = serializers.AdSearchSerializer(
+                ads, many=True, context={"request": request}
+            )
             search_for_services = ServiceDocument.search().query(q)
             services = search_for_services.execute()
             services_results = serializers.ServiceSearchSerializer(
-                services, many=True
+                services, many=True, context={"request": request}
             )
             return response.Response(
                 data=ads_results.data + services_results.data,
