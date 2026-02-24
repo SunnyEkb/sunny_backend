@@ -8,6 +8,7 @@ from api.v1.validators import (
     validate_file_quantity,
     validate_file_size,
 )
+from ads.models import Ad
 from comments.models import Comment, CommentImage
 
 
@@ -86,6 +87,25 @@ class CommentReadSerializer(CommentForModerationSerializer):
     """Сериализатор для чтения комментария."""
 
     author = UserReadSerializer(read_only=True)
+    obj_type = serializers.SerializerMethodField()
+    title = serializers.CharField(source="subject.title")
 
     class Meta(CommentForModerationSerializer.Meta):
-        fields = CommentCreateSerializer.Meta.fields + ("author",)  # type: ignore  # noqa
+        fields = CommentCreateSerializer.Meta.fields + (  # type: ignore  # noqa
+            "author",
+            "object_id",
+            "title",
+            "obj_type",
+        )
+
+    def get_obj_type(self, obj: Comment) -> str:
+        """Получить тип объекта, к которому комментарий относится.
+
+        Args:
+            obj (Comment): экземпляр комментария
+
+        Returns:
+            str(): тип объекта, к которому комментарий относится
+
+        """
+        return obj.subject.__class__.__name__.lower()
