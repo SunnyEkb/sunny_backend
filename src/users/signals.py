@@ -56,7 +56,7 @@ def creat_welcome_notification(
     """Создать приветственное уведомление зарегистрировавшемуся пользователю."""
     if created:
         notification = Notification.objects.create(
-            text=Notifications.WELCOME.value.format(instance.username),
+            text=Notifications.WELCOME.value.format(instance.username),  # type: ignore
             receiver=instance,
         )
         notification.save()

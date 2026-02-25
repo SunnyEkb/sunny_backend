@@ -1,4 +1,3 @@
-import os
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from uuid import UUID
@@ -54,12 +53,12 @@ def delete_expired_tokens() -> None:
             token.delete()
 
 
-def save_file_with_user_data(email: str, data: dict) -> None:
+def save_file_with_user_data(email: str, data: str) -> None:
     """Сохранить сведения о пользователе после удаления его аккаунта.
 
     Args:
         email (str): email пользователя
-        data (dict): данные пользователя
+        data (str): данные пользователя
 
     """
     date = (datetime.now(UTC) + settings.DATA_RETENTION_PERIOD).strftime("%Y-%m-%d")
@@ -79,8 +78,8 @@ def delete_files_after_expiration_date() -> None:
     for file in files:
         if datetime.now(UTC).date() > datetime.strptime(
             str(file).split("_")[-1].replace(".json", ""), "%Y-%m-%d"
-        ):
-            os.remove(file)
+        ).astimezone(UTC):
+            Path.unlink(file)
 
 
 def del_exprd_rfrsh_tokens_from_blck_lst() -> None:

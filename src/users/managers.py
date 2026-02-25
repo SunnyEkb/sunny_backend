@@ -42,9 +42,9 @@ class UserManager(BaseUserManager):
         """
         username = input("Введите имя пользователя: ")
         phone = input("Введите телефон: ")
-        extra_fields.setdefault("username", username)
+        extra_fields.setdefault("username", username)  # type: ignore
         user = self.create_user(
-            email=email, password=password, phone=phone, **extra_fields
+            email=email, password=password, phone=phone, **extra_fields  # type: ignore
         )
         user.is_superuser = True
         user.is_staff = True

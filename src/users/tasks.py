@@ -81,12 +81,12 @@ def delete_files_after_expiration_date_task() -> None:
 
 
 @shared_task
-def save_file_with_user_data_task(email: str, data: dict) -> None:
+def save_file_with_user_data_task(email: str, data: str) -> None:
     """Создать задачу по сохранению сведений о пользователе после удаления аккаунта.
 
     Args:
         email (str): email пользователя
-        data (dict): данные пользователя
+        data (str): данные пользователя
 
     """
     save_file_with_user_data(email=email, data=data)
