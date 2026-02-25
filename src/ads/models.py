@@ -38,9 +38,11 @@ class Ad(AbstractAdvertisement):
     cstm_mng = AdManager()
 
     class Meta:
+        """Настройки модели объявления."""
+
         verbose_name = "Объявление"
         verbose_name_plural = "Объявления"
-        ordering = ["-created_at"]
+        ordering = ["-created_at"]  # noqa: RUF012
         default_related_name = "ads"
 
 
@@ -55,8 +57,16 @@ class AdImage(AbstractImage):
     )
 
     class Meta:
+        """Настройки модели фото к объявлению."""
+
         verbose_name = "Фото к объявлению"
         verbose_name_plural = "Фото к объявлениям"
 
     def __str__(self) -> str:
+        """Получить строковое фото к объявлению.
+
+        Returns:
+            str: строковое фото к объявлению
+
+        """
         return self.ad.title
