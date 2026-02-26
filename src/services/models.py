@@ -29,7 +29,7 @@ class Service(AbstractAdvertisement):
         verbose_name="Категория",
         related_name="services",
     )
-    salon_name = models.CharField(
+    salon_name = models.CharField(  # noqa: DJ001
         "Название салона",
         max_length=Limits.MAX_LENGTH_SERVICE_SALON_NAME,
         null=True,
@@ -40,13 +40,12 @@ class Service(AbstractAdvertisement):
     cstm_mng = ServiceManager()
 
     class Meta:
+        """Настройки модели услуг."""
+
         verbose_name = "Услуга"
         verbose_name_plural = "Услуги"
-        ordering = ["-created_at"]
+        ordering = ["-created_at"]  # noqa: RUF012
         default_related_name = "services"
-
-    def __str__(self) -> str:
-        return self.title
 
 
 class ServiceImage(AbstractImage):
@@ -60,10 +59,18 @@ class ServiceImage(AbstractImage):
     )
 
     class Meta:
+        """Настройки модели фото к услуге."""
+
         verbose_name = "Фото к услуге"
         verbose_name_plural = "Фото к услугам"
 
     def __str__(self) -> str:
+        """Получить строковое представление фото к услуге.
+
+        Returns:
+            str: строковое представление фото к услуге
+
+        """
         return self.service.title
 
 
@@ -88,8 +95,16 @@ class SubService(models.Model):
     )
 
     class Meta:
+        """Настройки модели позиция прайс-листа."""
+
         verbose_name = "Позиция прайс-листа"
         verbose_name_plural = "Позиции прайс-листов"
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Получить строковое представление позиции прайс-листа.
+
+        Returns:
+            str: нимаенование позиции прайс-листа
+
+        """
         return self.title
