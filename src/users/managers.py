@@ -7,7 +7,18 @@ from core.choices import Role
 class UserManager(BaseUserManager):
     """Кастомный менеджер для модели пользователя."""
 
-    def create_user(self, email, password, **kwargs):
+    def create_user(self, email: str, password: str, **kwargs: dict) -> models.Model:
+        """Создать пользователя.
+
+        Args:
+            email (str): email пользователя
+            password (str): паролья пользователя
+            **kwargs (dict): дополнительные сведения о пользователе
+
+        Returns:
+            CustomUser: созданный пользователь
+
+        """
         email = self.normalize_email(email)
         user = self.model(email=email.lower(), **kwargs)
         user.set_password(password)
@@ -15,12 +26,25 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(
+        self, email: str, password: str, **extra_fields: dict
+    ) -> models.Model:
+        """Создать суперпользователя.
+
+        Args:
+            email (str): email пользователя
+            password (str): паролья пользователя
+            **extra_fields (dict): дополнительные сведения о пользователе
+
+        Returns:
+            CustomUser: созданный суперпользователь
+
+        """
         username = input("Введите имя пользователя: ")
         phone = input("Введите телефон: ")
-        extra_fields.setdefault("username", username)
+        extra_fields.setdefault("username", username)  # type: ignore
         user = self.create_user(
-            email=email, password=password, phone=phone, **extra_fields
+            email=email, password=password, phone=phone, **extra_fields  # type: ignore
         )
         user.is_superuser = True
         user.is_staff = True
@@ -31,9 +55,13 @@ class UserManager(BaseUserManager):
 
 
 class VerificationTokenManager(models.Manager):
-    """
-    Пользовательский менеджер для модели Токена для подтверждения регистрации.
-    """
+    """Пользовательский менеджер для модели Токена для подтверждения регистрации."""
 
     def get_queryset(self) -> models.QuerySet:
+        """Сформировать запрос к БД по умолчанию.
+
+        Returns:
+            QuerySet: запрос к БД по умолчанию
+
+        """
         return super().get_queryset().select_related("user")

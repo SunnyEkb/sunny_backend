@@ -48,9 +48,7 @@ class Migration(migrations.Migration):
                     "content_type",
                     models.ForeignKey(
                         limit_choices_to=models.Q(
-                            models.Q(
-                                ("app_label", "services"), ("model", "service")
-                            ),
+                            models.Q(("app_label", "services"), ("model", "service")),
                             models.Q(("app_label", "ads"), ("model", "ad")),
                             _connector="OR",
                         ),
@@ -98,9 +96,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "updated_at",
-                    models.DateTimeField(
-                        auto_now=True, verbose_name="Время изменения"
-                    ),
+                    models.DateTimeField(auto_now=True, verbose_name="Время изменения"),
                 ),
                 ("message", models.TextField()),
                 (

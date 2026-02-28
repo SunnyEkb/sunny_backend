@@ -161,9 +161,7 @@ class TestServivecesView(TestServiceFixtures):
     #            self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_services_create(self):
-        response = self.client_1.post(
-            reverse("services-list"), data=self.service_data
-        )
+        response = self.client_1.post(reverse("services-list"), data=self.service_data)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertTrue(
             Service.objects.filter(
@@ -187,9 +185,7 @@ class TestServivecesView(TestServiceFixtures):
 
     def test_cant_update_service_under_moderation(self):
         response = self.client_3.put(
-            reverse(
-                "services-detail", kwargs={"pk": self.moderate_service.pk}
-            ),
+            reverse("services-detail", kwargs={"pk": self.moderate_service.pk}),
             data=self.service_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.NOT_ACCEPTABLE)
@@ -302,17 +298,13 @@ class TestServivecesView(TestServiceFixtures):
 
     def test_not_owner_can_get_published_service(self):
         response = self.client_2.get(
-            reverse(
-                "services-detail", kwargs={"pk": self.published_service.id}
-            )
+            reverse("services-detail", kwargs={"pk": self.published_service.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_service_is_favorited(self):
         response = self.client_2.get(
-            reverse(
-                "services-detail", kwargs={"pk": self.published_service.id}
-            )
+            reverse("services-detail", kwargs={"pk": self.published_service.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertTrue(response.json()["is_favorited"])
@@ -404,9 +396,7 @@ class TestServivecesView(TestServiceFixtures):
     def test_cant_add_photo_to_service_under_moderation(self):
         data = {"images": [{"image": self.base64_image}]}
         response = self.client_3.post(
-            reverse(
-                "services-add_photo", kwargs={"pk": self.moderate_service.id}
-            ),
+            reverse("services-add_photo", kwargs={"pk": self.moderate_service.id}),
             data=data,
             format="json",
         )
@@ -450,17 +440,13 @@ class TestServivecesView(TestServiceFixtures):
 
     def test_get_service_image(self):
         response = self.client_3.get(
-            reverse(
-                "serviceimage-detail", kwargs={"pk": self.service_2_image.id}
-            )
+            reverse("serviceimage-detail", kwargs={"pk": self.service_2_image.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_delete_ad_image(self):
         response = self.client_2.delete(
-            reverse(
-                "serviceimage-detail", kwargs={"pk": self.service_2_image.id}
-            )
+            reverse("serviceimage-detail", kwargs={"pk": self.service_2_image.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
         self.assertFalse(
@@ -468,9 +454,7 @@ class TestServivecesView(TestServiceFixtures):
         )
 
     def test_service_deletion_when_provider_is_deleted(self):
-        self.assertTrue(
-            Service.objects.filter(id=self.service_del.id).exists()
-        )
+        self.assertTrue(Service.objects.filter(id=self.service_del.id).exists())
         self.assertTrue(
             ServiceImage.objects.filter(id=self.service_del_image.id).exists()
         )
@@ -478,9 +462,7 @@ class TestServivecesView(TestServiceFixtures):
             reverse("users-detail", kwargs={"pk": self.user_for_deletion.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
-        self.assertFalse(
-            Service.objects.filter(id=self.service_del.id).exists()
-        )
+        self.assertFalse(Service.objects.filter(id=self.service_del.id).exists())
         self.assertFalse(
             ServiceImage.objects.filter(id=self.service_del_image.id).exists()
         )
@@ -500,9 +482,7 @@ class TestServivecesView(TestServiceFixtures):
 
     def test_service_deletes_from_favorites_when_is_getting_draft(self):
         self.client_3.put(
-            reverse(
-                "services-detail", kwargs={"pk": self.published_service.pk}
-            ),
+            reverse("services-detail", kwargs={"pk": self.published_service.pk}),
             data=self.service_data,
         )
         self.assertFalse(
@@ -517,17 +497,11 @@ class TestServivecesView(TestServiceFixtures):
 
 class TestServivecesModerationView(TestServiceFixtures):
     def test_get_list_of_services_for_moderation(self):
-        response = self.client_moderator.get(
-            reverse("moderation_services-list")
-        )
+        response = self.client_moderator.get(reverse("moderation_services-list"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertEqual(
             len(response.json()["results"]),
-            len(
-                Service.objects.filter(
-                    status=AdvertisementStatus.MODERATION.value
-                )
-            ),
+            len(Service.objects.filter(status=AdvertisementStatus.MODERATION.value)),
         )
 
     def test_only_moderator_can_get_list_of_services_for_moderation(self):

@@ -54,10 +54,7 @@ class CookieAuthMiddleware:
             user_id = UntypedToken(token).get("user_id")
         except Exception:
             raise DenyConnection("Invalid token")
-        if (
-            user_id is None
-            or (user := await get_user_from_db(user_id)) is None
-        ):
+        if user_id is None or (user := await get_user_from_db(user_id)) is None:
             raise DenyConnection("User does not exist")
         else:
             scope["user"] = user

@@ -5,9 +5,12 @@ class AdManager(models.Manager):
     """Пользовательский менеджер для модели Объявлений."""
 
     def get_queryset(self) -> models.QuerySet:
+        """Изменить запрос к БД по умолчанию.
+
+        Returns:
+            QuerySet: запрос к БД
+
+        """
         return (
-            super()
-            .get_queryset()
-            .select_related("provider")
-            .prefetch_related("images")
+            super().get_queryset().select_related("provider").prefetch_related("images")
         )

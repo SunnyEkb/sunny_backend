@@ -50,9 +50,7 @@ class ServiceModelsTest(BaseTestCase):
                 self.assertEqual(model, title)
 
     def test_models_default_values(self):
-        self.assertEqual(
-            self.service_1.status, AdvertisementStatus.DRAFT.value
-        )
+        self.assertEqual(self.service_1.status, AdvertisementStatus.DRAFT.value)
 
 
 class SubServiceModelTest(TestCase):
@@ -95,9 +93,7 @@ class SubServiceModelTest(TestCase):
             "Тип данных поля {field_name} должен быть {expected_type}."
         )
         for case in field_types_test_data:
-            with self.subTest(
-                case=case, error_message_template=error_message_template
-            ):
+            with self.subTest(case=case, error_message_template=error_message_template):
                 try:
                     field = SubService._meta.get_field(case["field_name"])
                     error_msg = error_message_template.format(
@@ -183,9 +179,7 @@ class SubServiceModelTest(TestCase):
             "Значение атрибута {attribute} должно быть {expected_value}."
         )
         for case in meta_attributes_test_data:
-            with self.subTest(
-                case=case, error_message_template=error_message_template
-            ):
+            with self.subTest(case=case, error_message_template=error_message_template):
                 attribute = getattr(SubService._meta, case["attribute"])
                 error_msg = error_message_template.format(
                     attribute=case["attribute"],
@@ -211,9 +205,7 @@ class SubServiceModelTest(TestCase):
             "а фактически {real_result}."
         )
         for case in methods_test_data:
-            with self.subTest(
-                case=case, error_message_template=error_message_template
-            ):
+            with self.subTest(case=case, error_message_template=error_message_template):
                 error_msg = error_message_template.format(
                     method=case["method"],
                     expected_result=case["expected_result"],
@@ -239,9 +231,7 @@ class SubServiceModelTest(TestCase):
             "{real_related_model}."
         )
         for case in related_fields_test_data:
-            with self.subTest(
-                case=case, error_message_template=error_message_template
-            ):
+            with self.subTest(case=case, error_message_template=error_message_template):
                 try:
                     real_related_model = SubService._meta.get_field(
                         case["field_name"]
@@ -281,9 +271,7 @@ class SubServiceModelTest(TestCase):
                     real_validators = SubService._meta.get_field(
                         case["field_name"]
                     ).validators
-                    with self.subTest(
-                        case=case, real_validators=real_validators
-                    ):
+                    with self.subTest(case=case, real_validators=real_validators):
                         error_msg = case["error_message_template"].format(
                             field_name=case["field_name"],
                             expected_value=case["expected_value"],
@@ -291,9 +279,7 @@ class SubServiceModelTest(TestCase):
                         for expected_validator in case["expected_value"]:
                             self.assertTrue(
                                 any(
-                                    isinstance(
-                                        real_validator, expected_validator
-                                    )
+                                    isinstance(real_validator, expected_validator)
                                     for real_validator in real_validators
                                 ),
                                 error_msg,

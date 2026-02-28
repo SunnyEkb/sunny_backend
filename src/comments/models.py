@@ -19,9 +19,7 @@ User = get_user_model()
 class Comment(TimeCreateUpdateModel):
     """Комментарий."""
 
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name="Автор"
-    )
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
     limit = models.Q(app_label="services", model="service") | models.Q(
         app_label="ads", model="ad"
     )

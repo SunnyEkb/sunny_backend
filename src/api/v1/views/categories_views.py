@@ -7,9 +7,9 @@ from drf_spectacular.utils import (
 )
 from rest_framework import mixins, status, viewsets
 
-from categories.models import Category
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
+from categories.models import Category
 
 
 @extend_schema(

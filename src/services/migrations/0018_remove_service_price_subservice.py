@@ -30,9 +30,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "title",
-                    models.CharField(
-                        max_length=255, verbose_name="Наименование"
-                    ),
+                    models.CharField(max_length=255, verbose_name="Наименование"),
                 ),
                 (
                     "price",
@@ -40,9 +38,7 @@ class Migration(migrations.Migration):
                         decimal_places=2,
                         max_digits=10,
                         validators=[
-                            django.core.validators.MinValueValidator(
-                                Decimal("0")
-                            )
+                            django.core.validators.MinValueValidator(Decimal("0"))
                         ],
                         verbose_name="Цена",
                     ),

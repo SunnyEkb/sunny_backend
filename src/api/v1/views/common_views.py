@@ -9,12 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, status
 
 from ads.models import Ad
-from api.v1 import serializers
-from api.v1 import schemes
+from api.v1 import schemes, serializers
 from api.v1.paginators import CustomPaginator
 from api.v1.validators import validate_id
-from core.choices import AdvertisementStatus
 from categories.models import Category
+from core.choices import AdvertisementStatus
 from services.models import Service
 
 
@@ -45,9 +44,7 @@ from services.models import Service
             description="Идентификатор категории",
         ),
         OpenApiParameter("page", int, description="Номер страницы"),
-        OpenApiParameter(
-            "limit", int, description="Количество объявлений на странице"
-        ),
+        OpenApiParameter("limit", int, description="Количество объявлений на странице"),
     ],
 )
 class AdvertisementView(APIView):
@@ -57,7 +54,6 @@ class AdvertisementView(APIView):
 
     def get(self, request):
         """Получение списка объявлений."""
-
         params = request.query_params
         if "category_id" in params:
             category_id = params.get("category_id")
@@ -101,7 +97,6 @@ class AdvertisementView(APIView):
     @property
     def paginator(self):
         """Возвращает класс пагинатора."""
-
         if not hasattr(self, "_paginator"):
             if self.pagination_class is None:
                 self._paginator = None
@@ -111,14 +106,12 @@ class AdvertisementView(APIView):
 
     def paginate_queryset(self, queryset, request):
         """Возвращает запрос для одной страницы пагинатора."""
-
         if self.paginator is None:
             return None
         return self.paginator.paginate_queryset(queryset, request, view=self)
 
     def get_paginated_response(self, data):
         """Возвращает http ответ с пагинацией."""
-
         assert self.paginator is not None
         return self.paginator.get_paginated_response(data)
 
@@ -142,9 +135,7 @@ class AdvertisementView(APIView):
     },
     parameters=[
         OpenApiParameter("page", int, description="Номер страницы"),
-        OpenApiParameter(
-            "limit", int, description="Количество объявлений на странице"
-        ),
+        OpenApiParameter("limit", int, description="Количество объявлений на странице"),
     ],
 )
 class UserAdvertisementView(APIView):
@@ -155,7 +146,6 @@ class UserAdvertisementView(APIView):
 
     def get(self, request):
         """Получение списка объявлений пользователя."""
-
         ads_query = Ad.objects.none()
         service_query = Ad.objects.none()
         results: list = []
@@ -179,7 +169,6 @@ class UserAdvertisementView(APIView):
     @property
     def paginator(self):
         """Возвращает класс пагинатора."""
-
         if not hasattr(self, "_paginator"):
             if self.pagination_class is None:
                 self._paginator = None
@@ -189,13 +178,11 @@ class UserAdvertisementView(APIView):
 
     def paginate_queryset(self, queryset, request):
         """Возвращает запрос для одной страницы пагинатора."""
-
         if self.paginator is None:
             return None
         return self.paginator.paginate_queryset(queryset, request, view=self)
 
     def get_paginated_response(self, data):
         """Возвращает http ответ с пагинацией."""
-
         assert self.paginator is not None
         return self.paginator.get_paginated_response(data)

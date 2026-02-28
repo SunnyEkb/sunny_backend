@@ -14,9 +14,7 @@ class AdModelsTest(BaseTestCase):
         cls.user = CustomUserFactory()
         cls.ad_1 = AdFactory(provider=cls.user)
         cls.ad_2 = AdFactory()
-        cls.ad_1_image = AdImage.objects.create(
-            ad=cls.ad_1, image=cls.uploaded
-        )
+        cls.ad_1_image = AdImage.objects.create(ad=cls.ad_1, image=cls.uploaded)
 
     @classmethod
     def tearDownClass(cls):

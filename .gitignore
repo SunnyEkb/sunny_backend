@@ -171,3 +171,5 @@ certbot/
 .python-version
 
 db.sqlite3
+
+.ruff_cache

@@ -14,9 +14,7 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_add(self.group_name, self.channel_name)
 
     async def disconnect(self, code) -> None:
-        await self.channel_layer.group_discard(
-            self.group_name, self.channel_name
-        )
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
         await self.close(code)
 
     async def send_notification(self, event) -> None:
