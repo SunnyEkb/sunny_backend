@@ -1,4 +1,4 @@
-from django.db.models import Avg
+from django.db.models import Avg, QuerySet
 from django_filters import (
     BooleanFilter,
     CharFilter,
@@ -14,9 +14,7 @@ from services.models import Service
 
 
 class ServiceFilter(FilterSet):
-    """
-    Фильтры для услуг.
-    """
+    """Фильтры для услуг."""
 
     title = CharFilter(
         field_name="title",
@@ -74,6 +72,8 @@ class ServiceFilter(FilterSet):
     )
 
     class Meta:
+        """Настройки фильтра."""
+
         model = Service
         fields = (
             "title",
@@ -87,25 +87,43 @@ class ServiceFilter(FilterSet):
             "updated_at",
         )
 
-    def get_my_services(self, queryset, name, value):
-        """
-        Возвращает список услуг с любым статусом
-        для авторизованного пользователя.
-        """
+    def get_my_services(
+        self, queryset: QuerySet, name: str, value: bool  # noqa: ARG002, FBT001
+    ) -> QuerySet:
+        """Возвращает список услуг текущего пользователя.
 
+        Статус услуг любой.
+
+        Args:
+            queryset (QuerySet): запрос
+            name (str): название поля
+            value (bool): значение параметра
+
+        Returns:
+            QuerySet: измененный запрос
+
+        """
         user = self.request.user
         if value is False or not user.is_authenticated:
             return queryset
         return Service.cstm_mng.filter(provider=user)
 
-    def get_rating(self, queryset, name, value):
-        """
-        Возвращает список услуг, у которых рейтинг больше или равен значению.
+    def get_rating(
+        self, queryset: QuerySet, name: str, value: int  # noqa: ARG002
+    ) -> QuerySet:
+        """Возвращает список услуг, c рейтингом больше value.
+
+        Args:
+            queryset (QuerySet): запрос
+            name (str): название поля
+            value (bool): значение параметра
+
+        Returns:
+            QuerySet: измененный запрос
+
         """
         return (
             Service.cstm_mng.annotate(rating=Avg("comments__rating"))
-            .filter(
-                rating__gte=value, status=AdvertisementStatus.PUBLISHED.value
-            )
+            .filter(rating__gte=value, status=AdvertisementStatus.PUBLISHED.value)
             .order_by("-created_at")
         )

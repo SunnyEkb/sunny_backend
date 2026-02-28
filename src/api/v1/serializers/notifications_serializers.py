@@ -4,9 +4,7 @@ from notifications.models import Notification
 
 
 class NotificationSerializer(ModelSerializer):
-    """
-    Сериализатор для уведомлений.
-    """
+    """Сериализатор для уведомлений."""
 
     class Meta:
         model = Notification

@@ -15,9 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="service",
             name="address",
-            field=models.CharField(
-                max_length=250, null=True, verbose_name="Адрес"
-            ),
+            field=models.CharField(max_length=250, null=True, verbose_name="Адрес"),
         ),
         migrations.AddField(
             model_name="service",

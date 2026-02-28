@@ -17,9 +17,7 @@ User = get_user_model()
 class TestUser(TestUserFixtures):
     def setUp(self):
         self.real_email_backend = settings.EMAIL_BACKEND
-        settings.EMAIL_BACKEND = (
-            "django.core.mail.backends.locmem.EmailBackend"
-        )
+        settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
 
     def tearDown(self):
         settings.EMAIL_BACKEND = self.real_email_backend
@@ -32,9 +30,7 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": self.password,
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("email", None),
@@ -49,9 +45,7 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": self.password,
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("email", None),
@@ -67,14 +61,10 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": self.password,
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertTrue(User.objects.filter(email=email).exists())
-        self.assertEqual(
-            User.objects.filter(email=email).first().is_active, False
-        )
+        self.assertEqual(User.objects.filter(email=email).first().is_active, False)
 
     def test_user_verification(self):
         body = {
@@ -111,9 +101,7 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("non_field_errors", None),
@@ -127,9 +115,7 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("username"),
@@ -143,9 +129,7 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("username"),
@@ -159,9 +143,7 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("username"),
@@ -175,9 +157,7 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("username"),
@@ -192,9 +172,7 @@ class TestUser(TestUserFixtures):
             "password": self.password,
             "confirmation": f"{self.password}wrong",
         }
-        response = self.anon_client.post(
-            reverse("registry"), data=body, format="json"
-        )
+        response = self.anon_client.post(reverse("registry"), data=body, format="json")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
         self.assertEqual(
             response.json().get("phone"),
@@ -205,9 +183,7 @@ class TestUser(TestUserFixtures):
         data = {"email": self.user_2.email, "password": self.password}
         response = self.client_1.post(reverse("login"), data=data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            response.data, {"Success": APIResponses.SUCCESS_LOGIN.value}
-        )
+        self.assertEqual(response.data, {"Success": APIResponses.SUCCESS_LOGIN.value})
 
     def test_user_login_wrong_credentials(self):
         data = {"email": self.user_2.username, "password": self.password}
@@ -243,9 +219,7 @@ class TestUser(TestUserFixtures):
             data={"email": self.user_3.email, "password": self.new_password},
         )
         self.assertEqual(response_4.status_code, HTTPStatus.OK)
-        self.assertEqual(
-            response_4.data, {"Success": APIResponses.SUCCESS_LOGIN.value}
-        )
+        self.assertEqual(response_4.data, {"Success": APIResponses.SUCCESS_LOGIN.value})
 
     def test_user_logout(self):
         response = self.client_1.post(reverse("logout"))
@@ -469,6 +443,4 @@ class TestUser(TestUserFixtures):
             reverse("users-detail", kwargs={"pk": self.user_for_deletion.id})
         )
         self.assertEqual(response.status_code, HTTPStatus.NO_CONTENT)
-        self.assertFalse(
-            User.objects.filter(id=self.user_for_deletion.id).exists()
-        )
+        self.assertFalse(User.objects.filter(id=self.user_for_deletion.id).exists())

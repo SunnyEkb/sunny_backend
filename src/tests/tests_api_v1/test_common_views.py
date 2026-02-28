@@ -72,15 +72,11 @@ class TestAdvertisementsView(TestAdvertisementsFixtures):
         )
 
     def test_get_advertisements_with_unexisting_category_id_parametr(self):
-        response = self.client_1.get(
-            reverse("advertisements") + "?category_id=1000000"
-        )
+        response = self.client_1.get(reverse("advertisements") + "?category_id=1000000")
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_get_advertisements_with_wrong_category_id_parametr(self):
-        response = self.client_1.get(
-            reverse("advertisements") + "?category_id=aaaa"
-        )
+        response = self.client_1.get(reverse("advertisements") + "?category_id=aaaa")
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
 
 

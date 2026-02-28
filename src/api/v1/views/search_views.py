@@ -1,11 +1,10 @@
 import copy
 import logging
-from typing import List, Optional
 
 from django.http import HttpResponse
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from elasticsearch_dsl import Q
-from rest_framework import views, request, response, status
+from rest_framework import request, response, status, views
 
 from ads.documents import AdDocument
 from api.v1 import schemes, serializers
@@ -25,7 +24,7 @@ class SearchView(views.APIView):
     document_classes = [AdDocument, ServiceDocument]
     serializer_class = serializers.SearchSerialiser
 
-    def generate_q_expression(self, search_terms_list: Optional[List[str]]):
+    def generate_q_expression(self, search_terms_list: list[str] | None):
         if search_terms_list is None:
             return Q("match_all")
         search_terms = search_terms_list[0].replace("\x00", "")

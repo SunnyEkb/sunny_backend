@@ -12,8 +12,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="service",
             name="price",
-            field=models.JSONField(
-                blank=True, null=True, verbose_name="Прайс"
-            ),
+            field=models.JSONField(blank=True, null=True, verbose_name="Прайс"),
         ),
     ]

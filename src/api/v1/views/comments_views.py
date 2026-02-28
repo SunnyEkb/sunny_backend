@@ -5,7 +5,7 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import mixins, viewsets, permissions, response, status
+from rest_framework import mixins, permissions, response, status, viewsets
 from rest_framework.decorators import action
 
 from api.v1 import schemes
@@ -112,9 +112,9 @@ class CommentDestroyViewSet(
         if self.action == "list":
             type = self.request.query_params.get("type", None)
             if not type:
-                return Comment.cstm_mng.filter(
-                    author=self.request.user
-                ).order_by("-created_at")
+                return Comment.cstm_mng.filter(author=self.request.user).order_by(
+                    "-created_at"
+                )
             if type not in ["ad", "service"]:
                 raise WrongObjectType()
             return Comment.cstm_mng.filter(
@@ -162,9 +162,9 @@ class CommentModerationViewSet(
 ):
     """Модерация комментариев."""
 
-    queryset = Comment.cstm_mng.filter(
-        status=CommentStatus.MODERATION
-    ).order_by("-created_at")
+    queryset = Comment.cstm_mng.filter(status=CommentStatus.MODERATION).order_by(
+        "-created_at"
+    )
     serializer_class = api_serializers.CommentForModerationSerializer
     permission_classes = (ModeratorOnly,)
     pagination_class = CustomPaginator
@@ -191,7 +191,6 @@ class CommentModerationViewSet(
     )
     def approve(self, request, *args, **kwargs):
         """Одобрить."""
-
         object = self.get_object()
         object.approve()
         return response.Response(

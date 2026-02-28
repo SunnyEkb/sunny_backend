@@ -2,9 +2,9 @@ from rest_framework.pagination import PageNumberPagination
 
 
 class CustomPaginator(PageNumberPagination):
-    """
-    Кастомный пагинатор c возможностью задать размер
-    страницы параметром запроса "limit".
+    """Кастомный пагинатор.
+
+    Размер страницы задается параметром запроса "limit".
     """
 
     page_size_query_param = "limit"

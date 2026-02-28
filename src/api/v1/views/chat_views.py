@@ -3,7 +3,7 @@ from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
 )
-from rest_framework import mixins, viewsets, permissions, status
+from rest_framework import mixins, permissions, status, viewsets
 
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers

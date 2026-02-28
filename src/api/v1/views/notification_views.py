@@ -5,8 +5,8 @@ from drf_spectacular.utils import (
 from rest_framework import mixins, permissions, response, status, viewsets
 from rest_framework.decorators import action
 
-from api.v1 import serializers as api_serializers
 from api.v1 import schemes
+from api.v1 import serializers as api_serializers
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import NotificationRecieverOnly
 from core.choices import APIResponses
@@ -53,7 +53,6 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     )
     def mark_as_read(self, request, *args, **kwargs):
         """Пометить прочитанным."""
-
         obj: Notification = self.get_object()
         obj.mark_as_read()
         return response.Response(
@@ -80,7 +79,6 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     )
     def mark_as_unread(self, request, *args, **kwargs):
         """Пометить непрочитанным."""
-
         obj: Notification = self.get_object()
         obj.mark_as_unread()
         return response.Response(

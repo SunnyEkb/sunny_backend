@@ -14,8 +14,8 @@ from api.v1.serializers import (
 from api.v1.serializers.image_fields import Base64ImageField
 from api.v1.validators import (
     validate_base64_field,
-    validate_file_size,
     validate_extention,
+    validate_file_size,
 )
 from categories.models import Category
 from core.choices import CommentStatus
@@ -177,20 +177,13 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Метод создания услуги."""
-
         with transaction.atomic():
-            category = get_object_or_404(
-                Category, pk=validated_data.pop("category_id")
-            )
-            price_list_entries_data = validated_data.pop(
-                "price_list_entries", []
-            )
+            category = get_object_or_404(Category, pk=validated_data.pop("category_id"))
+            price_list_entries_data = validated_data.pop("price_list_entries", [])
             main_service = Service.objects.create(**validated_data)
             self.__ad_category(main_service, category)
             if price_list_entries_data:
-                self.__add_price_list_entries(
-                    main_service, price_list_entries_data
-                )
+                self.__add_price_list_entries(main_service, price_list_entries_data)
 
         return main_service
 
@@ -223,7 +216,6 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         self, instance: Service, price_list_entries_data: list[dict]
     ) -> None:
         """Создание записей прайс-листа."""
-
         sub_services = [
             SubService(main_service=instance, **data)
             for data in price_list_entries_data
@@ -234,7 +226,6 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         self, instance: Service, price_list_entries_data: list[dict]
     ) -> Service:
         """Обновление записей прайс-листа."""
-
         instance.price_list_entries.all().delete()
         self.__add_price_list_entries(instance, price_list_entries_data)
         return instance
@@ -255,10 +246,9 @@ class ServiceRetrieveSerializer(ServiceGetSerializer):
 
     def get_comments(self, obj):
         """Вывод трех последних комментариев к услуге."""
-
-        comments = obj.comments.filter(
-            status=CommentStatus.PUBLISHED
-        ).order_by("-created_at")[:3]
+        comments = obj.comments.filter(status=CommentStatus.PUBLISHED).order_by(
+            "-created_at"
+        )[:3]
         return [CommentReadSerializer(comment).data for comment in comments]
 
 
