@@ -6,6 +6,8 @@ from django.http import parse_cookie
 from django.utils.deprecation import MiddlewareMixin
 from rest_framework_simplejwt.tokens import UntypedToken
 
+from users.models import CustomUser
+
 User = get_user_model()
 
 
@@ -17,11 +19,16 @@ class CsrfHeaderMiddleware(MiddlewareMixin):
 
 
 @database_sync_to_async
-def get_user_from_db(user_id: str):
-    """
-    Получение пользователя из БД по id.
-    """
+def get_user_from_db(user_id: int) -> CustomUser | None:
+    """Получение пользователя из БД по id.
 
+    Args:
+        user_id (int): Идентификатор пользователя
+
+    Returns:
+        CustomUser |  None: пользователь, если найден
+
+    """
     try:
         return User.objects.get(pk=user_id, is_active=True)
     except User.DoesNotExist:
@@ -56,7 +63,6 @@ class CookieAuthMiddleware:
             raise DenyConnection("Invalid token")
         if user_id is None or (user := await get_user_from_db(user_id)) is None:
             raise DenyConnection("User does not exist")
-        else:
-            scope["user"] = user
+        scope["user"] = user
 
         return await self.app(scope, receive, send)

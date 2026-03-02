@@ -5,9 +5,7 @@ from core.utils import send_error_message, send_error_message_async
 
 
 class TelegramHandler(logging.Handler):
-    """
-    Отправка сообщения об ошибке в чат телеграмм.
-    """
+    """Отправка сообщения об ошибке в чат телеграмм."""
 
     def __init__(self, level: int | str = 0) -> None:
         super().__init__(level)
@@ -24,9 +22,7 @@ class TelegramHandler(logging.Handler):
 
 
 class TelegramAsyncHandler(logging.Handler):
-    """
-    Отправка сообщения об ошибке в чат телеграмм асинхронно.
-    """
+    """Отправка сообщения об ошибке в чат телеграмм асинхронно."""
 
     def __init__(self, level: int | str = 0) -> None:
         super().__init__(level)
