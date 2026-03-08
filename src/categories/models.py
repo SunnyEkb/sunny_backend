@@ -33,14 +33,17 @@ class Category(models.Model):
     cstm_mng = CategoryManager()
 
     class Meta:
+        """Настройки модели категории."""
+
         verbose_name = "Категория объявления"
         verbose_name_plural = "Категории объявлений"
-        ordering = ["parent_id", "id"]
+        ordering = ["parent_id", "id"]  # noqa: RUF012
 
     def __str__(self) -> str:
         """Получить строкового представления категории.
 
-        :returns: строковое представление категории
-        :rtype: str
+        Returns:
+            str: строковое представление категории
+
         """
         return self.title

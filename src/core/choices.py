@@ -1,16 +1,20 @@
 from django.db import models
 
-from core.enums import Limits
 from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
+from core.enums import Limits
 
 
 class Role(models.TextChoices):
+    """Роль пользователя."""
+
     ADMIN = "admin"
     MODERATOR = "moderator"
     USER = "user"
 
 
 class ServicePlace(models.TextChoices):
+    """Место оказания услуги."""
+
     HOUSE_CALL = "Выезд"
     OFFICE = "В офисе"
     ON_LINE = "On line"
@@ -18,11 +22,15 @@ class ServicePlace(models.TextChoices):
 
 
 class CommentStatus(models.IntegerChoices):
+    """Статус комментария."""
+
     PUBLISHED = 1
     MODERATION = 2
 
 
 class AdvertisementStatus(models.IntegerChoices):
+    """Статус объявления."""
+
     DRAFT = 0
     MODERATION = 1
     PUBLISHED = 2
@@ -30,17 +38,19 @@ class AdvertisementStatus(models.IntegerChoices):
 
 
 class APIResponses(models.TextChoices):
+    """Ответы API."""
+
     ACCOUNT_IS_INACTIVE = "This account is not active"
     ADDED_TO_FAVORITES = "Добавлено в избранное."
-    INVALID_TOKEN = "No valid token found in cookie 'refresh_token'"
+    INVALID_TOKEN = "No valid token found in cookie 'refresh_token'"  # noqa: S105
     INVALID_CREDENTIALS = "Invalid email or password"
-    PASSWORD_DO_NOT_MATCH = "Password and confirmation do not match"
+    PASSWORD_DO_NOT_MATCH = "Password and confirmation do not match"  # noqa: S105
     PASSWORD_CHANGED = "Password changed successfully"
-    NOT_SAME_PASSWORD = "New password is the same as the latest"
+    NOT_SAME_PASSWORD = "New password is the same as the latest"  # noqa: S105
     SUCCESS_LOGIN = "Login successfully"
     SUCCESS_LOGOUT = "Logout successfully"
-    SUCCESS_TOKEN_REFRESH = "Token refreshed"
-    WRONG_PASSWORD = "Wrong password"
+    SUCCESS_TOKEN_REFRESH = "Token refreshed"  # noqa: S105
+    WRONG_PASSWORD = "Wrong password"  # noqa: S105
     UNAUTHORIZED = "Учетные данные не были предоставлены."
     CAN_NOT_HIDE_SERVICE_OR_AD = (
         "Скрыть можно только опубликованную услугу (объявление)."
@@ -73,7 +83,7 @@ class APIResponses(models.TextChoices):
     INVALID_PARAMETR = "Параметр должен быть положительным числом."
     VERIFICATION_SUCCESS = "Регистрация подтверждена."
     VERIFICATION_FAILED = "Пользователь не найден."
-    TOKEN_EXPIRED = "Токен просрочен."
+    TOKEN_EXPIRED = "Токен просрочен."  # noqa: S105
     WRONG_USERNAME = (
         "Псевдоним должен содержать от 2 до 25 символов и может состоять из"
         " кириллицы, латиницы, цифр, cимволов:"
@@ -102,6 +112,8 @@ class APIResponses(models.TextChoices):
 
 
 class SystemMessages(models.TextChoices):
+    """Ответы системы."""
+
     TELEGRAM_ERROR = "Сообщение об ошибке не отпралено в телеграм."
     SERIALIZER_NOT_FOUND_ERROR = "Не найден тип объекта Избранного."
     AUTOMATIC_COMMENT_MODERATION_FAILED = (
@@ -111,19 +123,25 @@ class SystemMessages(models.TextChoices):
 
 
 class Notifications(models.TextChoices):
+    """Тексты уведомлений."""
+
     WELCOME = "{0}, приветствуем Вас на нашем сайте! Благодарим, за регистрацию!"
     APPROVE_OBJECT = "Модерация успешно пройдена."
     REJECT_OBJECT = "Модерация не пройдена."
 
 
 class EmailSubjects(models.TextChoices):
+    """Темы email сообщений."""
+
     WELCOME = "Регистрация на сервие Солнечный Екатеринбург"
-    PASSWORD_CHANGE = "Сброс пароля на сервисе Солнечный Екатеринбург"
+    PASSWORD_CHANGE = "Сброс пароля на сервисе Солнечный Екатеринбург"  # noqa: S105
     PASSWORD_HAS_CHANGED = (
-        "Уведомление о смене пароля на сервисе Солнечный Екатеринбург"
+        "Уведомление о смене пароля на сервисе Солнечный Екатеринбург"  # noqa: S105
     )
 
 
 class AdState(models.TextChoices):
+    """Сотояние товара в объявлении."""
+
     USED = "Б/у"
     NEW = "Новый"

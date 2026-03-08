@@ -2,9 +2,7 @@ from enum import IntEnum
 
 
 class Limits(IntEnum):
-    """
-    Предельные значения.
-    """
+    """Предельные значения."""
 
     # Предельные значения для users
     MAX_LENGTH_FIRST_NAME = 50
