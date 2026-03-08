@@ -102,7 +102,7 @@ def delete_image_files(path: str) -> None:
     """
     full_path = Path(settings.MEDIA_ROOT) / path
     if Path(full_path).exists():
-        directory = Path.parent(full_path)
+        directory = Path(full_path).parent
         files = Path.iterdir(directory)
         for file in files:
             full_file_path = Path(directory) / file
