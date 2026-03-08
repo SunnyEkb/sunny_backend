@@ -8,7 +8,6 @@ from api.v1.validators import (
     validate_file_quantity,
     validate_file_size,
 )
-from ads.models import Ad
 from comments.models import Comment, CommentImage
 
 

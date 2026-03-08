@@ -38,24 +38,29 @@ class Chat(models.Model):
         limit_choices_to={"is_active": True},
     )
 
-    def __str__(self) -> str:
-        """Получить строковое представление чата.
-
-        :returns: строковое представление чата
-        :rtype: str
-        """
-        return f"{self.room_group_name}"
-
     class Meta:
+        """Настройки модели чата."""
+
         verbose_name = "Чат"
         verbose_name_plural = "Чаты"
-        constraints = [
+        constraints = [  # noqa: RUF012
             models.CheckConstraint(
                 check=~models.Q(seller=models.F("buyer")),
                 name="not self chat",
             ),
         ]
-        unique_together = [["seller", "buyer", "content_type", "object_id"]]
+        unique_together = [
+            ["seller", "buyer", "content_type", "object_id"]
+        ]  # noqa: RUF012
+
+    def __str__(self) -> str:
+        """Получить строковое представление чата.
+
+        Returns:
+            str: строковое представление чата
+
+        """
+        return f"{self.room_group_name}"
 
 
 class Message(TimeCreateUpdateModel):
@@ -71,15 +76,18 @@ class Message(TimeCreateUpdateModel):
     message = models.TextField(null=False, blank=False)
     chat = models.ForeignKey(Chat, on_delete=models.PROTECT, related_name="messages")
 
+    class Meta:
+        """Настройки модели сообщения."""
+
+        verbose_name = "Сообщение"
+        verbose_name_plural = "Сообщения"
+        ordering = ["created_at"]  # noqa: RUF012
+
     def __str__(self) -> str:
         """Получить строковое представление сообщения.
 
-        :returns: строковое представление сообщения
-        :rtype: str
+        Returns:
+            str: строковое представление сообщения
+
         """
         return f"{self.message}"
-
-    class Meta:
-        verbose_name = "Сообщение"
-        verbose_name_plural = "Сообщения"
-        ordering = ["created_at"]
