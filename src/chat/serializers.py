@@ -9,6 +9,8 @@ class MessageSerializer(ModelSerializer):
     sender_username = SerializerMethodField()
 
     class Meta:
+        """Настройки сериализатора сооющений."""
+
         model = Message
         fields = (
             "id",
@@ -21,10 +23,11 @@ class MessageSerializer(ModelSerializer):
     def get_sender_username(self, obj: Message) -> str:
         """Получить имя пользователя, отправившего сообщение.
 
-        :param obj: сообщение
-        :type obj: Message
+        Atrs:
+            obj (Message): сообщение
 
-        :returns: имя пользователя
-        :rtype: str
+        Returns:
+            str: имя пользователя
+
         """
         return obj.sender.username
