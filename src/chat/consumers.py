@@ -5,15 +5,15 @@ from typing import Any
 from channels.db import database_sync_to_async
 from channels.exceptions import DenyConnection
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.db.models import Model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Model
 from rest_framework.utils.serializer_helpers import ReturnList
 
 from chat.models import Chat, Message
 from chat.serializers import MessageSerializer
-from core.middleware import get_user_from_db
 from core.choices import AdvertisementStatus
+from core.middleware import get_user_from_db
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +98,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :type close_code: Any
         """
         try:
-            if getattr(self, "room_group_name"):
+            if self.room_group_name:
                 await self.channel_layer.group_discard(
                     self.room_group_name, self.channel_name
                 )
@@ -156,7 +156,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :returns: экземпляр сообщения, если найден, или None
         :rtype: ReturnList
         """
-        messages = MessageSerializer(
+        return MessageSerializer(
             Message.objects.filter(**filters)
             .select_related("sender")
             .only(
@@ -168,7 +168,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             ),
             many=True,
         ).data
-        return messages
 
     @database_sync_to_async
     def __save_message(self, sender: AbstractUser, message: str) -> Message:
@@ -182,8 +181,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :returns: экземпляр сообщения
         :rtype: Message
         """
-        msg = Message.objects.create(sender=sender, message=message, chat=self.chat)
-        return msg
+        return Message.objects.create(sender=sender, message=message, chat=self.chat)
 
     async def __save_chat_message(self, sender: AbstractUser, message: str) -> Message:
         """Сохранить сообщение в БД.
@@ -201,21 +199,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if not self.chat:
             self.chat = await self.__create_chat(self.chat_data)
 
-        msg = await self.__save_message(sender=sender, message=message)
-        return msg
+        return await self.__save_message(sender=sender, message=message)
 
     @database_sync_to_async
-    def __get_content_type(self, type: str) -> ContentType | None:
+    def __get_content_type(self, obj_type: str) -> ContentType | None:
         """Получить экземпляр ContentType.
 
-        :param type: cтроковое название класса
-        :type type: str
+        :param obj_type: cтроковое название класса
+        :type obj_type: str
 
         :returns: экземпляр ContentType если найден
         :rtype: ContentType | None
         """
         try:
-            return ContentType.objects.get(app_label=f"{type}s", model=f"{type}")
+            return ContentType.objects.get(
+                app_label=f"{obj_type}s", model=f"{obj_type}"
+            )
         except ContentType.DoesNotExist:
             return None
 
@@ -252,8 +251,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :returns: экземпляр объекта чата
         :rtype: Chat
         """
-        chat = Chat.objects.create(**data)
-        return chat
+        return Chat.objects.create(**data)
 
     @database_sync_to_async
     def __get_chat(self, data: dict) -> Chat | None:
@@ -266,7 +264,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         :rtype: Chat | None
         """
         try:
-            chat = Chat.objects.get(**data)
-            return chat
+            return Chat.objects.get(**data)
         except Chat.DoesNotExist:
             return None

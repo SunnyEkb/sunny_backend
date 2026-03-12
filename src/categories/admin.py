@@ -7,6 +7,6 @@ from categories.models import Category
 class AdvCategoryAdmin(admin.ModelAdmin):
     """Отображение модели категорий в админке."""
 
-    list_display = ["id", "title"]
-    search_fields = ["title"]
-    list_filter = ["parent"]
+    list_display = ["id", "title"]  # noqa: RUF012
+    search_fields = ["title"]  # noqa: RUF012
+    list_filter = ["parent"]  # noqa: RUF012

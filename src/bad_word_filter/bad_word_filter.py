@@ -1,40 +1,49 @@
-import os
 from functools import lru_cache
-from typing import List
+from pathlib import Path
 
 from django.conf import settings
 
 
 @lru_cache
-def get_bad_words_list() -> List:
-    """Получение списка нецензурных слов."""
+def get_bad_words_list() -> list[str]:
+    """Получение списка нецензурных слов.
 
-    with open(
-        os.path.join(settings.BASE_DIR, "media", "bad_words.txt"),
+    Returns:
+        list[str]: список нецензурных слов
+
+    """
+    with Path.open(
+        Path(settings.BASE_DIR) / "media" / "bad_words.txt",
         encoding="utf-8",
     ) as file:
         return [line.rstrip() for line in file]
 
 
 @lru_cache
-def get_good_words_list() -> List:
-    """Получение списка исключений."""
+def get_good_words_list() -> list:
+    """Получение списка исключений.
 
-    with open(
-        os.path.join(settings.BASE_DIR, "media", "white_list_words.txt"),
+    Returns:
+        list[str]: список слов исключений.
+
+    """
+    with Path.open(
+        Path(settings.BASE_DIR) / "media" / "white_list_words.txt",
         encoding="utf-8",
     ) as file:
         return [line.rstrip() for line in file]
 
 
-def bad_words_filter(text: str) -> List[str]:
-    """
-    Модерация текста.
+def bad_words_filter(text: str) -> list[str]:  # noqa: C901
+    """Модерация текста.
 
-    :param text: текст для модерации
-    :return: список нецензурных слов из текста
-    """
+    Args:
+        text (str): текст для модерации
 
+    Returns:
+        list[str]: список нецензурных слов из текста
+
+    """
     bad_words = get_bad_words_list()
     good_words = get_good_words_list()
 
@@ -104,7 +113,7 @@ def bad_words_filter(text: str) -> List[str]:
     result = []
     for word in bad_words:
         for part in range(len(text)):
-            fragment = text[part : part + len(word)]  # noqa
+            fragment = text[part : part + len(word)]
             if fragment == word:
                 result.append(fragment)
     return result
