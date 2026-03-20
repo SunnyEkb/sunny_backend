@@ -1,7 +1,7 @@
 import logging
 
-from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
 from core.choices import EmailSubjects
@@ -16,8 +16,7 @@ def send_email(
     context: dict,
     subject: str,
 ) -> None:
-    """
-    Отправка e-mail.
+    """Отправка e-mail.
 
     :param html_template: шаблон письма в формате html
     :param text_template: шаблон письма в текстовом формате
@@ -25,7 +24,6 @@ def send_email(
     :param context: словарь с данными для подстановки в шаблон
     :param subject: тема письма
     """
-
     try:
         html_body = render_to_string(html_template, context)
         message_text = render_to_string(text_template, context)
@@ -41,15 +39,13 @@ def send_email(
 def send_password_reset_token(
     domain: str, username: str, mail_to: str, key: str
 ) -> None:
-    """
-    Отправка токена для смены пароля от ЛК на email.
+    """Отправка токена для смены пароля от ЛК на email.
 
     :param domain: доменное имя сайта
     :param username: имя пользователя, которому отправляется письмо
     :param mail_to: адрес отправки письма
     :param key: токен для смены пароля
     """
-
     context = {
         "username": username,
         "reset_password_url": f"https://{domain}/password-forget?token={key}",
@@ -65,14 +61,12 @@ def send_password_reset_token(
 
 
 def send_welcome_email(username: str, token: str, email: str) -> None:
-    """
-    Отправка приветственного сообщения на email.
+    """Отправка приветственного сообщения на email.
 
     :param username: имя пользователя, которому отправляется письмо
     :param token: токен для подтверждения регистрации
     :param email: адрес отправки письма
     """
-
     context = {
         "username": username,
         "verification_url": (
@@ -90,13 +84,11 @@ def send_welcome_email(username: str, token: str, email: str) -> None:
 
 
 def send_password_changed_email(username: str, email: str) -> None:
-    """
-    Отправка сообщения о смене пароля на email.
+    """Отправка сообщения о смене пароля на email.
 
     :param username: имя пользователя, которому отправляется письмо
     :param email: адрес отправки письма
     """
-
     context = {"username": username}
 
     send_email(
