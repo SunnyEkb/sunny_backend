@@ -12,7 +12,7 @@ from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from api.v1.paginators import CustomPaginator
 from api.v1.permissions import CommentAuthorOnly, ModeratorOnly
-from comments.exceptions import WrongObjectType
+from comments.exceptions import WrongObjectTypeError
 from comments.models import Comment
 from core.choices import APIResponses, CommentStatus
 
@@ -48,7 +48,7 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
         obj_id = self.kwargs.get("obj_id", None)
         type = self.kwargs.get("type", None)
         if type not in ["ad", "service"]:
-            raise WrongObjectType()
+            raise WrongObjectTypeError()
         if obj_id and type:
             cont_type_model = get_object_or_404(
                 ContentType, app_label=f"{type}s", model=f"{type}"
@@ -64,7 +64,7 @@ class CommentViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     def list(self, request, *args, **kwargs):
         try:
             return super().list(request, *args, **kwargs)
-        except WrongObjectType:
+        except WrongObjectTypeError:
             return response.Response(
                 status=status.HTTP_400_BAD_REQUEST,
                 data=APIResponses.WRONG_OBJECT_TYPE,
@@ -112,11 +112,11 @@ class CommentDestroyViewSet(
         if self.action == "list":
             type = self.request.query_params.get("type", None)
             if not type:
-                return Comment.cstm_mng.filter(author=self.request.user).order_by(
-                    "-created_at"
-                )
+                return Comment.cstm_mng.filter(
+                    author=self.request.user
+                ).order_by("-created_at")
             if type not in ["ad", "service"]:
-                raise WrongObjectType()
+                raise WrongObjectTypeError()
             return Comment.cstm_mng.filter(
                 author=self.request.user,
                 content_type=ContentType.objects.get(
@@ -138,7 +138,7 @@ class CommentDestroyViewSet(
     def list(self, request, *args, **kwargs):
         try:
             return super().list(request, *args, **kwargs)
-        except WrongObjectType:
+        except WrongObjectTypeError:
             return response.Response(
                 status=status.HTTP_400_BAD_REQUEST,
                 data=APIResponses.WRONG_OBJECT_TYPE,
@@ -162,9 +162,9 @@ class CommentModerationViewSet(
 ):
     """Модерация комментариев."""
 
-    queryset = Comment.cstm_mng.filter(status=CommentStatus.MODERATION).order_by(
-        "-created_at"
-    )
+    queryset = Comment.cstm_mng.filter(
+        status=CommentStatus.MODERATION
+    ).order_by("-created_at")
     serializer_class = api_serializers.CommentForModerationSerializer
     permission_classes = (ModeratorOnly,)
     pagination_class = CustomPaginator

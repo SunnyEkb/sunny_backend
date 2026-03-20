@@ -7,13 +7,13 @@ from comments.models import Comment, CommentImage
 class CommentAdmin(admin.ModelAdmin):
     """Отображение модели комментариев в админке."""
 
-    list_display = ["author", "created_at", "updated_at"]
-    search_fields = ["author"]
-    ordering = ["created_at"]
+    list_display = ["author", "created_at", "updated_at"]  # noqa: RUF012
+    search_fields = ["author"]  # noqa: RUF012
+    ordering = ["created_at"]  # noqa: RUF012
 
 
 @admin.register(CommentImage)
 class ServiceImageAdmin(admin.ModelAdmin):
     """Отображение модели фотографий к комментариям в админке."""
 
-    list_display = ["comment"]
+    list_display = ["comment"]  # noqa: RUF012

@@ -7,10 +7,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
+from comments.managers import CommentManager
 from core.abstract_models import AbstractImage, TimeCreateUpdateModel
 from core.choices import CommentStatus
 from core.enums import Limits
-from comments.managers import CommentManager
 from services.tasks import delete_images_dir_task, notify_about_moderation_task
 
 User = get_user_model()
@@ -19,7 +19,9 @@ User = get_user_model()
 class Comment(TimeCreateUpdateModel):
     """Комментарий."""
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name="Автор"
+    )
     limit = models.Q(app_label="services", model="service") | models.Q(
         app_label="ads", model="ad"
     )
@@ -55,6 +57,8 @@ class Comment(TimeCreateUpdateModel):
     objects = models.Manager()
 
     class Meta:
+        """Настройки модели комментариев."""
+
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
         unique_together = ("author", "content_type", "object_id")
@@ -131,6 +135,8 @@ class CommentImage(AbstractImage):
     )
 
     class Meta:
+        """Настройки модели фото к комментариям."""
+
         verbose_name = "Фото к комментарию"
         verbose_name_plural = "Фото к комментариям"
 
