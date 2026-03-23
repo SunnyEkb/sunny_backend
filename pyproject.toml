@@ -18,6 +18,7 @@ exclude = [
     ".venv",
     "src/users/migrations",
     "src/categories/migrations",
+    "src/comments/migrations",
     "src/chat/migrations",
     "src/ads/migrations",
     "src/services/migrations",
