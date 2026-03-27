@@ -5,13 +5,13 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.prod")
 django.setup()
 
-from channels.routing import ProtocolTypeRouter, URLRouter  # noqa
-from channels.security.websocket import AllowedHostsOriginValidator  # noqa
-from django.core.asgi import get_asgi_application  # noqa
+from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
+from channels.security.websocket import AllowedHostsOriginValidator  # noqa: E402
+from django.core.asgi import get_asgi_application  # noqa: E402
 
-from chat.routing import chat_urlpatterns  # noqa
-from core.middleware import CookieAuthMiddleware  # noqa
-from notifications.routing import websocket_urlpatterns  # noqa
+from chat.routing import chat_urlpatterns  # noqa: E402
+from core.middleware import CookieAuthMiddleware  # noqa: E402
+from notifications.routing import websocket_urlpatterns  # noqa: E402
 
 django_asgi_app = get_asgi_application()
 
