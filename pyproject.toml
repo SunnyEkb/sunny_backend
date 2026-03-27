@@ -23,6 +23,7 @@ exclude = [
     "src/ads/migrations",
     "src/services/migrations",
     "src/notifications/migrations",
+    "src/tests",
 ]
 [tool.ruff.lint]
 ignore = ["D100", "D102", "D104", "RUF002", "RUF001", "COM812"]
