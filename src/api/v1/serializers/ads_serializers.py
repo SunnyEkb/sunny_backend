@@ -151,7 +151,7 @@ class AdGetSerializer(serializers.ModelSerializer):
             int: количество комментариев к объявлению
 
         """
-        return obj.comments.filter(status=CommentStatus.PUBLISHED.value).count() # type: ignore
+        return obj.comments.filter(status=CommentStatus.PUBLISHED.value).count()  # type: ignore
 
     def get_avg_rating(self, obj: Ad) -> float | None:
         """Получить средний рейтинг.
