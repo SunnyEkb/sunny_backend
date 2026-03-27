@@ -15,7 +15,7 @@ class Notification(TimeCreateUpdateModel):
         "Текст уведомления",
         max_length=Limits.MAX_LENGTH_NOTIFICATION_TEXT.value,
     )
-    link = models.URLField(
+    link = models.URLField(  # noqa: DJ001
         "Ссылка на ресурс",
         blank=True,
         null=True,
@@ -42,27 +42,39 @@ class Notification(TimeCreateUpdateModel):
     )
 
     class Meta:
+        """Настройки модели уведомлений."""
+
         verbose_name = "Уведомление"
         verbose_name_plural = "Уведомления"
-        ordering = ["receiver", "-created_at"]
+        ordering = ["receiver", "-created_at"]  # noqa: RUF012
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Получить строковое представление уведомления.
+
+        Returns:
+            str: строковое представление уведомления
+
+        """
         return self.text[:30]
 
-    def mark_as_read(self):
-        if self.unread:
+    def mark_as_read(self) -> None:
+        """Пометить прочитанным."""
+        if not self.read:
             self.read_at = timezone.now()
             self.save()
 
-    def mark_as_unread(self):
+    def mark_as_unread(self) -> None:
+        """Пометить не прочитанным."""
         if self.read:
             self.read_at = None
             self.save()
 
     @property
-    def read(self):
-        return bool(self.read_at)
+    def read(self) -> bool:
+        """Уведомление прочитано.
 
-    @property
-    def unread(self):
-        return bool(not self.read_at)
+        Returns:
+            bool: уведомление прочитано
+
+        """
+        return bool(self.read_at)
