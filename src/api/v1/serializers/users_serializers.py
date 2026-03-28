@@ -33,7 +33,7 @@ class UserReadSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
+        fields = [  # noqa: RUF012
             "id",
             "username",
             "email",
@@ -50,7 +50,7 @@ class UserSearchSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "email"]
+        fields = ["id", "email"]  # noqa: RUF012
 
 
 class UserCreateSerializer(ModelSerializer):
@@ -63,7 +63,7 @@ class UserCreateSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = [
+        fields = [  # noqa: RUF012
             "username",
             "email",
             "phone",
@@ -109,8 +109,10 @@ class UserUpdateSerializer(ModelSerializer):
     phone = PhoneNumberField(region="RU")
 
     class Meta:
+        """Настройки сериализатора для изменения данных о пользователе."""
+
         model = User
-        fields = [
+        fields = [  # noqa: RUF012
             "username",
             "first_name",
             "last_name",
@@ -132,8 +134,10 @@ class UserAdAvatarSerializer(ModelSerializer):
     )
 
     class Meta:
+        """Настройки сериализатора для изменения фото пользователя."""
+
         model = User
-        fields = ["avatar"]
+        fields = ["avatar"]  # noqa: RUF012
 
     def to_representation(self, instance):
         serializer = UserReadSerializer(instance)
@@ -208,5 +212,7 @@ class VerificationTokenSerialiser(ModelSerializer):
     """Сериализатор для подтверждения регистрации."""
 
     class Meta:
+        """Настройки сериализатора для подтверждения регистрации."""
+
         model = VerificationToken
-        fields = ["token"]
+        fields = ["token"]  # noqa: RUF012

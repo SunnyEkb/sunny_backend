@@ -1,4 +1,4 @@
-from config.settings.base import *  # noqa
+from config.settings.base import *  # noqa: F403
 
 ALLOWED_HOSTS = ["testserver"]
 
@@ -14,4 +14,4 @@ CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 
-INSTALLED_APPS.remove("django_elasticsearch_dsl")  # noqa
+INSTALLED_APPS.remove("django_elasticsearch_dsl")  # noqa: F405

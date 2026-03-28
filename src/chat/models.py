@@ -49,9 +49,9 @@ class Chat(models.Model):
                 name="not self chat",
             ),
         ]
-        unique_together = [
+        unique_together = [  # noqa: RUF012
             ["seller", "buyer", "content_type", "object_id"]
-        ]  # noqa: RUF012
+        ]
 
     def __str__(self) -> str:
         """Получить строковое представление чата.
