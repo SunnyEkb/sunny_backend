@@ -91,7 +91,16 @@ def validate_id(id):
         )
 
 
-def validate_base64_field(value):
+def validate_base64_field(value: str) -> None:
+    """Валидировать base64.
+
+    Args:
+        value (str): значение
+
+    Raises:
+        ValidationError: Значение не валидно
+
+    """
     if not isinstance(value, str) or not re.match(
         r"data:image\/[a-z]{3,4};base64,[a-zA-Z0-9\/=\+]+=",
         str(value),
@@ -99,6 +108,15 @@ def validate_base64_field(value):
         raise exceptions.ValidationError(APIResponses.WRONG_CONTENT)
 
 
-def validate_extention(value: str):
+def validate_extention(value: str) -> None:
+    """Валидировать расширение файлов.
+
+    Args:
+        value (str): расширение
+
+    Raises:
+        ValidationError: расширение не в списке допустимых
+
+    """
     if value.lower() not in ALLOWED_IMAGE_FILE_EXTENTIONS:
         raise exceptions.ValidationError(APIResponses.WRONG_EXTENTION.format(value))

@@ -14,7 +14,7 @@ load_dotenv(dotenv_path)
 
 SECRET_KEY = getenv("SECRET_KEY", default="secret_key")
 
-DEBUG = True if getenv("DEBUG") in TRUE_VALUES else False
+DEBUG = getenv("DEBUG") in TRUE_VALUES
 
 ALLOWED_HOSTS = getenv("ALLOWED_HOSTS", default="").split(", ")
 
@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "oauth2_provider",
     "social_django",
-    # "drf_social_oauth2",
     "corsheaders",
     "users",
     "notifications",
@@ -84,7 +83,6 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = "config.asgi.application"
-# WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
@@ -93,7 +91,7 @@ DATABASES = {
         "USER": getenv("POSTGRES_USER", default="admin_test"),
         "PASSWORD": getenv("POSTGRES_PASSWORD", default="postgre_admin"),
         "HOST": getenv("POSTGRES_HOST", default="db_test"),
-        "PORT": getenv("POSTGRES_PORT", default=5432),
+        "PORT": getenv("POSTGRES_PORT", default="5432"),
     }
 }
 
@@ -164,10 +162,10 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=int(getenv("ACCESS_TOKEN_LIFETIME", default=5))
+        minutes=int(getenv("ACCESS_TOKEN_LIFETIME", default="5"))
     ),
     "REFRESH_TOKEN_LIFETIME": timedelta(
-        days=int(getenv("REFRESH_TOKEN_LIFETIME", default=14))
+        days=int(getenv("REFRESH_TOKEN_LIFETIME", default="14"))
     ),
     "AUTH_COOKIE": getenv("AUTH_COOKIE", default="access"),
     "AUTH_REFRESH": getenv("AUTH_REFRESH", default="refresh"),
@@ -242,7 +240,7 @@ DATA_RETENTION_PERIOD = timedelta(weeks=53 * 5)
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_USE_TLS = True if getenv("EMAIL_USE_TLS") == "YES" else False
+EMAIL_USE_TLS = getenv("EMAIL_USE_TLS") == "YES"
 EMAIL_USE_SSL = False
 EMAIL_PORT = getenv("EMAIL_PORT")
 EMAIL_HOST = getenv("EMAIL_HOST")
@@ -258,7 +256,7 @@ TELEGRAM_MODERATORS_CHAT_TOPIC = getenv("TELEGRAM_MODERATORS_CHAT_TOPIC", "")
 TELEGRAM_SUPPORT_CHAT_TOPIC = getenv("TELEGRAM_SUPPORT_CHAT_TOPIC", None)
 
 REDIS_HOST = getenv("REDDIS_HOST", default="127.0.0.1")
-REDIS_PORT = getenv("REDDIS_PORT", default=6379)
+REDIS_PORT = getenv("REDDIS_PORT", default="6379")
 CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
 CELERY_BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
@@ -32,6 +30,8 @@ class AdImageCreateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        """Настройки сериализатора для добавления фото к объявлению."""
+
         model = AdImage
         fields = ("image",)
 
@@ -41,7 +41,16 @@ class AdImageSerializer(serializers.Serializer):
 
     image = serializers.CharField()
 
-    def validate_image(self, value):
+    def validate_image(self, value: str) -> str:
+        """Валидация изображения.
+
+        Args:
+            str: изображение в base64
+
+        Returns:
+            str: изображение в base64
+
+        """
         validate_base64_field(value)
         return value
 
@@ -51,7 +60,16 @@ class AdImagesSerializer(serializers.Serializer):
 
     images = AdImageSerializer(many=True)
 
-    def validate_images(self, data):
+    def validate_images(self, data: list[AdImageSerializer]) -> list[AdImageSerializer]:
+        """Валидация изображений.
+
+        Args:
+            data (list[AdImageSerializer]): список изображений
+
+        Returns:
+            list[AdImageSerializer]: список изображений, если он валиден
+
+        """
         for img in data:
             validate_base64_field(img["image"])
             format, _ = img["image"].split(";base64,")
@@ -66,6 +84,8 @@ class AdImageRetrieveSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(read_only=True)
 
     class Meta:
+        """Настройки сериализатора для получения фото объявлений."""
+
         model = AdImage
         fields = ("id", "image", "title_photo")
 
@@ -80,6 +100,8 @@ class AdGetSerializer(serializers.ModelSerializer):
     avg_rating = serializers.SerializerMethodField()
 
     class Meta:
+        """Настройки сериализатора объявлений."""
+
         model = Ad
         fields = (
             "id",
@@ -98,7 +120,16 @@ class AdGetSerializer(serializers.ModelSerializer):
             "created_at",
         )
 
-    def get_is_favorited(self, obj):
+    def get_is_favorited(self, obj: Ad) -> bool:
+        """Получить объявление в избранном
+
+        Args:
+            obj (Ad): объявление
+
+        Returns:
+            bool: объявление в избранном
+
+        """
         request = self.context.get("request", None)
         if request and hasattr(request, "user"):
             user = request.user
@@ -110,17 +141,44 @@ class AdGetSerializer(serializers.ModelSerializer):
                 ).exists()
         return False
 
-    def get_comments_quantity(self, obj):
-        return obj.comments.filter(status=CommentStatus.PUBLISHED.value).count()
+    def get_comments_quantity(self, obj: Ad) -> int:
+        """Получить количество комментариев к объявлению.
 
-    def get_avg_rating(self, obj):
+        Args:
+            obj (Ad): объявление
+
+        Returns:
+            int: количество комментариев к объявлению
+
+        """
+        return obj.comments.filter(status=CommentStatus.PUBLISHED.value).count()  # type: ignore
+
+    def get_avg_rating(self, obj: Ad) -> float | None:
+        """Получить средний рейтинг.
+
+        Args:
+            obj (Ad): объявление
+
+        Returns:
+            float: средний рейтинг объявления
+
+        """
         rating = obj.comments.aggregate(Avg("rating"))
         rating = rating["rating__avg"]
         if rating is None:
             return None
         return round(rating, 1)
 
-    def get_type(self, obj):
+    def get_type(self, obj: Ad) -> str:
+        """Получить тип объекта.
+
+        Args:
+            obj (Ad): объявление
+
+        Returns:
+            str: тип объекта
+
+        """
         return self.Meta.model.__name__.lower()
 
 
@@ -132,7 +190,16 @@ class AdListSerializer(AdGetSerializer):
     class Meta(AdGetSerializer.Meta):
         fields = AdGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa
 
-    def get_title_photo(self, obj) -> Any | None:
+    def get_title_photo(self, obj: Ad) -> dict | None:
+        """Получить титульную фотографию.
+
+        Args:
+            obj (Ad): объявление
+
+        Returns:
+            dict | None: титульная фотография
+
+        """
         title_photo = obj.images.filter(title_photo=True).first()
         if title_photo:
             return AdImageRetrieveSerializer(title_photo).data
@@ -145,6 +212,8 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField(write_only=True)
 
     class Meta:
+        """Настройки сериализатора для создания и изменения объявления."""
+
         model = Ad
         fields = (
             "title",
@@ -157,13 +226,38 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("category",)
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> Ad:
+        """Создать экземпляр объявления.
+
+        Args:
+            validated_data (dict): данные объявления, после валидации
+
+        Returns:
+            Ad: Созданное объявление
+
+        Raises:
+            Http404: Не найдена категория объявления
+
+        """
         category = get_object_or_404(Category, pk=validated_data.pop("category_id"))
         ad = Ad.objects.create(**validated_data)
         self.__ad_category(ad, category)
         return ad
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Ad, validated_data: dict) -> Ad:
+        """Изменить объявление.
+
+        Args:
+            instance (Ad): объявление
+            validated_data (dict): данные объявления, после валидации
+
+        Returns:
+            Ad: измененное объявление
+
+        Raises:
+            Http404: Не найдена категория объявления
+
+        """
         if "category_id" in validated_data:
             category = get_object_or_404(Category, pk=validated_data.pop("category_id"))
             if category not in instance.category.all():
@@ -176,6 +270,15 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
         return instance
 
     def __ad_category(self, ad: Ad, category: Category) -> None:
+        """Добавить категории к объявлению.
+
+        Добавляет родительсткие категории к списку категорий объявления
+
+        Args:
+            ad (Ad): объявление
+            category (Category): категория, указанная при создании объявления
+
+        """
         ad.category.add(category)
         if category.parent:
             self.__ad_category(ad, category.parent)
@@ -209,7 +312,7 @@ class AdForModerationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ad
-        fields = [
+        fields = [  # noqa: RUF012
             "id",
             "title",
             "description",
@@ -233,7 +336,7 @@ class AdSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ad
-        fields = [
+        fields = [  # noqa: RUF012
             "id",
             "type",
             "title",

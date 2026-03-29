@@ -8,7 +8,10 @@ from comments.models import Comment
 
 @receiver(post_save, sender=Comment)
 def notify_about_comment_creation(
-    sender: Any, instance: Comment, created: bool, **kwargs
+    sender: Any,  # noqa: ANN401, ARG001
+    instance: Comment,
+    created: bool,  # noqa: FBT001
+    **kwargs  # noqa: ANN003, ARG001
 ) -> None:
     """Уведомить о создании комментария.
 
