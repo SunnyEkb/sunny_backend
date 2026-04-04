@@ -13,6 +13,8 @@ class ChatSerializer(ModelSerializer):
     seller = UserReadSerializer(read_only=True)
 
     class Meta:
+        """Настройки для сериализатора для сообщений."""
+
         model = Chat
         fields = (
             "id",

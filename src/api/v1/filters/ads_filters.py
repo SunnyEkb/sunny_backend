@@ -97,6 +97,6 @@ class AdFilter(FilterSet):
         """
         return (
             Ad.cstm_mng.annotate(rating=Avg("comments__rating"))
-            .filter(rating__gte=value, status=AdvertisementStatus.PUBLISHED.value)
+            .filter(rating__gte=value, status=AdvertisementStatus.PUBLISHED)
             .order_by("-created_at")
         )
