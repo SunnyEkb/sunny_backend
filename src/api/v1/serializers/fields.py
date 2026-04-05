@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from rest_framework import serializers
 
 from ads.documents import AdDocument
@@ -14,28 +16,49 @@ from core.choices import SystemMessages
 from services.documents import ServiceDocument
 from services.models import Service
 
+if TYPE_CHECKING:
+    from django.db.models import Model
+
 
 class FavoriteObjectRelatedField(serializers.RelatedField):
     """Поле для вывода объектов избранного."""
 
-    def to_representation(self, value):
+    def to_representation(self, value: "Model") -> dict:
+        """Представить данные.
+
+        Args:
+            value (Model): данные
+
+        Returns:
+            dict: данные в изменененном виде
+
+        """
         if isinstance(value, Service):
             serializer = ServiceListSerializer(value, context=self.context)
         elif isinstance(value, Ad):
             serializer = AdListSerializer(value, context=self.context)
         else:
-            raise Exception(SystemMessages.SERIALIZER_NOT_FOUND_ERROR.value)
+            raise Exception(SystemMessages.SERIALIZER_NOT_FOUND_ERROR)
         return serializer.data
 
 
 class SearchObjectRelatedField(serializers.RelatedField):
     """Поле для вывода результатов поиска."""
 
-    def to_representation(self, value):
+    def to_representation(self, value: "Model") -> dict:
+        """Представить данные.
+
+        Args:
+            value (Model): данные
+
+        Returns:
+            dict: данные в изменененном виде
+
+        """
         if isinstance(value, ServiceDocument):
             serializer = ServiceSearchSerializer(value, context=self.context)
         elif isinstance(value, AdDocument):
             serializer = AdSearchSerializer(value, context=self.context)
         else:
-            raise Exception(SystemMessages.SERIALIZER_NOT_FOUND_ERROR.value)
+            raise Exception(SystemMessages.SERIALIZER_NOT_FOUND_ERROR)
         return serializer.data

@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.contrib.auth import get_user_model, password_validation
 from phonenumber_field.serializerfields import PhoneNumberField
@@ -25,6 +27,11 @@ from users.models import VerificationToken
 
 User = get_user_model()
 
+if TYPE_CHECKING:
+    from django.db.models import Model
+
+    from users.models import CustomUser
+
 
 class UserReadSerializer(ModelSerializer):
     """Сериализатор для получения данных о пользователе."""
@@ -32,8 +39,10 @@ class UserReadSerializer(ModelSerializer):
     avatar = Base64ImageField(required=True, allow_null=False)
 
     class Meta:
+        """Настройки сериализатора для получения данных о пользователе."""
+
         model = User
-        fields = [  # noqa: RUF012
+        fields = (
             "id",
             "username",
             "email",
@@ -42,15 +51,17 @@ class UserReadSerializer(ModelSerializer):
             "last_name",
             "role",
             "avatar",
-        ]
+        )
 
 
 class UserSearchSerializer(ModelSerializer):
     """Сериализатор для получения данных о пользователе."""
 
     class Meta:
+        """Настройки сериализатора для получения данных о пользователе."""
+
         model = User
-        fields = ["id", "email"]  # noqa: RUF012
+        fields = ("id", "email")
 
 
 class UserCreateSerializer(ModelSerializer):
@@ -62,21 +73,30 @@ class UserCreateSerializer(ModelSerializer):
     email = EmailField(validators=[validate_email, validate_email_length])
 
     class Meta:
+        """Настройка сериализатор для создания пользователя."""
+
         model = User
-        fields = [  # noqa: RUF012
+        fields = (
             "username",
             "email",
             "phone",
             "password",
             "confirmation",
-        ]
-        extra_kwargs = {
-            "password": {"write_only": True},
-        }
+        )
+        extra_kwargs = {"password": {"write_only": True}}
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict) -> dict:
+        """Валидация данных.
+
+        Args:
+            attrs (dict): данные
+
+        Returns:
+            dict: проверенные данные
+
+        """
         if attrs["password"] != attrs["confirmation"]:
-            raise ValidationError(APIResponses.PASSWORD_DO_NOT_MATCH.value)
+            raise ValidationError(APIResponses.PASSWORD_DO_NOT_MATCH)
 
         data = attrs.copy()
         del data["confirmation"]
@@ -93,12 +113,30 @@ class UserCreateSerializer(ModelSerializer):
             raise ValidationError(errors)
         return attrs
 
-    def create(self, validated_data):
+    def create(self, validated_data: dict) -> "CustomUser":
+        """Создать пользователя.
+
+        Args:
+            validated_data (dict): данные
+
+        Returns:
+            CustomUser: созданный пользователь
+
+        """
         _ = validated_data.pop("confirmation")
         user = User.objects.create_user(**validated_data)
         return user
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: "Model") -> dict:
+        """Представить данные.
+
+        Args:
+            instance (Model): данные
+
+        Returns:
+            dict: данные в изменененном виде
+
+        """
         serializer = UserReadSerializer(instance)
         return serializer.data
 
@@ -112,14 +150,23 @@ class UserUpdateSerializer(ModelSerializer):
         """Настройки сериализатора для изменения данных о пользователе."""
 
         model = User
-        fields = [  # noqa: RUF012
+        fields = (
             "username",
             "first_name",
             "last_name",
             "phone",
-        ]
+        )
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: "Model") -> dict:
+        """Представить данные.
+
+        Args:
+            instance (Model): данные
+
+        Returns:
+            dict: данные в изменененном виде
+
+        """
         serializer = UserReadSerializer(instance)
         return serializer.data
 
@@ -137,9 +184,18 @@ class UserAdAvatarSerializer(ModelSerializer):
         """Настройки сериализатора для изменения фото пользователя."""
 
         model = User
-        fields = ["avatar"]  # noqa: RUF012
+        fields = ("avatar",)
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: "Model") -> dict:
+        """Представить данные.
+
+        Args:
+            instance (Model): данные
+
+        Returns:
+            dict: данные в изменененном виде
+
+        """
         serializer = UserReadSerializer(instance)
         return serializer.data
 
@@ -168,7 +224,7 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
         )
         if attrs["refresh"]:
             return super().validate(attrs)
-        raise InvalidToken(APIResponses.INVALID_TOKEN.value)
+        raise InvalidToken(APIResponses.INVALID_TOKEN)
 
 
 class PasswordChangeSerializer(Serializer):
@@ -181,21 +237,19 @@ class PasswordChangeSerializer(Serializer):
     def validate(self, attrs):
         user = self.initial_data["user"]
         if not user.check_password(attrs["current_password"]):
-            raise ValidationError({"password": APIResponses.WRONG_PASSWORD.value})
+            raise ValidationError({"password": APIResponses.WRONG_PASSWORD})
         if (
             not self.initial_data["new_password"].strip()
             == self.initial_data["confirmation"].strip()
         ):
-            raise ValidationError(
-                {"password": APIResponses.PASSWORD_DO_NOT_MATCH.value}
-            )
+            raise ValidationError({"password": APIResponses.PASSWORD_DO_NOT_MATCH})
         if (
             self.initial_data["new_password"].strip()
             == self.initial_data["current_password"]
         ):
-            raise ValidationError({"password": APIResponses.NOT_SAME_PASSWORD.value})
+            raise ValidationError({"password": APIResponses.NOT_SAME_PASSWORD})
 
-        errors = dict()
+        errors = {}
         try:
             password_validation.validate_password(
                 password=attrs["new_password"], user=user
@@ -215,4 +269,4 @@ class VerificationTokenSerialiser(ModelSerializer):
         """Настройки сериализатора для подтверждения регистрации."""
 
         model = VerificationToken
-        fields = ["token"]  # noqa: RUF012
+        fields = ("token",)
