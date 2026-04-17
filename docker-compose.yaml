@@ -21,6 +21,15 @@ services:
     env_file:
       - ./.env
 
+  chat_db:
+    image: postgres:16.1-alpine
+    container_name: chat_db
+    restart: always
+    volumes:
+      - sunny_ekb_chat_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.chat
+
   nginx:
     image: nginx:1.21.3-alpine
     container_name: nginx
@@ -114,9 +123,25 @@ services:
     ports:
       - "3000:5173"
 
+  chat:
+    image: ${DOCKER_HUB_USERNAME}/sunny_ekb_chat:latest
+    container_name: chat
+    restart: always
+    volumes:
+      - sunny_static_value:/app/static/
+      - sunny_media_value:/app/media/
+      - sunny_ekb_chat_data:/app/data_store/
+    depends_on:
+      - chat_db
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./.env.chat
+
 volumes:
   sunny_static_value:
   sunny_media_value:
   sunny_data_store_value:
   sunny_ekb_data:
   elasticsearch_data:
+  sunny_ekb_chat_data:
