@@ -33,6 +33,8 @@ class ServiceImageCreateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = ServiceImage
         fields = ("image",)
 
@@ -43,6 +45,8 @@ class ServiceImageRetrieveSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(required=True)
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = ServiceImage
         fields = ("id", "image", "title_photo")
 
@@ -75,8 +79,10 @@ class SubServiceSerializer(serializers.ModelSerializer):
     """Сериализатор для подуслуг."""
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = SubService
-        fields = ["id", "title", "price"]
+        fields = ("id", "title", "price")
 
 
 class ServiceGetSerializer(serializers.ModelSerializer):
@@ -90,6 +96,8 @@ class ServiceGetSerializer(serializers.ModelSerializer):
     price_list_entries = SubServiceSerializer(many=True, read_only=True)
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Service
         fields = (
             "id",
@@ -111,17 +119,17 @@ class ServiceGetSerializer(serializers.ModelSerializer):
             "price_list_entries",
         )
 
-    def get_comments_quantity(self, obj) -> int:
+    def get_comments_quantity(self, obj: Service) -> int:
         return obj.comments.filter(status=CommentStatus.PUBLISHED).count()
 
-    def get_avg_rating(self, obj) -> int | None:
+    def get_avg_rating(self, obj: Service) -> int | None:
         rating = obj.comments.aggregate(Avg("rating"))
         rating = rating["rating__avg"]
         if rating is None:
             return None
         return round(rating, 1)
 
-    def get_is_favorited(self, obj) -> bool:
+    def get_is_favorited(self, obj: Service) -> bool:
         request = self.context.get("request", None)
         if request and hasattr(request, "user"):
             user = request.user
@@ -145,9 +153,11 @@ class ServiceListSerializer(ServiceGetSerializer):
     title_photo = serializers.SerializerMethodField()
 
     class Meta(ServiceGetSerializer.Meta):
+        """Настройки сериализатора."""
+
         fields = ServiceGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa
 
-    def get_title_photo(self, obj) -> Any | None:
+    def get_title_photo(self, obj: Service) -> Any | None:
         title_photo = obj.images.filter(title_photo=True).first()
         if title_photo:
             return ServiceImageRetrieveSerializer(title_photo).data
@@ -161,6 +171,8 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
     price_list_entries = SubServiceSerializer(many=True, required=False)
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Service
         fields = (
             "title",
@@ -175,8 +187,16 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("category",)
 
-    def create(self, validated_data):
-        """Метод создания услуги."""
+    def create(self, validated_data: dict) -> Service:
+        """Cоздать услугу.
+
+        Args:
+            validated_data (dict): исходные данные
+
+        Returns:
+            Service: Созданная услуга
+
+        """
         with transaction.atomic():
             category = get_object_or_404(Category, pk=validated_data.pop("category_id"))
             price_list_entries_data = validated_data.pop("price_list_entries", [])
@@ -230,7 +250,16 @@ class ServiceCreateUpdateSerializer(serializers.ModelSerializer):
         self.__add_price_list_entries(instance, price_list_entries_data)
         return instance
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: Service) -> dict:
+        """Представить данные.
+
+        Args:
+            instance (Service): данные
+
+        Returns:
+            dict: данные в изменененном виде
+
+        """
         serializer = ServiceListSerializer(instance)
         return serializer.data
 
@@ -242,9 +271,11 @@ class ServiceRetrieveSerializer(ServiceGetSerializer):
     images = ServiceImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta(ServiceGetSerializer.Meta):
+        """Настройки сериализатора."""
+
         fields = ServiceGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
 
-    def get_comments(self, obj):
+    def get_comments(self, obj: Service) -> list[CommentReadSerializer]:
         """Вывод трех последних комментариев к услуге."""
         comments = obj.comments.filter(status=CommentStatus.PUBLISHED).order_by(
             "-created_at"
@@ -259,6 +290,8 @@ class ServiceForModerationSerializer(serializers.ModelSerializer):
     price_list_entries = SubServiceSerializer(many=True, read_only=True)
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Service
         fields = (
             "id",
@@ -284,6 +317,8 @@ class ServiceSearchSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Service
         fields = (
             "id",
@@ -297,10 +332,19 @@ class ServiceSearchSerializer(serializers.ModelSerializer):
             "is_favorited",
         )
 
-    def get_type(self, obj):
+    def get_type(self, obj: Service) -> str:  # noqa: ARG002
+        """Получить тип объекта.
+
+        Args:
+            obj (Service): услуга
+
+        Returns:
+            str: тип объекта
+
+        """
         return self.Meta.model.__name__.lower()
 
-    def get_is_favorited(self, obj) -> bool:
+    def get_is_favorited(self, obj: Service) -> bool:
         request = self.context.get("request", None)
         if request and hasattr(request, "user"):
             user = request.user
