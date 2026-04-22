@@ -21,6 +21,8 @@ class CommentImageCreateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = CommentImage
         fields = ("image",)
 
@@ -30,7 +32,16 @@ class CommentImageAddSerializer(serializers.Serializer):
 
     image = serializers.CharField()
 
-    def validate_image(self, value):
+    def validate_image(self, value: str) -> str:
+        """Валидация строки в base64.
+
+        Args:
+            value (str): строка
+
+        Returns:
+            str: строка
+
+        """
         validate_base64_field(value)
         return value
 
@@ -39,6 +50,8 @@ class CommentImageRetrieveSerializer(CommentImageCreateSerializer):
     """Сериализатор для получения фото комментариев."""
 
     class Meta(CommentImageCreateSerializer.Meta):
+        """Настройки сериализатора."""
+
         fields = CommentImageCreateSerializer.Meta.fields + ("id",)  # type: ignore  # noqa
 
 
@@ -48,6 +61,8 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     images = CommentImageAddSerializer(many=True, required=False)
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Comment
         fields = ("rating", "feedback", "images")
 
@@ -79,6 +94,8 @@ class CommentForModerationSerializer(CommentCreateSerializer):
     images = CommentImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta(CommentCreateSerializer.Meta):
+        """Настройки сериализатора."""
+
         fields = CommentCreateSerializer.Meta.fields + ("id", "images")  # type: ignore  # noqa
 
 
@@ -90,6 +107,8 @@ class CommentReadSerializer(CommentForModerationSerializer):
     title = serializers.CharField(source="subject.title")
 
     class Meta(CommentForModerationSerializer.Meta):
+        """Настройки сериализатора."""
+
         fields = CommentCreateSerializer.Meta.fields + (  # type: ignore  # noqa
             "author",
             "object_id",

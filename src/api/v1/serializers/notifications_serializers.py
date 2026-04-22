@@ -7,11 +7,13 @@ class NotificationSerializer(ModelSerializer):
     """Сериализатор для уведомлений."""
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Notification
-        fields = [
+        fields = (
             "text",
             "link",
             "created_at",
             "updated_at",
             "read_at",
-        ]
+        )
