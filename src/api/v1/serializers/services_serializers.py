@@ -84,8 +84,8 @@ class ServiceImagesSerializer(serializers.Serializer):
 
         """
         for img in data:
-            validate_base64_field(img["image"])
-            img_format, _ = img["image"].split(";base64,")
+            validate_base64_field(img["image"])  # type: ignore  # noqa: PGH003
+            img_format, _ = img["image"].split(";base64,")  # type: ignore  # noqa: PGH003
             ext = img_format.split("/")[-1]
             validate_extention(ext)
         return data

@@ -9,7 +9,16 @@ from api.v1.validators import validate_base64_field, validate_extention
 class Base64ImageField(serializers.ImageField):
     """Поле для преобразования фото в base64."""
 
-    def to_internal_value(self, data: str):
+    def to_internal_value(self, data: str) -> ContentFile:
+        """Изменить формат изображения.
+
+        Args:
+            data (str): изображение в base64
+
+        Returns:
+            ContentFile: файл с изображением
+
+        """
         validate_base64_field(data)
         img_format, img_str = data.split(";base64,")
         ext = img_format.split("/")[-1]

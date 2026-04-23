@@ -12,7 +12,7 @@ from api.v1.serializers.services_serializers import (
     ServiceListSerializer,
     ServiceSearchSerializer,
 )
-from core.choices import SystemMessages
+from core.exceptions import SerializerNotFoundError
 from services.documents import ServiceDocument
 from services.models import Service
 
@@ -38,7 +38,7 @@ class FavoriteObjectRelatedField(serializers.RelatedField):
         elif isinstance(value, Ad):
             serializer = AdListSerializer(value, context=self.context)
         else:
-            raise Exception(SystemMessages.SERIALIZER_NOT_FOUND_ERROR)
+            raise SerializerNotFoundError
         return serializer.data
 
 
@@ -60,5 +60,5 @@ class SearchObjectRelatedField(serializers.RelatedField):
         elif isinstance(value, AdDocument):
             serializer = AdSearchSerializer(value, context=self.context)
         else:
-            raise Exception(SystemMessages.SERIALIZER_NOT_FOUND_ERROR)
+            raise SerializerNotFoundError
         return serializer.data

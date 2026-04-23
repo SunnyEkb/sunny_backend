@@ -45,7 +45,7 @@ class AdImageSerializer(serializers.Serializer):
         """Валидация изображения.
 
         Args:
-            str: изображение в base64
+            value (str): изображение в base64
 
         Returns:
             str: изображение в base64
@@ -72,8 +72,8 @@ class AdImagesSerializer(serializers.Serializer):
         """
         for img in data:
             validate_base64_field(img["image"])
-            format, _ = img["image"].split(";base64,")
-            ext = format.split("/")[-1]
+            img_format, _ = img["image"].split(";base64,")
+            ext = img_format.split("/")[-1]
             validate_extention(ext)
         return data
 
@@ -121,7 +121,7 @@ class AdGetSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, obj: Ad) -> bool:
-        """Получить объявление в избранном
+        """Получить объявление в избранном.
 
         Args:
             obj (Ad): объявление
@@ -151,7 +151,7 @@ class AdGetSerializer(serializers.ModelSerializer):
             int: количество комментариев к объявлению
 
         """
-        return obj.comments.filter(status=CommentStatus.PUBLISHED.value).count()  # type: ignore
+        return obj.comments.filter(status=CommentStatus.PUBLISHED.value).count()  # type: ignore  # noqa: PGH003
 
     def get_avg_rating(self, obj: Ad) -> float | None:
         """Получить средний рейтинг.
@@ -169,7 +169,7 @@ class AdGetSerializer(serializers.ModelSerializer):
             return None
         return round(rating, 1)
 
-    def get_type(self, obj: Ad) -> str:
+    def get_type(self, obj: Ad) -> str:  # noqa: ARG002
         """Получить тип объекта.
 
         Args:
@@ -188,7 +188,9 @@ class AdListSerializer(AdGetSerializer):
     title_photo = serializers.SerializerMethodField()
 
     class Meta(AdGetSerializer.Meta):
-        fields = AdGetSerializer.Meta.fields + ("title_photo",)  # type: ignore
+        """Настройки сериализатора."""
+
+        fields = AdGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa: PGH003, RUF005
 
     def get_title_photo(self, obj: Ad) -> dict | None:
         """Получить титульную фотографию.
@@ -266,8 +268,7 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
                     instance.category.remove(cat)
                 instance = super().update(instance, validated_data)
                 self.__ad_category(instance, category)
-        instance = super().update(instance, validated_data)
-        return instance
+        return super().update(instance, validated_data)
 
     def __ad_category(self, ad: Ad, category: Category) -> None:
         """Добавить категории к объявлению.
@@ -306,7 +307,7 @@ class AdRetrieveSerializer(AdGetSerializer):
     class Meta(AdGetSerializer.Meta):
         """Настройки сериализатора."""
 
-        fields = AdGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
+        fields = AdGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa: PGH003, RUF005
 
     def get_comments(self, obj: Ad) -> list[dict]:
         """Получить три последних комментариев к объявлению.
