@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import (
@@ -10,6 +12,9 @@ from rest_framework import mixins, status, viewsets
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from categories.models import Category
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 
 @extend_schema(
@@ -36,7 +41,8 @@ class CommonCategoriesViewSet(
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
 
-    def get_queryset(self):
+    def get_queryset(self) -> "QuerySet":
+        """Изменить запрос по умолчанию."""
         queryset = Category.objects.all()
         if self.action == "list":
             params = self.request.query_params

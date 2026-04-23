@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
@@ -12,10 +14,11 @@ from api.v1.permissions import NotificationRecieverOnly
 from core.choices import APIResponses
 from notifications.models import Notification
 
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
-@extend_schema(
-    tags=["Notifications"],
-)
+
+@extend_schema(tags=["Notifications"])
 @extend_schema_view(
     list=extend_schema(
         summary="Список Уведомлений.",
@@ -28,10 +31,11 @@ class NotificationViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """Список уведомлений."""
 
     serializer_class = api_serializers.NotificationSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (permissions.IsAuthenticated,)
     pagination_class = CustomPaginator
 
-    def get_queryset(self):
+    def get_queryset(self) -> "QuerySet":
+        """Изменить запрос по умолчанию."""
         return Notification.objects.filter(receiver=self.request.user)
 
     @extend_schema(

@@ -21,7 +21,7 @@ logger = logging.getLogger("django")
     responses={status.HTTP_200_OK: schemes.SEARCH_OK_200},
 )
 class SearchView(views.APIView):
-    document_classes = [AdDocument, ServiceDocument]
+    document_classes = (AdDocument, ServiceDocument)
     serializer_class = serializers.SearchSerialiser
 
     def generate_q_expression(self, search_terms_list: list[str] | None):
@@ -43,8 +43,7 @@ class SearchView(views.APIView):
                 for field in search_fields
             ],
         )
-        query = query | wildcard_query
-        return query
+        return query | wildcard_query
 
     def get(self, request: request.Request):
         try:

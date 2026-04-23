@@ -1,4 +1,5 @@
 import sys
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
@@ -42,6 +43,9 @@ from services.tasks import delete_image_files_task
 from users.exceptions import TokenDoesNotExistsError, TokenExpiredError
 from users.tasks import save_file_with_user_data_task
 from users.utils import verify_user
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
 
 User = get_user_model()
 
@@ -116,13 +120,13 @@ class LoginView(APIView):
 class LogoutView(APIView):
     """Выход из системы."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     serializer_class = None
 
-    def post(self, request, format=None):
+    def post(self, request, format=None):  # noqa: ARG002
         try:
-            refreshToken = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_REFRESH"])
-            token = RefreshToken(refreshToken)
+            refresh_token = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_REFRESH"])
+            token = RefreshToken(refresh_token)
             token.blacklist()
 
             response: Response = Response()
@@ -133,8 +137,8 @@ class LogoutView(APIView):
             response["X-CSRFToken"] = None
             response.data = {"Success": APIResponses.SUCCESS_LOGOUT}
             return response
-        except Exception:
-            raise ParseError(APIResponses.INVALID_TOKEN)
+        except Exception:  # noqa: BLE001
+            raise ParseError(APIResponses.INVALID_TOKEN) from Exception
 
 
 @extend_schema(
@@ -182,7 +186,7 @@ class CookieTokenRefreshView(TokenRefreshView):
 class ChangePassowrdView(GenericAPIView):
     """Изменение пароля пользователя."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = (IsAuthenticated,)
     serializer_class = api_serializers.PasswordChangeSerializer
 
     def post(self, request):
@@ -242,7 +246,8 @@ class UserViewSet(
 
     permission_classes = (SelfOnly,)
 
-    def get_queryset(self):
+    def get_queryset(self) -> "QuerySet":
+        """Изменить запрос по умолчанию."""
         return User.objects.all()
 
     def get_serializer_class(self):
@@ -335,7 +340,8 @@ class AdAvatarView(generics.UpdateAPIView):
     permission_classes = (SelfOnly,)
     serializer_class = api_serializers.UserAdAvatarSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> "QuerySet":
+        """Изменить запрос по умолчанию."""
         return User.objects.filter(id=self.request.user.id)
 
     def update(self, request, *args, **kwargs):

@@ -1,4 +1,5 @@
 import sys
+from typing import TYPE_CHECKING
 
 from drf_spectacular.utils import (
     extend_schema,
@@ -20,6 +21,10 @@ from api.v1.views.base_views import (
     BaseServiceAdViewSet,
 )
 from core.choices import AdvertisementStatus
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+    from rest_framework.serializers import ModelSerializer
 
 
 @extend_schema(tags=["Ads"])
@@ -75,21 +80,20 @@ from core.choices import AdvertisementStatus
 class AdViewSet(BaseServiceAdViewSet):
     """Вьюсет для объявлений."""
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> "ModelSerializer":
+        """Получить класс сериализатора."""
         if self.action == "retrieve":
             return api_serializers.AdRetrieveSerializer
         return api_serializers.AdCreateUpdateSerializer
 
-    def get_queryset(self):
-        queryset = Ad.cstm_mng.all()
-        return queryset
+    def get_queryset(self) -> "QuerySet":
+        """Изменить запрос по умолчанию."""
+        return Ad.cstm_mng.all()
 
 
 @extend_schema(
     tags=["Ads"],
-    responses={
-        status.HTTP_204_NO_CONTENT: None,
-    },
+    responses={status.HTTP_204_NO_CONTENT: None},
 )
 @extend_schema_view(
     destroy=extend_schema(summary="Удаление фото."),
