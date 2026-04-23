@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from django.db.models import Avg
@@ -75,7 +73,16 @@ class ServiceImagesSerializer(serializers.Serializer):
 
     images = ServiceImageSerializer(many=True)
 
-    def validate_images(self, data):
+    def validate_images(self, data: list[str]) -> list[str]:
+        """Валидровать изображения.
+
+        Args:
+            data (list[str]): изображения в формате base64
+
+        Returns:
+            list[str]: изображения в формате base64
+
+        """
         for img in data:
             validate_base64_field(img["image"])
             img_format, _ = img["image"].split(";base64,")
@@ -200,9 +207,9 @@ class ServiceListSerializer(ServiceGetSerializer):
     class Meta(ServiceGetSerializer.Meta):
         """Настройки сериализатора."""
 
-        fields = ServiceGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa
+        fields = ServiceGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa: PGH003, RUF005
 
-    def get_title_photo(self, obj: Service) -> Any | None:
+    def get_title_photo(self, obj: Service) -> dict | None:
         title_photo = obj.images.filter(title_photo=True).first()
         if title_photo:
             return ServiceImageRetrieveSerializer(title_photo).data
@@ -327,7 +334,7 @@ class ServiceRetrieveSerializer(ServiceGetSerializer):
     class Meta(ServiceGetSerializer.Meta):
         """Настройки сериализатора."""
 
-        fields = ServiceGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
+        fields = ServiceGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa: PGH003, RUF005
 
     def get_comments(self, obj: Service) -> list[CommentReadSerializer]:
         """Вывод трех последних комментариев к услуге."""

@@ -52,7 +52,7 @@ class CommentImageRetrieveSerializer(CommentImageCreateSerializer):
     class Meta(CommentImageCreateSerializer.Meta):
         """Настройки сериализатора."""
 
-        fields = CommentImageCreateSerializer.Meta.fields + ("id",)  # type: ignore  # noqa
+        fields = CommentImageCreateSerializer.Meta.fields + ("id",)  # type: ignore  # noqa: PGH003, RUF005
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
@@ -66,10 +66,18 @@ class CommentCreateSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ("rating", "feedback", "images")
 
-    def create(self, validated_data):
-        if "images" not in validated_data.keys():
-            comment = Comment.objects.create(**validated_data)
-            return comment
+    def create(self, validated_data: dict) -> Comment:
+        """Создать комментарий.
+
+        Args:
+            validated_data (dict): исходные данные
+
+        Returns:
+            Comment: созданный комментарий
+
+        """
+        if "images" not in validated_data:
+            return Comment.objects.create(**validated_data)
         images = validated_data.pop("images")
         comment = Comment.objects.create(**validated_data)
         for image in images:
@@ -78,12 +86,21 @@ class CommentCreateSerializer(serializers.ModelSerializer):
                 img_serializer.save(comment=comment)
         return comment
 
-    def validate_images(self, data):
+    def validate_images(self, data: list[str]) -> list[str]:
+        """Валидровать изображения.
+
+        Args:
+            data (list[str]): изображения в формате base64
+
+        Returns:
+            list[str]: изображения в формате base64
+
+        """
         validate_file_quantity(data)
         for img in data:
             validate_base64_field(img["image"])
-            format, _ = img["image"].split(";base64,")
-            ext = format.split("/")[-1]
+            img_format, _ = img["image"].split(";base64,")
+            ext = img_format.split("/")[-1]
             validate_extention(ext)
         return data
 
@@ -96,7 +113,7 @@ class CommentForModerationSerializer(CommentCreateSerializer):
     class Meta(CommentCreateSerializer.Meta):
         """Настройки сериализатора."""
 
-        fields = CommentCreateSerializer.Meta.fields + ("id", "images")  # type: ignore  # noqa
+        fields = CommentCreateSerializer.Meta.fields + ("id", "images")  # type: ignore  # noqa: PGH003, RUF005
 
 
 class CommentReadSerializer(CommentForModerationSerializer):
@@ -109,11 +126,14 @@ class CommentReadSerializer(CommentForModerationSerializer):
     class Meta(CommentForModerationSerializer.Meta):
         """Настройки сериализатора."""
 
-        fields = CommentCreateSerializer.Meta.fields + (  # type: ignore  # noqa
-            "author",
-            "object_id",
-            "title",
-            "obj_type",
+        fields = (
+            CommentCreateSerializer.Meta.fields  # type: ignore  # noqa: PGH003, RUF005
+            + (
+                "author",
+                "object_id",
+                "title",
+                "obj_type",
+            )
         )
 
     def get_obj_type(self, obj: Comment) -> str:

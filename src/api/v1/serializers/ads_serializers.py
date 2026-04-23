@@ -188,7 +188,7 @@ class AdListSerializer(AdGetSerializer):
     title_photo = serializers.SerializerMethodField()
 
     class Meta(AdGetSerializer.Meta):
-        fields = AdGetSerializer.Meta.fields + ("title_photo",)  # type: ignore  # noqa
+        fields = AdGetSerializer.Meta.fields + ("title_photo",)  # type: ignore
 
     def get_title_photo(self, obj: Ad) -> dict | None:
         """Получить титульную фотографию.
@@ -283,7 +283,16 @@ class AdCreateUpdateSerializer(serializers.ModelSerializer):
         if category.parent:
             self.__ad_category(ad, category.parent)
 
-    def to_representation(self, instance):
+    def to_representation(self, instance: Ad) -> dict:
+        """Представить данные.
+
+        Args:
+            instance (Ad): данные
+
+        Returns:
+            dict: данные в изменененном виде
+
+        """
         serializer = AdListSerializer(instance)
         return serializer.data
 
@@ -295,10 +304,20 @@ class AdRetrieveSerializer(AdGetSerializer):
     images = AdImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta(AdGetSerializer.Meta):
+        """Настройки сериализатора."""
+
         fields = AdGetSerializer.Meta.fields + ("comments", "images")  # type: ignore  # noqa
 
-    def get_comments(self, obj):
-        """Вывод трех последних комментариев к объявлению."""
+    def get_comments(self, obj: Ad) -> list[dict]:
+        """Получить три последних комментариев к объявлению.
+
+        Args:
+            obj (Ad): экземпляр объявления
+
+        Returns:
+            list[dict]: три последних комментариев к объявлению
+
+        """
         comments = obj.comments.filter(status=CommentStatus.PUBLISHED).order_by(
             "-created_at"
         )[:3]
@@ -311,8 +330,10 @@ class AdForModerationSerializer(serializers.ModelSerializer):
     images = AdImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Ad
-        fields = [  # noqa: RUF012
+        fields = (
             "id",
             "title",
             "description",
@@ -324,7 +345,7 @@ class AdForModerationSerializer(serializers.ModelSerializer):
             "category",
             "created_at",
             "updated_at",
-        ]
+        )
 
 
 class AdSearchSerializer(serializers.ModelSerializer):
@@ -335,8 +356,10 @@ class AdSearchSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Ad
-        fields = [  # noqa: RUF012
+        fields = (
             "id",
             "type",
             "title",
@@ -346,12 +369,30 @@ class AdSearchSerializer(serializers.ModelSerializer):
             "provider",
             "condition",
             "is_favorited",
-        ]
+        )
 
-    def get_type(self, obj):
+    def get_type(self, obj: Ad) -> str:  # noqa: ARG002
+        """Получить тип объявления.
+
+        Args:
+            obj (Ad): экземпляр объявления
+
+        Returns:
+            str: тип объявления
+
+        """
         return self.Meta.model.__name__.lower()
 
-    def get_is_favorited(self, obj):
+    def get_is_favorited(self, obj: Ad) -> bool:
+        """Определить находится ли объявление в избранном у пользователя.
+
+        Args:
+            obj (Ad): экземпляр объявления
+
+        Returns:
+            bool: объявление в избранном
+
+        """
         request = self.context.get("request", None)
         if request and hasattr(request, "user"):
             user = request.user
