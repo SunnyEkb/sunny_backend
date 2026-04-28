@@ -20,6 +20,9 @@ from core.choices import AdvertisementStatus
 from services.models import Service, ServiceImage
 
 
+from rest_framework.response import Response
+
+
 @extend_schema(tags=["Services"])
 @extend_schema_view(
     retrieve=extend_schema(
@@ -79,7 +82,29 @@ class ServiceViewSet(BaseServiceAdViewSet):
     def get_serializer_class(self):
         if self.action == "retrieve":
             return api_serializers.ServiceRetrieveSerializer
+        if self.action == "upload_images":
+            return api_serializers.ServiceImagesSerializer
         return api_serializers.ServiceCreateUpdateSerializer
+
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path="upload-images",
+    )
+    def upload_images(self, request, pk=None):
+        service = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        images_data = serializer.validated_data["images"]
+
+        for image_data in images_data:
+            image_serializer = api_serializers.ServiceImageCreateSerializer(
+                data={"image": image_data["image"]}
+            )
+            image_serializer.is_valid(raise_exception=True)
+            image_serializer.save(service=service)
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 @extend_schema(

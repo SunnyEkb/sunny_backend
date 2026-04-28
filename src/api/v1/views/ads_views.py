@@ -1,5 +1,6 @@
 import sys
 
+from rest_framework.response import Response
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view,
@@ -78,11 +79,33 @@ class AdViewSet(BaseServiceAdViewSet):
     def get_serializer_class(self):
         if self.action == "retrieve":
             return api_serializers.AdRetrieveSerializer
+        if self.action == "upload_images":
+            return api_serializers.AdImagesSerializer
         return api_serializers.AdCreateUpdateSerializer
 
     def get_queryset(self):
         queryset = Ad.cstm_mng.all()
         return queryset
+
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path="upload-images",
+    )
+    def upload_images(self, request, pk=None):
+        ad = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        images_data = serializer.validated_data["images"]
+
+        for image_data in images_data:
+            image_serializer = api_serializers.AdImageCreateSerializer(
+                data={"image": image_data["image"]}
+            )
+            image_serializer.is_valid(raise_exception=True)
+            image_serializer.save(ad=ad)
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 @extend_schema(
