@@ -124,7 +124,7 @@ services:
       - "3000:5173"
 
   chat:
-    image: ${DOCKER_HUB_USERNAME}/sunny_ekb_chat:latest
+    image: ${DOCKER_HUB_USERNAME}/sunny_chat:latest
     container_name: chat
     restart: always
     volumes:
