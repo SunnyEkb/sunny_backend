@@ -1,4 +1,5 @@
 import re
+from typing import TYPE_CHECKING
 
 from django.contrib.auth import get_user_model
 from rest_framework import exceptions, status
@@ -8,23 +9,53 @@ from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from core.choices import APIResponses
 from core.enums import Limits
 
+if TYPE_CHECKING:
+    from django.core.files import TemporaryUploadedFile
+
+    from users.models import CustomUser
+
 User = get_user_model()
 
 
-def validate_file_size(temp_file):
-    """Валидация размера загружаемого файла."""
+def validate_file_size(temp_file: "TemporaryUploadedFile") -> None:
+    """Валидация размера загружаемого файла.
+
+    Args:
+        temp_file (TemporaryUploadedFile): файл
+
+    Raises:
+        ValidationError: Размер файла превышен
+
+    """
     if temp_file.size > Limits.MAX_FILE_SIZE:
         raise ValidationError(APIResponses.MAX_FILE_SIZE_EXEED)
 
 
-def validate_file_quantity(value):
-    """Валидация количества загружаемых файлов."""
+def validate_file_quantity(value: list) -> None:
+    """Валидация количества загружаемых файлов.
+
+    Args:
+        value (list): список файлов
+
+    Raises:
+        ValidationError: количество загружаемых файлов превышено
+
+    """
     if len(value) > Limits.MAX_FILE_QUANTITY:
         raise ValidationError(APIResponses.MAX_IMAGE_QUANTITY_EXEED)
 
 
-def validate_username(value):
-    """Валидация имени пользователя."""
+def validate_username(value: str) -> None:
+    """Валидация имени пользователя.
+
+    Args:
+        value (str): имя пользователя
+
+    Raises:
+        ValidationError: неверное имя пользователя или пользователь \
+        с таким именем существует
+
+    """
     if (
         len(value) < Limits.USERNAME_MIN_LENGTH
         or len(value) > Limits.USERNAME_MAX_LENGTH
@@ -36,8 +67,18 @@ def validate_username(value):
         raise ValidationError(APIResponses.USERNAME_EXISTS)
 
 
-def validate_username_updating(instance, value):
-    """Валидация имени пользователя."""
+def validate_username_updating(instance: "CustomUser", value: str) -> None:
+    """Валидация имени пользователя при изменении его данных.
+
+    Args:
+        instance (CustomUser): пользователь
+        value (str): ноное значение имени пользователя
+
+    Raises:
+        ValidationError: неверное имя пользователя или пользователь \
+        с таким именем существует
+
+    """
     if (
         len(value) < Limits.USERNAME_MIN_LENGTH
         or len(value) > Limits.USERNAME_MAX_LENGTH
@@ -51,40 +92,82 @@ def validate_username_updating(instance, value):
         raise ValidationError(APIResponses.PHONE_EXISTS)
 
 
-def validate_email(value: str):
-    """Валидация email."""
+def validate_email(value: str) -> None:
+    """Валидация email на повторение.
+
+    Args:
+        value (str): email
+
+    Raises:
+        ValidationError: пользователь с таким email существует
+
+    """
     if User.objects.filter(email=value.lower()).exists():
         raise ValidationError(APIResponses.EMAIL_EXISTS)
 
 
-def validate_email_length(email: str):
-    """Валидация длины email."""
+def validate_email_length(email: str) -> None:
+    """Валидация длины email.
+
+    Args:
+        email (str): email
+
+    Raises:
+        ValidationError: длина email не соовтетсвует требуемой
+
+    """
     if len(email) < Limits.MIN_LENGTH_EAMIL or len(email) > Limits.MAX_LENGTH_EAMIL:
         raise ValidationError(APIResponses.INVALID_EMAIL_LENGTH)
 
 
-def validate_phone(value: str):
-    """Валидация номера телефона."""
+def validate_phone(value: str) -> None:
+    """Валидация номера телефона на повторение.
+
+    Args:
+        value (str): номер телефона
+
+    Raises:
+        ValidationError: пользователь с таким номером телефона существует
+
+    """
     if User.objects.filter(phone=value).exists():
         raise ValidationError(APIResponses.PHONE_EXISTS)
 
 
-def validate_phone_updating(instance, value: str):
-    """Валидация номера телефона."""
+def validate_phone_updating(instance: "CustomUser", value: str) -> None:
+    """Валидация номера телефона при обновлении данных пользователя.
+
+    Args:
+        value (str): номер телефона
+        instance (CustomUser): пользователь
+
+    Raises:
+        ValidationError: пользователь с таким номером телефона существует
+
+    """
     user = User.objects.filter(phone=value)
     if user.exists() and instance != user.first():
         raise ValidationError(APIResponses.PHONE_EXISTS)
 
 
-def validate_id(id):
+def validate_id(value: str) -> None:
+    """Валидация идентификатора.
+
+    Args:
+        value (str): идентификатор
+
+    Raises:
+        ValidationError: неверное значение идентификатора
+
+    """
     try:
-        id = int(id)
-    except ValueError:
+        value_id = int(value)
+    except ValueError as e:
         raise exceptions.ValidationError(
             detail=APIResponses.INVALID_PARAMETR,
             code=status.HTTP_400_BAD_REQUEST,
-        )
-    if id < 0:
+        ) from e
+    if value_id < 0:
         raise exceptions.ValidationError(
             detail=APIResponses.INVALID_PARAMETR,
             code=status.HTTP_400_BAD_REQUEST,

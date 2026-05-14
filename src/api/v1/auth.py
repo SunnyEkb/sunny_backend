@@ -1,19 +1,47 @@
+from typing import TYPE_CHECKING, Optional, Tuple
+
 from django.conf import settings
 from rest_framework import authentication, exceptions
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
+if TYPE_CHECKING:
+    from django.http import HttpRequest
 
-def enforce_csrf(request):
+    from users.models import CustomUser
+
+
+def enforce_csrf(request: "HttpRequest") -> None:
+    """Проверить CSRF.
+
+    Args:
+        request (HttpRequest): HTTP запрос
+
+    Raises:
+        PermissionDenied: отсутствуют права доступа
+
+    """
     check = authentication.CSRFCheck(request)
     reason = check.process_view(request, None, (), {})
     if reason:
-        raise exceptions.PermissionDenied("CSRF Failed: %s" % reason)
+        message = f"CSRF Failed: {reason}"
+        raise exceptions.PermissionDenied(message)
 
 
 class CustomAuthentication(JWTAuthentication):
     """Кастомная аутентификация через Cookie."""
 
-    def authenticate(self, request):
+    def authenticate(
+        self, request: "HttpRequest"
+    ) -> Optional[Tuple["CustomUser", str]]:
+        """Аутентифицировать пользователя.
+
+        Args:
+            request (HttpRequest): HTTP запрос
+
+        Returns:
+           Optional[CustomUser]: Пользователь, если найден
+
+        """
         header = self.get_header(request)
 
         if header is None:
