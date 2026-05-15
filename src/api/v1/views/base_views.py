@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, List  # noqa: UP035
+
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.sites.shortcuts import get_current_site
 from django.db.transaction import atomic
@@ -9,11 +11,11 @@ from drf_spectacular.utils import extend_schema
 from rest_framework import (
     mixins,
     permissions,
-    response,
     status,
     viewsets,
 )
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from ads.models import Ad
 from api.v1 import schemes
@@ -24,9 +26,15 @@ from bad_word_filter.tasks import moderate_comment_task
 from comments.models import Comment
 from config.settings.base import ALLOWED_IMAGE_FILE_EXTENTIONS
 from core.choices import AdvertisementStatus, APIResponses, Notifications
+from core.enums import Limits
 from notifications.models import Notification
 from services.models import Service
 from users.models import Favorites
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+    from rest_framework.request import Request
+    from rest_framework.serializers import Serializer
 
 
 class BaseServiceAdViewSet(
@@ -42,7 +50,7 @@ class BaseServiceAdViewSet(
     filter_backends = (DjangoFilterBackend,)
     serializer_class = None
 
-    def get_permissions(self):
+    def get_permissions(self) -> permissions.BasePermission:
         if self.action == "retrieve":
             return (ReadOnly(),)
         if self.action in [
@@ -53,16 +61,18 @@ class BaseServiceAdViewSet(
             return (permissions.IsAuthenticated(),)
         return (OwnerOrReadOnly(),)
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: "Serializer") -> None:
         serializer.save(provider=self.request.user)
 
-    def update(self, request, *args, **kwargs):
+    def update(
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
 
         # Проверяем, что объект не находится на модерации
         if instance.status == AdvertisementStatus.MODERATION:
-            return response.Response(
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION,
             )
@@ -71,13 +81,13 @@ class BaseServiceAdViewSet(
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         if getattr(instance, "_prefetched_objects_cache", None):
-            instance._prefetched_objects_cache = {}
+            instance._prefetched_objects_cache = {}  # noqa: SLF001
 
         # смена статуса на DRAFT для повторной модерации
         instance.set_draft()
-        return response.Response(serializer.data)
+        return Response(serializer.data)
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self, request: "Request", *args: list, **kwargs: dict) -> Response:
         instance = self.get_object()
         instance.delete_images()
         return super().destroy(request, *args, **kwargs)
@@ -100,17 +110,19 @@ class BaseServiceAdViewSet(
         url_name="hide",
         permission_classes=(OwnerOrReadOnly,),
     )
-    def hide(self, request, *args, **kwargs):
+    def hide(
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         """Скрыть услугу или объявление."""
-        object = self.get_object()
-        if not object.status == AdvertisementStatus.PUBLISHED:
-            return response.Response(
+        obj = self.get_object()
+        if obj.status != AdvertisementStatus.PUBLISHED:
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.CAN_NOT_HIDE_SERVICE_OR_AD,
             )
-        object.hide()
-        serializer = self.get_serializer(object)
-        return response.Response(serializer.data)
+        obj.hide()
+        serializer = self.get_serializer(obj)
+        return Response(serializer.data)
 
     @extend_schema(
         summary="Опубликовать услугу или объявление.",
@@ -134,23 +146,25 @@ class BaseServiceAdViewSet(
         url_name="publish",
         permission_classes=(OwnerOrReadOnly,),
     )
-    def publish_object(self, request, *args, **kwargs):
+    def publish_object(
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         """Опубликовать услугу или объявление."""
-        object = self.get_object()
-        obj_status = object.status
+        obj = self.get_object()
+        obj_status = obj.status
         if obj_status not in [
             AdvertisementStatus.DRAFT,
             AdvertisementStatus.HIDDEN,
         ]:
-            return response.Response(
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.SERVICE_OR_AD_CANT_BE_PUBLISHED,
             )
-        object.publish(request)
+        obj.publish(request)
         if obj_status == AdvertisementStatus.HIDDEN:
-            serializer = self.get_serializer(object)
-            return response.Response(serializer.data)
-        return response.Response(APIResponses.AD_OR_SERVICE_SENT_MODERATION)
+            serializer = self.get_serializer(obj)
+            return Response(serializer.data)
+        return Response(APIResponses.AD_OR_SERVICE_SENT_MODERATION)
 
     @extend_schema(
         summary="Добавить фото к услуге.",
@@ -176,30 +190,32 @@ class BaseServiceAdViewSet(
         url_name="add_photo",
         permission_classes=(OwnerOrReadOnly,),
     )
-    def add_photo(self, request, *args, **kwargs):
+    def add_photo(  # noqa: C901, PLR0912
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         """Добавить фото к услуге (объявлению)."""
-        object = self.get_object()
+        obj = self.get_object()
 
         # Проверяем, что объект не находится на модерации
-        if object.status == AdvertisementStatus.MODERATION:
-            return response.Response(
+        if obj.status == AdvertisementStatus.MODERATION:
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.AD_OR_SERVICE_IS_UNDER_MODERATION,
             )
 
         # Проверяем, чтобы количество фото было не больше максимума
-        images = object.images.all()
-        if len(images) + len(request.data["images"]) >= 5:
-            return response.Response(
+        images = obj.images.all()
+        if len(images) + len(request.data["images"]) >= Limits.MAX_FILE_QUANTITY:
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.MAX_IMAGE_QUANTITY_EXEED,
             )
 
         data = request.data
         # Определяем необходимый сериализатор
-        if isinstance(object, Service):
+        if isinstance(obj, Service):
             img_serializer = api_serializers.ServiceImagesSerializer(data=data)
-        elif isinstance(object, Ad):
+        elif isinstance(obj, Ad):
             img_serializer = api_serializers.AdImagesSerializer(data=data)
 
         if img_serializer.is_valid():
@@ -210,9 +226,9 @@ class BaseServiceAdViewSet(
                     )
                     if photo_serializer.is_valid(raise_exception=True):
                         if images.filter(title_photo=True).exists():
-                            photo_serializer.save(service=object)
+                            photo_serializer.save(service=obj)
                         else:
-                            photo_serializer.save(service=object, title_photo=True)
+                            photo_serializer.save(service=obj, title_photo=True)
             else:
                 for image in img_serializer.validated_data["images"]:
                     photo_serializer = api_serializers.AdImageCreateSerializer(
@@ -220,15 +236,13 @@ class BaseServiceAdViewSet(
                     )
                     if photo_serializer.is_valid(raise_exception=True):
                         if images.filter(title_photo=True).exists():
-                            photo_serializer.save(ad=object)
+                            photo_serializer.save(ad=obj)
                         else:
-                            photo_serializer.save(ad=object, title_photo=True)
-            object.set_draft()
-            obj_serializer = self.get_serializer(object)
-            return response.Response(obj_serializer.data)
-        return response.Response(
-            img_serializer.errors, status=status.HTTP_400_BAD_REQUEST
-        )
+                            photo_serializer.save(ad=obj, title_photo=True)
+            obj.set_draft()
+            obj_serializer = self.get_serializer(obj)
+            return Response(obj_serializer.data)
+        return Response(img_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @extend_schema(
         summary="Добавить в избранное.",
@@ -247,16 +261,18 @@ class BaseServiceAdViewSet(
         url_name="add_to_favorites",
         permission_classes=(permissions.IsAuthenticated),
     )
-    def add_to_favorites(self, request, *args, **kwargs):
+    def add_to_favorites(
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         """Добавить в избранное."""
-        object = self.get_object()
-        if object.status != AdvertisementStatus.PUBLISHED:
-            return response.Response(
+        obj = self.get_object()
+        if obj.status != AdvertisementStatus.PUBLISHED:
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.OBJECT_IS_NOT_PUBLISHED,
             )
 
-        if isinstance(object, Service):
+        if isinstance(obj, Service):
             app_label = "services"
             model = "service"
         else:
@@ -265,24 +281,24 @@ class BaseServiceAdViewSet(
 
         if Favorites.objects.filter(
             content_type=ContentType.objects.get(app_label=app_label, model=model),
-            object_id=object.id,
+            object_id=obj.id,
             user=request.user,
         ).exists():
-            return response.Response(
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.OBJECT_ALREADY_IN_FAVORITES,
             )
-        if object.provider == request.user:
-            return response.Response(
+        if obj.provider == request.user:
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.OBJECT_PROVIDER_CANT_ADD_TO_FAVORITE,
             )
         Favorites.objects.create(
             content_type=ContentType.objects.get(app_label=app_label, model=model),
-            object_id=object.id,
+            object_id=obj.id,
             user=request.user,
         )
-        return response.Response(
+        return Response(
             status=status.HTTP_201_CREATED,
             data=APIResponses.ADDED_TO_FAVORITES,
         )
@@ -311,22 +327,22 @@ class BaseServiceAdViewSet(
         url_name="add_comment",
         permission_classes=(permissions.IsAuthenticated),
     )
-    def add_comment(self, request, *args, **kwargs):
+    def add_comment(
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         """Добавить комментарий."""
         serializer = api_serializers.CommentCreateSerializer(data=request.data)
         if not serializer.is_valid():
-            return response.Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        object = self.get_object()
-        if object.status != AdvertisementStatus.PUBLISHED:
-            return response.Response(
+        obj = self.get_object()
+        if obj.status != AdvertisementStatus.PUBLISHED:
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.OBJECT_IS_NOT_PUBLISHED,
             )
 
-        if isinstance(object, Service):
+        if isinstance(obj, Service):
             app_label = "services"
             model = "service"
         else:
@@ -335,26 +351,26 @@ class BaseServiceAdViewSet(
 
         if Comment.objects.filter(
             content_type=ContentType.objects.get(app_label=app_label, model=model),
-            object_id=object.id,
+            object_id=obj.id,
             author=request.user,
         ).exists():
-            return response.Response(
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.COMMENT_ALREADY_EXISTS,
             )
-        if object.provider == request.user:
-            return response.Response(
+        if obj.provider == request.user:
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.COMMENTS_BY_PROVIDER_PROHIBITED,
             )
 
         comment: Comment = serializer.save(
             content_type=ContentType.objects.get(app_label=app_label, model=model),
-            object_id=object.id,
+            object_id=obj.id,
             author=request.user,
         )
         moderate_comment_task.delay_on_commit(comment_id=comment.id)
-        return response.Response(
+        return Response(
             status=status.HTTP_201_CREATED,
             data=APIResponses.COMMENT_ADDED,
         )
@@ -376,11 +392,13 @@ class BaseServiceAdViewSet(
         url_name="delete_from_favorites",
         permission_classes=(permissions.IsAuthenticated),
     )
-    def delete_from_favorites(self, request, *args, **kwargs):
+    def delete_from_favorites(
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         """Удалить из избранного."""
-        object = self.get_object()
+        obj = self.get_object()
 
-        if isinstance(object, Service):
+        if isinstance(obj, Service):
             app_label = "services"
             model = "service"
         else:
@@ -389,19 +407,19 @@ class BaseServiceAdViewSet(
 
         if not Favorites.objects.filter(
             content_type=ContentType.objects.get(app_label=app_label, model=model),
-            object_id=object.id,
+            object_id=obj.id,
             user=request.user,
         ).exists():
-            return response.Response(
+            return Response(
                 status=status.HTTP_406_NOT_ACCEPTABLE,
                 data=APIResponses.OBJECT_NOT_IN_FAVORITES,
             )
         Favorites.objects.get(
             content_type=ContentType.objects.get(app_label=app_label, model=model),
-            object_id=object.id,
+            object_id=obj.id,
             user=request.user,
         ).delete()
-        return response.Response(
+        return Response(
             status=status.HTTP_204_NO_CONTENT,
             data=APIResponses.DELETED_FROM_FAVORITES,
         )
@@ -410,19 +428,32 @@ class BaseServiceAdViewSet(
 class CategoryTypeViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
-    """Базовый вьюсет для типов услуг и объявлений"""
+    """Базовый вьюсет для типов услуг и объявлений."""
 
     serializer_class = None
 
     @method_decorator(cache_page(60 * 2))
-    def list(self, request, *args, **kwargs):
+    def list(self, request: "Request", *args: list, **kwargs: dict) -> Response:
+        """Получить список объектов."""
         return super().list(request, *args, **kwargs)
 
     @method_decorator(cache_page(60 * 2))
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(
+        self, request: "Request", *args: List, **kwargs: dict  # noqa: UP006
+    ) -> Response:
+        """Получить объект."""
         return super().retrieve(request, *args, **kwargs)
 
-    def base_get_queryset(self, queryset):
+    def base_get_queryset(self, queryset: "QuerySet") -> "QuerySet":
+        """Изменить запрос к БД по умолчанию.
+
+        Args:
+            queryset (QuerySet): запрос к БД
+
+        Returns:
+            QuerySet: измененный запрос к БД
+
+        """
         if self.action == "list":
             params = self.request.query_params
             if "title" in params:
@@ -444,34 +475,50 @@ class BaseModeratorViewSet(
     serializer_class = None
     permission_classes = (ModeratorOnly,)
 
-    def approve(self, request, *args, **kwargs):
+    def approve(
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         """Одобрить."""
-        object = self.get_object()
+        obj = self.get_object()
         with atomic():
             self._create_notification(text=Notifications.APPROVE_OBJECT)
-            object.approve()
-        return response.Response(
+            obj.approve()
+        return Response(
             status=status.HTTP_200_OK,
             data=APIResponses.OBJECT_APPROVED,
         )
 
-    def reject(self, request, *args, **kwargs):
+    def reject(
+        self, request: "Request", *args: list, **kwargs: dict  # noqa: ARG002
+    ) -> Response:
         """Отклонить."""
-        object = self.get_object()
+        obj = self.get_object()
         with atomic():
             self._create_notification(text=Notifications.REJECT_OBJECT)
-            object.reject()
-        return response.Response(
+            obj.reject()
+        return Response(
             status=status.HTTP_200_OK,
             data=APIResponses.OBJECT_REJECTED,
         )
 
-    def _create_notification(self, text: dict):
+    def _create_notification(self, text: str) -> None:
+        """Создать уведомление в БД.
+
+        Args:
+            text (str): текст уведомления
+
+        """
         Notification.objects.create(
             link=self._get_url(), receiver=self._get_receiver(), text=text
         )
 
     def _get_url(self) -> str:
+        """Создать url ссылку на объект.
+
+        Returns:
+            str: url ссылку на объект
+
+        """
         obj = self.get_object()
         domain = get_current_site(self.request).domain
         return "".join(

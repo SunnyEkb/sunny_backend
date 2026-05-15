@@ -15,6 +15,9 @@ from categories.models import Category
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+    from rest_framework.request import Request
+    from rest_framework.response import Response
+    from rest_framework.serializers import Serializer
 
 
 @extend_schema(
@@ -34,11 +37,15 @@ class CommonCategoriesViewSet(
     """Вьюсет для категорий сервиса."""
 
     @method_decorator(cache_page(60 * 2))
-    def list(self, request, *args, **kwargs):
+    def list(self, request: "Request", *args: list, **kwargs: dict) -> "Response":
+        """Получить список объектов."""
         return super().list(request, *args, **kwargs)
 
     @method_decorator(cache_page(60 * 2))
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(
+        self, request: "Request", *args, **kwargs: dict  # noqa: ANN002
+    ) -> "Response":
+        """Получить объект."""
         return super().retrieve(request, *args, **kwargs)
 
     def get_queryset(self) -> "QuerySet":
@@ -53,7 +60,8 @@ class CommonCategoriesViewSet(
                 queryset = queryset.filter(parent=None)
         return queryset
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> "Serializer":
+        """Получить класс сериализатора."""
         params = self.request.query_params
         if self.action == "list" and "title" in params:
             return api_serializers.CommonCategoryNoSubCatSerializer
