@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_spectacular.utils import (
@@ -10,6 +12,12 @@ from rest_framework import mixins, status, viewsets
 from api.v1 import schemes
 from api.v1 import serializers as api_serializers
 from categories.models import Category
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+    from rest_framework.request import Request
+    from rest_framework.response import Response
+    from rest_framework.serializers import Serializer
 
 
 @extend_schema(
@@ -29,14 +37,19 @@ class CommonCategoriesViewSet(
     """Вьюсет для категорий сервиса."""
 
     @method_decorator(cache_page(60 * 2))
-    def list(self, request, *args, **kwargs):
+    def list(self, request: "Request", *args: list, **kwargs: dict) -> "Response":
+        """Получить список объектов."""
         return super().list(request, *args, **kwargs)
 
     @method_decorator(cache_page(60 * 2))
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(
+        self, request: "Request", *args, **kwargs: dict  # noqa: ANN002
+    ) -> "Response":
+        """Получить объект."""
         return super().retrieve(request, *args, **kwargs)
 
-    def get_queryset(self):
+    def get_queryset(self) -> "QuerySet":
+        """Изменить запрос по умолчанию."""
         queryset = Category.objects.all()
         if self.action == "list":
             params = self.request.query_params
@@ -47,7 +60,8 @@ class CommonCategoriesViewSet(
                 queryset = queryset.filter(parent=None)
         return queryset
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> "Serializer":
+        """Получить класс сериализатора."""
         params = self.request.query_params
         if self.action == "list" and "title" in params:
             return api_serializers.CommonCategoryNoSubCatSerializer

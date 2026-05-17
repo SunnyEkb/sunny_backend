@@ -230,7 +230,6 @@ COMMENT_LIST_EXAMPLE: OpenApiExample = OpenApiExample(
             "images": [{"id": 1, "image": "string"}],
             "obj_type": "ad",
             "title": "my_ad",
-            "object_id": 2,
         },
     ],
 )

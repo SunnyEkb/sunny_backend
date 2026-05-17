@@ -83,7 +83,7 @@ class UserCreateSerializer(ModelSerializer):
             "password",
             "confirmation",
         )
-        extra_kwargs = {"password": {"write_only": True}}
+        extra_kwargs = {"password": {"write_only": True}}  # noqa: RUF012
 
     def validate(self, attrs: dict) -> dict:
         """Валидация данных.
@@ -101,7 +101,7 @@ class UserCreateSerializer(ModelSerializer):
         data = attrs.copy()
         del data["confirmation"]
 
-        errors = dict()
+        errors = {}
         user = User(**data)
 
         try:
@@ -124,8 +124,7 @@ class UserCreateSerializer(ModelSerializer):
 
         """
         _ = validated_data.pop("confirmation")
-        user = User.objects.create_user(**validated_data)
-        return user
+        return User.objects.create_user(**validated_data)
 
     def to_representation(self, instance: "Model") -> dict:
         """Представить данные.
@@ -218,7 +217,16 @@ class CookieTokenRefreshSerializer(TokenRefreshSerializer):
 
     refresh = None
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict) -> dict:
+        """Валидация данных.
+
+        Args:
+            attrs (dict): данные
+
+        Returns:
+            dict: проверенные данные
+
+        """
         attrs["refresh"] = self.context["request"].COOKIES.get(
             settings.SIMPLE_JWT["AUTH_REFRESH"]
         )
@@ -234,7 +242,16 @@ class PasswordChangeSerializer(Serializer):
     new_password = CharField(required=True)
     confirmation = CharField(required=True)
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict) -> dict:
+        """Валидация данных.
+
+        Args:
+            attrs (dict): данные
+
+        Returns:
+            dict: проверенные данные
+
+        """
         user = self.initial_data["user"]
         if not user.check_password(attrs["current_password"]):
             raise ValidationError({"password": APIResponses.WRONG_PASSWORD})
