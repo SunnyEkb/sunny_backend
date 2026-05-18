@@ -25,10 +25,10 @@ class CategorySerializer(serializers.ModelSerializer):
 
         """
         if obj.subcategories.exists():
-            subcat = []
-            for subcategory in obj.subcategories.all():
-                subcat.append(CategorySerializer(subcategory).data)
-            return subcat
+            return [
+                CategorySerializer(subcategory).data
+                for subcategory in obj.subcategories.all()
+            ]
         return None
 
 

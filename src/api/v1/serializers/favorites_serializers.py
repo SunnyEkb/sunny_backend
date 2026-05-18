@@ -13,8 +13,10 @@ class FavoritesSerialiser(serializers.ModelSerializer):
     subject = FavoriteObjectRelatedField(read_only=True)
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Favorites
-        fields = ["subject"]
+        fields = ("subject",)
 
 
 class SearchSerialiser(serializers.Serializer):

@@ -191,8 +191,8 @@ class CommentModerationViewSet(
     )
     def approve(self, request, *args, **kwargs):
         """Одобрить."""
-        object = self.get_object()
-        object.approve()
+        obj = self.get_object()
+        obj.approve()
         return response.Response(
             status=status.HTTP_200_OK,
             data=APIResponses.OBJECT_APPROVED,
@@ -216,8 +216,8 @@ class CommentModerationViewSet(
         permission_classes=(ModeratorOnly,),
     )
     def reject(self, request, *args, **kwargs):
-        object: Comment = self.get_object()
-        object.reject()
+        obj: Comment = self.get_object()
+        obj.reject()
         return response.Response(
             status=status.HTTP_200_OK,
             data=APIResponses.OBJECT_REJECTED,

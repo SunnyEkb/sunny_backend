@@ -1,4 +1,5 @@
 import sys
+from typing import TYPE_CHECKING
 
 from drf_spectacular.utils import (
     extend_schema,
@@ -20,6 +21,15 @@ from api.v1.views.base_views import (
     BaseServiceAdViewSet,
 )
 from core.choices import AdvertisementStatus
+
+if TYPE_CHECKING:
+    from django.db.models import QuerySet
+    from rest_framework.permissions import BasePermission
+    from rest_framework.request import Request
+    from rest_framework.response import Response
+    from rest_framework.serializers import ModelSerializer
+
+    from users.models import CustomUser
 
 
 @extend_schema(tags=["Ads"])
@@ -75,21 +85,20 @@ from core.choices import AdvertisementStatus
 class AdViewSet(BaseServiceAdViewSet):
     """Вьюсет для объявлений."""
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> "ModelSerializer":
+        """Получить класс сериализатора."""
         if self.action == "retrieve":
             return api_serializers.AdRetrieveSerializer
         return api_serializers.AdCreateUpdateSerializer
 
-    def get_queryset(self):
-        queryset = Ad.cstm_mng.all()
-        return queryset
+    def get_queryset(self) -> "QuerySet":
+        """Изменить запрос по умолчанию."""
+        return Ad.cstm_mng.all()
 
 
 @extend_schema(
     tags=["Ads"],
-    responses={
-        status.HTTP_204_NO_CONTENT: None,
-    },
+    responses={status.HTTP_204_NO_CONTENT: None},
 )
 @extend_schema_view(
     destroy=extend_schema(summary="Удаление фото."),
@@ -109,12 +118,14 @@ class AdImageViewSet(
     queryset = AdImage.objects.all()
     serializer_class = api_serializers.AdImageRetrieveSerializer
 
-    def get_permissions(self):
+    def get_permissions(self) -> "BasePermission":
+        """Получить Permission класс."""
         if self.action == "retrieve":
             return (PhotoReadOnly(),)
         return (PhotoOwnerOrReadOnly(),)
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self, request: "Request", *args: list, **kwargs: dict) -> "Response":
+        """Удалить фото."""
         instance: AdImage = self.get_object()
 
         # удаляем файл
@@ -138,9 +149,15 @@ class AdModerationViewSet(BaseModeratorViewSet):
     """Модерация объявлений."""
 
     queryset = Ad.cstm_mng.filter(status=AdvertisementStatus.MODERATION)
-    serializer_class = api_serializers.AdForModerationSerializer  # type: ignore  # noqa
+    serializer_class = api_serializers.AdForModerationSerializer  # type: ignore  # noqa: PGH003
 
-    def _get_receiver(self):
+    def _get_receiver(self) -> "CustomUser":
+        """Получить получателя уведомления.
+
+        Returns:
+            CustomUser: получатель уведомления
+
+        """
         return self.get_object().provider
 
     @extend_schema(
@@ -160,7 +177,8 @@ class AdModerationViewSet(BaseModeratorViewSet):
         url_name="approve",
         permission_classes=(ModeratorOnly,),
     )
-    def approve(self, request, *args, **kwargs):
+    def approve(self, request: "Request", *args: list, **kwargs: dict) -> "Response":
+        """Одобрить публикацию."""
         return super().approve(request, *args, **kwargs)
 
     @extend_schema(
@@ -180,5 +198,6 @@ class AdModerationViewSet(BaseModeratorViewSet):
         url_name="reject",
         permission_classes=(ModeratorOnly,),
     )
-    def reject(self, request, *args, **kwargs):
+    def reject(self, request: "Request", *args: list, **kwargs: dict) -> "Response":
+        """Отклонить публикацию."""
         return super().reject(request, *args, **kwargs)

@@ -21,6 +21,8 @@ class CommentImageCreateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = CommentImage
         fields = ("image",)
 
@@ -30,7 +32,16 @@ class CommentImageAddSerializer(serializers.Serializer):
 
     image = serializers.CharField()
 
-    def validate_image(self, value):
+    def validate_image(self, value: str) -> str:
+        """Валидация строки в base64.
+
+        Args:
+            value (str): строка
+
+        Returns:
+            str: строка
+
+        """
         validate_base64_field(value)
         return value
 
@@ -39,7 +50,9 @@ class CommentImageRetrieveSerializer(CommentImageCreateSerializer):
     """Сериализатор для получения фото комментариев."""
 
     class Meta(CommentImageCreateSerializer.Meta):
-        fields = CommentImageCreateSerializer.Meta.fields + ("id",)  # type: ignore  # noqa
+        """Настройки сериализатора."""
+
+        fields = CommentImageCreateSerializer.Meta.fields + ("id",)  # type: ignore  # noqa: PGH003, RUF005
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
@@ -48,13 +61,23 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     images = CommentImageAddSerializer(many=True, required=False)
 
     class Meta:
+        """Настройки сериализатора."""
+
         model = Comment
         fields = ("rating", "feedback", "images")
 
-    def create(self, validated_data):
-        if "images" not in validated_data.keys():
-            comment = Comment.objects.create(**validated_data)
-            return comment
+    def create(self, validated_data: dict) -> Comment:
+        """Создать комментарий.
+
+        Args:
+            validated_data (dict): исходные данные
+
+        Returns:
+            Comment: созданный комментарий
+
+        """
+        if "images" not in validated_data:
+            return Comment.objects.create(**validated_data)
         images = validated_data.pop("images")
         comment = Comment.objects.create(**validated_data)
         for image in images:
@@ -63,12 +86,21 @@ class CommentCreateSerializer(serializers.ModelSerializer):
                 img_serializer.save(comment=comment)
         return comment
 
-    def validate_images(self, data):
+    def validate_images(self, data: list[str]) -> list[str]:
+        """Валидровать изображения.
+
+        Args:
+            data (list[str]): изображения в формате base64
+
+        Returns:
+            list[str]: изображения в формате base64
+
+        """
         validate_file_quantity(data)
         for img in data:
-            validate_base64_field(img["image"])
-            format, _ = img["image"].split(";base64,")
-            ext = format.split("/")[-1]
+            validate_base64_field(img["image"])  # type: ignore  # noqa: PGH003
+            img_format, _ = img["image"].split(";base64,")  # type: ignore  # noqa: PGH003
+            ext = img_format.split("/")[-1]
             validate_extention(ext)
         return data
 
@@ -79,7 +111,9 @@ class CommentForModerationSerializer(CommentCreateSerializer):
     images = CommentImageRetrieveSerializer(many=True, read_only=True)
 
     class Meta(CommentCreateSerializer.Meta):
-        fields = CommentCreateSerializer.Meta.fields + ("id", "images")  # type: ignore  # noqa
+        """Настройки сериализатора."""
+
+        fields = CommentCreateSerializer.Meta.fields + ("id", "images")  # type: ignore  # noqa: PGH003, RUF005
 
 
 class CommentReadSerializer(CommentForModerationSerializer):
@@ -90,11 +124,16 @@ class CommentReadSerializer(CommentForModerationSerializer):
     title = serializers.CharField(source="subject.title")
 
     class Meta(CommentForModerationSerializer.Meta):
-        fields = CommentCreateSerializer.Meta.fields + (  # type: ignore  # noqa
-            "author",
-            "object_id",
-            "title",
-            "obj_type",
+        """Настройки сериализатора."""
+
+        fields = (
+            CommentCreateSerializer.Meta.fields  # type: ignore  # noqa: PGH003, RUF005
+            + (
+                "author",
+                "object_id",
+                "title",
+                "obj_type",
+            )
         )
 
     def get_obj_type(self, obj: Comment) -> str:

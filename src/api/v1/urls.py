@@ -34,7 +34,6 @@ api_v1_router.register(
     "categories", CommonCategoriesViewSet, basename="common_categories"
 )
 api_v1_router.register("ads", AdViewSet, basename="ads")
-api_v1_router.register("chats", ChatViewSet, basename="chats")
 api_v1_router.register(
     "comments",
     CommentDestroyViewSet,
