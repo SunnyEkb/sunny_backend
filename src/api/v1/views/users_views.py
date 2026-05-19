@@ -46,6 +46,8 @@ from users.utils import verify_user
 
 if TYPE_CHECKING:
     from django.db.models import QuerySet
+    from rest_framework.request import Request
+    from rest_framework.serializers import Serializer
 
 User = get_user_model()
 
@@ -63,7 +65,7 @@ User = get_user_model()
 class RegisrtyView(APIView):
     """Регистрация пользователей."""
 
-    def post(self, request):
+    def post(self, request: "Request") -> Response:
         serializer = api_serializers.UserCreateSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -86,7 +88,11 @@ class LoginView(APIView):
 
     authentication_classes = ()
 
-    def post(self, request, format=None):
+    def post(
+        self,
+        request: "Request",
+        format=None,  # noqa: ARG002, ANN001, A002
+    ) -> Response:
         serializer = api_serializers.LoginSerializer(data=request.data)
         if serializer.is_valid():
             response = Response()
@@ -123,7 +129,9 @@ class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = None
 
-    def post(self, request, format=None):  # noqa: ARG002
+    def post(
+        self, request: "Request", format=None  # noqa: ARG002, ANN001, A002
+    ) -> Response:
         try:
             refresh_token = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_REFRESH"])
             token = RefreshToken(refresh_token)
@@ -136,7 +144,7 @@ class LogoutView(APIView):
             response.delete_cookie("csrftoken")
             response["X-CSRFToken"] = None
             response.data = {"Success": APIResponses.SUCCESS_LOGOUT}
-            return response
+            return response  # noqa: TRY300
         except Exception:  # noqa: BLE001
             raise ParseError(APIResponses.INVALID_TOKEN) from Exception
 
@@ -153,9 +161,15 @@ class LogoutView(APIView):
 class CookieTokenRefreshView(TokenRefreshView):
     """Обновление refresh и access токена."""
 
-    serializer_class = api_serializers.CookieTokenRefreshSerializer  # type: ignore  # noqa
+    serializer_class = api_serializers.CookieTokenRefreshSerializer  # type: ignore  # noqa: PGH003
 
-    def finalize_response(self, request, response, *args, **kwargs):
+    def finalize_response(
+        self,
+        request: "Request",
+        response: Response,
+        *args: list,
+        **kwargs: dict,
+    ) -> Response:
         if response.status_code == status.HTTP_401_UNAUTHORIZED:
             res = Response()
             res.data = {"detail": APIResponses.INVALID_TOKEN}
@@ -189,7 +203,7 @@ class ChangePassowrdView(GenericAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = api_serializers.PasswordChangeSerializer
 
-    def post(self, request):
+    def post(self, request: "Request") -> Response:
         data = request.data
         data["user"] = request.user
         serializer = api_serializers.PasswordChangeSerializer(data=data)
@@ -250,12 +264,13 @@ class UserViewSet(
         """Изменить запрос по умолчанию."""
         return User.objects.all()
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> "Serializer":
+        """Получить класс сериализатора."""
         if self.request.method in ["PUT", "PATCH"]:
             return api_serializers.UserUpdateSerializer
         return api_serializers.UserReadSerializer
 
-    def destroy(self, request, *args, **kwargs):
+    def destroy(self, request: "Request", *args: list, **kwargs: dict) -> Response:
         if "test" not in sys.argv:
             # удаляем фото для услуг, объявлений и комментариев пользователя
             user = self.get_object()
@@ -279,7 +294,12 @@ class UserViewSet(
 
         return super().destroy(request, *args, **kwargs)
 
-    def update(self, request, *args, **kwargs):
+    def update(
+        self,
+        request: "Request",
+        *args: list,  # noqa: ARG002
+        **kwargs: dict,
+    ) -> Response:
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -294,7 +314,7 @@ class UserViewSet(
         self.perform_update(serializer)
 
         if getattr(instance, "_prefetched_objects_cache", None):
-            instance._prefetched_objects_cache = {}
+            instance._prefetched_objects_cache = {}  # noqa: SLF001
 
         return Response(serializer.data)
 
@@ -314,7 +334,12 @@ class UserViewSet(
         url_name="me",
         permission_classes=(IsAuthenticated,),
     )
-    def get_me(self, request, *args, **kwargs):
+    def get_me(
+        self,
+        request: "Request",
+        *args: list,  # noqa: ARG002
+        **kwargs: dict,  # noqa: ARG002
+    ) -> Response:
         user = get_object_or_404(User, pk=request.user.id)
         serializer = self.get_serializer(user)
         return Response(serializer.data)
@@ -344,7 +369,7 @@ class AdAvatarView(generics.UpdateAPIView):
         """Изменить запрос по умолчанию."""
         return User.objects.filter(id=self.request.user.id)
 
-    def update(self, request, *args, **kwargs):
+    def update(self, request: "Request", *args: list, **kwargs: dict) -> Response:
         instance = self.get_object()
         if instance.avatar:
             old_image = instance.avatar
@@ -365,7 +390,7 @@ class AdAvatarView(generics.UpdateAPIView):
 class VerificationView(APIView):
     """Подтверждение регистрации пользователя."""
 
-    def post(self, request):
+    def post(self, request: "Request") -> Response:
         serializer = api_serializers.VerificationTokenSerialiser(data=request.data)
         if serializer.is_valid():
             try:
