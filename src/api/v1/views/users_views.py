@@ -121,20 +121,45 @@ class LogoutView(APIView):
 
     def post(self, request, format=None):
         try:
-            refreshToken = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_REFRESH"])
-            token = RefreshToken(refreshToken)
-            token.blacklist()
+    def post(self, request, format=None):
+        response = Response({"Success": APIResponses.SUCCESS_LOGOUT})
 
-            response: Response = Response()
-            response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
-            response.delete_cookie(settings.SIMPLE_JWT["AUTH_REFRESH"])
-            response.delete_cookie("X-CSRFToken")
-            response.delete_cookie("csrftoken")
-            response["X-CSRFToken"] = None
-            response.data = {"Success": APIResponses.SUCCESS_LOGOUT}
-            return response
+        # Попытка добавить refresh-токен в черный список
+        try:
+            refreshToken = request.COOKIES.get(settings.SIMPLE_JWT["AUTH_REFRESH"])
+            if refreshToken:
+                token = RefreshToken(refreshToken)
+                token.blacklist()
         except Exception:
-            raise ParseError(APIResponses.INVALID_TOKEN)
+            # Логируем исключение для отладки, но не прерываем выход из системы.
+            # logger.warning(f"Не удалось добавить refresh-токен в черный список: {e}")
+            pass
+
+        # Всегда удаляем аутентификационные и CSRF-куки
+        auth_cookie_samesite = settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"]
+        csrf_cookie_samesite = settings.CSRF_COOKIE_SAMESITE
+        auth_cookie_path = settings.SIMPLE_JWT["AUTH_COOKIE_PATH"]
+
+        response.delete_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            path=auth_cookie_path,
+            samesite=auth_cookie_samesite
+        )
+        response.delete_cookie(
+            key=settings.SIMPLE_JWT["AUTH_REFRESH"],
+            path=auth_cookie_path,
+            samesite=auth_cookie_samesite
+        )
+        # Удаляем стандартный CSRF-куки Django
+        response.delete_cookie(
+            key="csrftoken",
+            path="/", # Путь по умолчанию для CSRF-куки Django
+            samesite=csrf_cookie_samesite
+        )
+        # Очищаем заголовок X-CSRFToken
+        response["X-CSRFToken"] = None
+        
+        return response
 
 
 @extend_schema(
