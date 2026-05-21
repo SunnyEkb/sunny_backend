@@ -85,6 +85,7 @@ class BaseServiceAdViewSet(
 
         # смена статуса на DRAFT для повторной модерации
         instance.set_draft()
+        instance.notify_about_need_for_moderation(request)
         return Response(serializer.data)
 
     def destroy(self, request: "Request", *args: list, **kwargs: dict) -> Response:
@@ -240,6 +241,7 @@ class BaseServiceAdViewSet(
                         else:
                             photo_serializer.save(ad=obj, title_photo=True)
             obj.set_draft()
+            obj.notify_about_need_for_moderation(request)
             obj_serializer = self.get_serializer(obj)
             return Response(obj_serializer.data)
         return Response(img_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
