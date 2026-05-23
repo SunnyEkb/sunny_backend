@@ -43,8 +43,8 @@ class CookieAuthMiddleware:
 
     async def __call__(self, scope, receive, send):
         if "headers" not in scope:
-            raise ValueError(
-                "CookieMiddleware was passed a scope that did not have a "
+            raise ValueError(  # noqa: TRY003
+                "CookieMiddleware was passed a scope that did not have a "  # noqa: EM101
                 "headers key (make sure it is only passed HTTP or WebSocket "
                 "connections)"
             )
@@ -53,16 +53,16 @@ class CookieAuthMiddleware:
                 cookies = parse_cookie(value.decode("latin1"))
                 break
         else:
-            raise DenyConnection("Empty cookies")
+            raise DenyConnection("Empty cookies")  # noqa: EM101, TRY003
 
         scope = dict(scope, cookies=cookies)
         token = scope["cookies"].get(settings.SIMPLE_JWT["AUTH_COOKIE"], None)
         try:
             user_id = UntypedToken(token).get("user_id")
-        except Exception:
-            raise DenyConnection("Invalid token")
+        except Exception as e:
+            raise DenyConnection("Invalid token") from e  # noqa: EM101, TRY003
         if user_id is None or (user := await get_user_from_db(user_id)) is None:
-            raise DenyConnection("User does not exist")
+            raise DenyConnection("User does not exist")  # noqa: EM101, TRY003
         scope["user"] = user
 
         return await self.app(scope, receive, send)

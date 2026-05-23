@@ -53,7 +53,7 @@ def send_error_message(message: str) -> None:
     send_telegram_message(
         message=(
             message
-            if len(message) < 4095
+            if len(message) < 4095  # noqa: PLR2004
             else (message[0:2000] + "\n...\n" + message[-2080:])
         ),
         chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
@@ -71,7 +71,7 @@ async def send_error_message_async(message: str) -> None:
     await send_telegram_message_async(
         message=(
             message
-            if len(message) < 4095
+            if len(message) < 4095  # noqa: PLR2004
             else (message[0:2000] + "\n...\n" + message[-2080:])
         ),
         chat_id=settings.TELEGRAM_SUPPORT_CHAT_ID,
