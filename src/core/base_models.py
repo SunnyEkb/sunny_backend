@@ -79,9 +79,7 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
         if self.status == AdvertisementStatus.DRAFT:
             self.status = AdvertisementStatus.MODERATION
             self.save()
-            url = self.get_admin_url(request)
-            if "test" not in sys.argv:
-                notify_about_moderation_task.delay(url)
+            self.notify_about_need_for_moderation(request)
 
     def set_draft(self) -> None:
         """Изменить статус на 'Черновик'."""
@@ -103,6 +101,7 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
         """Отказать в публикации.
 
         Изменить статус на 'Черновик'
+
         """
         if self.status == AdvertisementStatus.MODERATION:
             self.status = AdvertisementStatus.DRAFT
@@ -133,3 +132,14 @@ class AbstractAdvertisement(TimeCreateUpdateModel):
             for image in images:
                 image.delete()
             delete_images_dir_task.delay(f"{name}/{self.id}")
+
+    def notify_about_need_for_moderation(self, request: HttpRequest) -> None:
+        """Уведомить о необходимости модерации.
+
+        Args:
+            request (HttpRequest): http запрос
+
+        """
+        if "test" not in sys.argv:
+            url = self.get_admin_url(request)
+            notify_about_moderation_task.delay(url)
