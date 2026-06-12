@@ -266,6 +266,8 @@ class UserViewSet(
 
     def get_serializer_class(self) -> "Serializer":
         """Получить класс сериализатора."""
+        if self.action == "get_me":
+            return api_serializers.UserReadWithTokenSerializer
         if self.request.method in ["PUT", "PATCH"]:
             return api_serializers.UserUpdateSerializer
         return api_serializers.UserReadSerializer
