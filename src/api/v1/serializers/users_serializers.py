@@ -9,6 +9,7 @@ from rest_framework.serializers import (
     ListField,
     ModelSerializer,
     Serializer,
+    SerializerMethodField,
     ValidationError,
 )
 from rest_framework_simplejwt.exceptions import InvalidToken
@@ -52,6 +53,21 @@ class UserReadSerializer(ModelSerializer):
             "role",
             "avatar",
         )
+
+
+class UserReadWithTokenSerializer(UserReadSerializer):
+    """Сериализатор для получения данных о пользователе c токеном."""
+
+    token = SerializerMethodField()
+
+    class Meta(UserReadSerializer.Meta):
+        """Настройки сериализатора."""
+
+        fields = UserReadSerializer.Meta.fields + ("token",)  # type: ignore  # noqa: PGH003, RUF005
+
+    def get_token(self, obj: "CustomUser") -> str:  # noqa: ARG002
+        """Получить текущий токен."""
+        return self.context["request"].COOKIES.get(settings.SIMPLE_JWT["AUTH_COOKIE"])
 
 
 class UserSearchSerializer(ModelSerializer):
