@@ -183,7 +183,8 @@ class TestUser(TestUserFixtures):
         data = {"email": self.user_2.email, "password": self.password}
         response = self.client_1.post(reverse("login"), data=data)
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertEqual(response.data, {"Success": APIResponses.SUCCESS_LOGIN.value})
+        self.assertEqual(response.data["Success"], APIResponses.SUCCESS_LOGIN.value)
+        self.assertTrue("access_token" in response.data)
 
     def test_user_login_wrong_credentials(self):
         data = {"email": self.user_2.username, "password": self.password}
@@ -219,7 +220,8 @@ class TestUser(TestUserFixtures):
             data={"email": self.user_3.email, "password": self.new_password},
         )
         self.assertEqual(response_4.status_code, HTTPStatus.OK)
-        self.assertEqual(response_4.data, {"Success": APIResponses.SUCCESS_LOGIN.value})
+        self.assertEqual(response_4.data["Success"], APIResponses.SUCCESS_LOGIN.value)
+        self.assertTrue("access_token" in response_4.data)
 
     def test_user_logout(self):
         response = self.client_1.post(reverse("logout"))
