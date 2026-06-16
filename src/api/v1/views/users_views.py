@@ -105,7 +105,10 @@ class LoginView(APIView):
                     set_access_cookie(response, data)
                     set_refresh_cookie(response, data)
                     response["X-CSRFToken"] = csrf.get_token(request)
-                    response.data = {"Success": APIResponses.SUCCESS_LOGIN, "access_token": data["access"]}
+                    response.data = {
+                        "Success": APIResponses.SUCCESS_LOGIN,
+                        "access_token": data["access"],
+                    }
                     return response
                 return Response(
                     {"No active": APIResponses.ACCOUNT_IS_INACTIVE},
