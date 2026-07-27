@@ -184,8 +184,8 @@ def validate_base64_field(value: str) -> None:
         ValidationError: Значение не валидно
 
     """
-    if not isinstance(value, str) or not re.match(
-        r"data:image\/[a-z]{3,4};base64,[a-zA-Z0-9\/=\+]+=",
+    if not isinstance(value, str) or not re.fullmatch(
+        r"data:image\/[a-z]{3,4};base64,[a-zA-Z0-9\/=\+]+={0,2}",
         str(value),
     ):
         raise exceptions.ValidationError(APIResponses.WRONG_CONTENT)
