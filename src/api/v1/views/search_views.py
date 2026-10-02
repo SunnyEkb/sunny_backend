@@ -24,9 +24,7 @@ class SearchView(views.APIView):
     document_classes = (AdDocument, ServiceDocument)
     serializer_class = serializers.SearchSerialiser
 
-    def generate_q_expression(
-        self, search_terms_list: list[str] | None, category: str | None
-    ):
+    def generate_q_expression(self, search_terms_list: list[str] | None):
         if search_terms_list is None:
             return Q("match_all")
         search_terms = search_terms_list[0].replace("\x00", "")

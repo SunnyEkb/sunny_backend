@@ -20,7 +20,6 @@ class AdDocument(Document):
         }
     )
     condition = fields.TextField()
-    category = fields.NestedField(properties={"title": fields.TextField()}, many=True)
 
     def prepare_condition(self, instance: "AdDocument") -> str:
         """Преобразовать состояние товара в строку.
@@ -52,7 +51,6 @@ class AdDocument(Document):
             "description",
             "price",
             "address",
-            "category",
         ]
 
         related_models = [User]  # noqa: RUF012
