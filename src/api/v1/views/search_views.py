@@ -8,6 +8,7 @@ from rest_framework import request, response, status, views
 
 from ads.documents import AdDocument
 from api.v1 import schemes, serializers
+from api.v1.validators import validate_id
 from services.documents import ServiceDocument
 
 logger = logging.getLogger("django")
@@ -53,6 +54,9 @@ class SearchView(views.APIView):
             params = copy.deepcopy(request.query_params)
             search_terms = params.pop("search", None)
             limit = params.pop("limit", None)
+            if limit is not None:
+                validate_id(limit)
+                limit = int(limit)
             q = self.generate_q_expression(search_terms_list=search_terms)
             search_for_ads = AdDocument.search().query(q)
             ads = search_for_ads.execute()
@@ -65,7 +69,7 @@ class SearchView(views.APIView):
                 services, many=True, context={"request": request}
             )
             data = ads_results.data + services_results.data
-            if limit:
+            if limit is not None:
                 data = data[:limit]
             return response.Response(data=data, status=status.HTTP_200_OK)
         except Exception as e:
