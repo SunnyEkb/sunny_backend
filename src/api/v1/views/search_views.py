@@ -25,9 +25,7 @@ class SearchView(views.APIView):
     serializer_class = serializers.SearchSerialiser
 
     def generate_q_expression(
-        self,
-        search_terms_list: list[str] | None,
-        category: str | None
+        self, search_terms_list: list[str] | None, category: str | None
     ):
         if search_terms_list is None:
             return Q("match_all")
