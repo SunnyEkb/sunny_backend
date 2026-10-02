@@ -20,6 +20,7 @@ class ServiceDocument(Document):
         }
     )
     place_of_provision = fields.TextField()
+    category = fields.NestedField(properties={"title": fields.TextField()}, many=True)
 
     def prepare_place_of_provision(self, instance: "ServiceDocument") -> str:
         """Преобразовать vесто оказания услуги в строку.
@@ -52,6 +53,7 @@ class ServiceDocument(Document):
             "description",
             "address",
             "salon_name",
+            "category",
         ]
 
         related_models = [User]  # noqa: RUF012

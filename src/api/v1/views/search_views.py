@@ -24,7 +24,11 @@ class SearchView(views.APIView):
     document_classes = (AdDocument, ServiceDocument)
     serializer_class = serializers.SearchSerialiser
 
-    def generate_q_expression(self, search_terms_list: list[str] | None):
+    def generate_q_expression(
+        self,
+        search_terms_list: list[str] | None,
+        category: str | None
+    ):
         if search_terms_list is None:
             return Q("match_all")
         search_terms = search_terms_list[0].replace("\x00", "")
@@ -49,6 +53,8 @@ class SearchView(views.APIView):
         try:
             params = copy.deepcopy(request.query_params)
             search_terms = params.pop("search", None)
+            limit = params.pop("limit", None)
+            category = params.pop("category", None)
             q = self.generate_q_expression(search_terms_list=search_terms)
             search_for_ads = AdDocument.search().query(q)
             ads = search_for_ads.execute()
@@ -60,10 +66,10 @@ class SearchView(views.APIView):
             services_results = serializers.ServiceSearchSerializer(
                 services, many=True, context={"request": request}
             )
-            return response.Response(
-                data=ads_results.data + services_results.data,
-                status=status.HTTP_200_OK,
-            )
+            data = ads_results.data + services_results.data
+            if limit:
+                data = data[:limit]
+            return response.Response(data=data, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(e, exc_info=True)
             return HttpResponse(
