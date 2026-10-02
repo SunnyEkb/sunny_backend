@@ -17,7 +17,10 @@ logger = logging.getLogger("django")
     summary="Поиск по услугам и объявлениям.",
     tags=["Search"],
     request=None,
-    parameters=[OpenApiParameter("search", str)],
+    parameters=[
+        OpenApiParameter("search", str, description="Строка поиска"),
+        OpenApiParameter("limit", int, description="Лимит вывода записей"),
+    ],
     responses={status.HTTP_200_OK: schemes.SEARCH_OK_200},
 )
 class SearchView(views.APIView):
@@ -49,6 +52,7 @@ class SearchView(views.APIView):
         try:
             params = copy.deepcopy(request.query_params)
             search_terms = params.pop("search", None)
+            limit = params.pop("limit", None)
             q = self.generate_q_expression(search_terms_list=search_terms)
             search_for_ads = AdDocument.search().query(q)
             ads = search_for_ads.execute()
@@ -60,10 +64,10 @@ class SearchView(views.APIView):
             services_results = serializers.ServiceSearchSerializer(
                 services, many=True, context={"request": request}
             )
-            return response.Response(
-                data=ads_results.data + services_results.data,
-                status=status.HTTP_200_OK,
-            )
+            data = ads_results.data + services_results.data
+            if limit:
+                data = data[:limit]
+            return response.Response(data=data, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(e, exc_info=True)
             return HttpResponse(
