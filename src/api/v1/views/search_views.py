@@ -55,8 +55,8 @@ class SearchView(views.APIView):
             search_terms = params.pop("search", None)
             limit = params.pop("limit", None)
             if limit is not None:
-                validate_id(limit)
-                limit = int(limit)
+                validate_id(limit[0])
+                limit = int(limit[0])
             q = self.generate_q_expression(search_terms_list=search_terms)
             search_for_ads = AdDocument.search().query(q)
             ads = search_for_ads.execute()
