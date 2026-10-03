@@ -47,6 +47,16 @@ class Service(AbstractAdvertisement):
         ordering = ["-created_at"]  # noqa: RUF012
         default_related_name = "services"
 
+    @property
+    def get_categories_titles(self) -> list[str]:
+        """Получить список категорий.
+
+        Returns:
+            list[str]: Список наименований категорий.
+
+        """
+        return [cat.title for cat in self.category.all()]
+
 
 class ServiceImage(AbstractImage):
     """Фото к услуге."""
