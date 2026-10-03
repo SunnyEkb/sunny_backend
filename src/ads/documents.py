@@ -20,6 +20,7 @@ class AdDocument(Document):
         }
     )
     condition = fields.TextField()
+    categories_titles = fields.TextField(attr="get_categories_titles", multi=True)
 
     def prepare_condition(self, instance: "AdDocument") -> str:
         """Преобразовать состояние товара в строку.
@@ -62,7 +63,12 @@ class AdDocument(Document):
             QuerySet: запрос к БД
 
         """
-        return super().get_queryset().select_related("provider")
+        return (
+            super()
+            .get_queryset()
+            .select_related("provider")
+            .prefetch_related("category")
+        )
 
     def get_instances_from_related(self, related_instance: Model) -> list[Ad] | None:
         """Получить список объявлений пользователя.

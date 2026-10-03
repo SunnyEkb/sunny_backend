@@ -21,6 +21,7 @@ logger = logging.getLogger("django")
     parameters=[
         OpenApiParameter("search", str, description="Строка поиска"),
         OpenApiParameter("limit", int, description="Лимит вывода записей"),
+        OpenApiParameter("category", str, description="Категория объявления"),
     ],
     responses={status.HTTP_200_OK: schemes.SEARCH_OK_200},
 )
@@ -28,7 +29,11 @@ class SearchView(views.APIView):
     document_classes = (AdDocument, ServiceDocument)
     serializer_class = serializers.SearchSerialiser
 
-    def generate_q_expression(self, search_terms_list: list[str] | None):
+    def generate_q_expression(
+        self,
+        search_terms_list: list[str] | None,
+        category: list[str] | None,
+    ):
         if search_terms_list is None:
             return Q("match_all")
         search_terms = search_terms_list[0].replace("\x00", "")
@@ -47,6 +52,9 @@ class SearchView(views.APIView):
                 for field in search_fields
             ],
         )
+        if category is not None:
+            category_query = Q("terms", tags_names=category)
+            return query | wildcard_query | category_query
         return query | wildcard_query
 
     def get(self, request: request.Request):
@@ -57,7 +65,10 @@ class SearchView(views.APIView):
             if limit is not None:
                 validate_id(limit[0])
                 limit = int(limit[0])
-            q = self.generate_q_expression(search_terms_list=search_terms)
+            category = params.pop("category", None)
+            q = self.generate_q_expression(
+                search_terms_list=search_terms, category=category
+            )
             search_for_ads = AdDocument.search().query(q)
             ads = search_for_ads.execute()
             ads_results = serializers.AdSearchSerializer(

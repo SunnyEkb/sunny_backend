@@ -20,6 +20,7 @@ class ServiceDocument(Document):
         }
     )
     place_of_provision = fields.TextField()
+    categories_titles = fields.TextField(attr="get_categories_titles", multi=True)
 
     def prepare_place_of_provision(self, instance: "ServiceDocument") -> str:
         """Преобразовать vесто оказания услуги в строку.
@@ -63,7 +64,12 @@ class ServiceDocument(Document):
             QuerySet: запрос к БД
 
         """
-        return super().get_queryset().select_related("provider")
+        return (
+            super()
+            .get_queryset()
+            .select_related("provider")
+            .prefetch_related("category")
+        )
 
     def get_instances_from_related(
         self,
