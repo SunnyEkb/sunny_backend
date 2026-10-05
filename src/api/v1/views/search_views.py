@@ -67,7 +67,7 @@ class SearchView(views.APIView):
         if category is not None:
             cat = category[0].replace("\x00", "")
             cat.replace(",", " ")
-            category_query = Q("terms", tags_names=cat)
+            category_query = Q("terms", categories_titles=cat)
             return query | wildcard_query | category_query
         return query | wildcard_query
 
