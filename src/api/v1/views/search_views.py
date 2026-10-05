@@ -26,6 +26,8 @@ logger = logging.getLogger("django")
     responses={status.HTTP_200_OK: schemes.SEARCH_OK_200},
 )
 class SearchView(views.APIView):
+    """Вью класс для потска."""
+
     document_classes = (AdDocument, ServiceDocument)
     serializer_class = serializers.SearchSerialiser
 
@@ -33,7 +35,17 @@ class SearchView(views.APIView):
         self,
         search_terms_list: list[str] | None,
         category: list[str] | None,
-    ):
+    ) -> list[Q]:
+        """Сформировать list[str].
+
+        Args:
+            search_terms_list (list[str]): параметры поиска
+            category (list[str]): категория объявления
+
+        Returns:
+            list[Q]: запрос
+
+        """
         if search_terms_list is None:
             return Q("match_all")
         search_terms = search_terms_list[0].replace("\x00", "")
@@ -53,7 +65,9 @@ class SearchView(views.APIView):
             ],
         )
         if category is not None:
-            category_query = Q("terms", tags_names=category)
+            cat = category[0].replace("\x00", "")
+            cat.replace(",", " ")
+            category_query = Q("terms", tags_names=cat)
             return query | wildcard_query | category_query
         return query | wildcard_query
 
