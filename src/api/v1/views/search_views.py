@@ -4,7 +4,10 @@ import logging
 from django.http import HttpResponse
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from elasticsearch_dsl import Q
-from rest_framework import request, response, status, views
+from rest_framework import status
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from ads.documents import AdDocument
 from api.v1 import schemes, serializers
@@ -25,8 +28,8 @@ logger = logging.getLogger("django")
     ],
     responses={status.HTTP_200_OK: schemes.SEARCH_OK_200},
 )
-class SearchView(views.APIView):
-    """Вью класс для потска."""
+class SearchView(APIView):
+    """Вью класс для поиска."""
 
     document_classes = (AdDocument, ServiceDocument)
     serializer_class = serializers.SearchSerialiser
@@ -71,7 +74,15 @@ class SearchView(views.APIView):
             return query | wildcard_query | category_query
         return query | wildcard_query
 
-    def get(self, request: request.Request):
+    def get(self, request: Request) -> Response:
+        """Найти объявления.
+
+        Attrs:
+            request (Request): HTTP запрос
+
+        Returns:
+            Response: HTTP ответ
+        """
         try:
             params = copy.deepcopy(request.query_params)
             search_terms = params.pop("search", None)
@@ -96,7 +107,7 @@ class SearchView(views.APIView):
             data = ads_results.data + services_results.data
             if limit is not None:
                 data = data[:limit]
-            return response.Response(data=data, status=status.HTTP_200_OK)
+            return Response(data=data, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(e, exc_info=True)
             return HttpResponse(

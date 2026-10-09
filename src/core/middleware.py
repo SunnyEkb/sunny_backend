@@ -38,7 +38,8 @@ def get_user_from_db(user_id: int) -> CustomUser | None:
 class CookieAuthMiddleware:
     """Cookie authentication middleware for Django channels."""
 
-    def __init__(self, app):
+    def __init__(self, app) -> None:
+        """Инициализация экземпляра класса."""
         self.app = app
 
     async def __call__(self, scope, receive, send):
